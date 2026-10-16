@@ -6383,6 +6383,11 @@ async def get_sabian_symbols_for_chart(
 # MAIN
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
+# Octave: Nine Star Ki on the enneagram, read through the Gnostic Book of Changes (octave.py)
+from octave import register_octave  # noqa: E402
+register_octave(mcp)
+
+
 if __name__ == "__main__":
     import asyncio
 

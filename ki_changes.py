@@ -161,6 +161,7 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     from convergence_ki import (
         get_convergence_ki, _year_ki, _find_lichun, _flying_star,
         _dt_to_jd, _jd_to_dt, TRIAD_OF, SIGN_NAMES, TZ as CK_TZ,
+        synodic_gate_start, SYNODIC_GATE_YEARS,
     )
     import swisseph as swe
 
@@ -280,7 +281,7 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
         "day": next_day_dt.isoformat(),
         "month": next_month_dt.strftime("%Y-%m-%d %I:%M %p"),
         "year": next_year_dt.strftime("%Y-%m-%d %I:%M %p"),
-        "synodic": "~2034 (next Jupiter perihelion gate)",
+        "synodic": f"Lichun {synodic_gate_start(lichun_year) + SYNODIC_GATE_YEARS} (next 12-year gate)",
     }
 
     # ── Changing lines at each level ──

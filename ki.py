@@ -339,9 +339,10 @@ def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None,
     target_dt = datetime.combine(target_date, datetime.min.time())
     target_dt = target_dt.replace(tzinfo=zoneinfo.ZoneInfo("America/New_York"))
     
-    # Helper function for -3 descending pattern
+    # First month of the year: continuous count, 12 mod 9 = 3.
+    # Year 1/4/7 -> 8, 9/6/3 -> 5, 8/5/2 -> 2.
     def first_sub(parent):
-        return [None, 8, 5, 2, 8, 5, 2, 8, 5, 2][parent]
+        return [None, 8, 2, 5, 8, 2, 5, 8, 2, 5][parent]
     
     # Find Lichun (Sun at 315° = 15° Aquarius) for the Ki year
     def find_lichun(start_jd):

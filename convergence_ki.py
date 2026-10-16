@@ -259,6 +259,26 @@ def _find_jupiter_perihelion(near_year: float) -> float:
     return (lo + hi) / 2
 
 
+# Great year (synodic gate): arithmetic 12-year gates. Lichun 2022 opens gate 8 and the
+# great year descends 1 per gate. 12 mod 9 = 3 keeps every gate on an Earth year (2, 5, 8),
+# as 12 months keep every Lichun on an Earth month. 9 gates = 108 years.
+# Jupiter's ~11.86-year perihelion cycle lands near these gates but is not the clock.
+SYNODIC_ANCHOR_YEAR = 2022
+SYNODIC_ANCHOR_KI = 8
+SYNODIC_GATE_YEARS = 12
+
+
+def synodic_gate_start(ki_year: int) -> int:
+    """Ki year (Lichun) that opens the synodic gate containing ki_year."""
+    return SYNODIC_ANCHOR_YEAR + ((ki_year - SYNODIC_ANCHOR_YEAR) // SYNODIC_GATE_YEARS) * SYNODIC_GATE_YEARS
+
+
+def synodic_ki_for_year(ki_year: int) -> int:
+    """Global great-year Ki for a Ki year: 2010-2021 = 9, 2022-2033 = 8, 2034-2045 = 7."""
+    gate = (ki_year - SYNODIC_ANCHOR_YEAR) // SYNODIC_GATE_YEARS
+    return (SYNODIC_ANCHOR_KI - gate - 1) % 9 + 1
+
+
 def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     """Calculate the Synodic Gate Ki — the ~12-year Jupiter cycle level.
 
@@ -346,87 +366,32 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
         current_gate_lichun = _find_lichun(prev_lichun_year)
         current_gate_year_ki = _year_ki(prev_peri_dt_check.year, prev_peri_dt_check.month, prev_peri_dt_check.day)
 
-    # Synodic gate Ki: count backwards through perihelia to find position in 9-cycle
-    # We use the year Ki at each gate boundary (always Earth: 2, 5, 8)
-    # and the synodic Ki descends 9, 8, 7... one per gate
-    # To determine current synodic Ki, we count perihelia mod 9 from a reference
-    # Reference: find a chain of perihelia and their gate year Ki values
+    # Synodic gate Ki: arithmetic 12-year gates (see synodic_ki_for_year).
+    # The perihelion chain is kept as an informational layer only.
+    td_ki_year = td.year if (td.month > 2 or (td.month == 2 and td.day >= 4)) else td.year - 1
+    synodic_ki = synodic_ki_for_year(td_ki_year)
+    gate_start_year = synodic_gate_start(td_ki_year)
+    current_gate_lichun = _find_lichun(gate_start_year)
+    gate_lichun_dt = _jd_to_dt(current_gate_lichun)
+    gate_year_ki = _year_ki(gate_start_year, 2, 4)
+    next_gate_lichun_dt = _jd_to_dt(_find_lichun(gate_start_year + SYNODIC_GATE_YEARS))
+
     perihelia_chain = []
     for offset in range(-9, 3):
-        yr = current_year + offset * 11.86
-        pjd = _find_jupiter_perihelion(yr)
+        pjd = _find_jupiter_perihelion(current_year + offset * 11.86)
         pdt = _jd_to_dt(pjd)
-        if pdt.month > 2 or (pdt.month == 2 and pdt.day >= 4):
-            ly = pdt.year
-        else:
-            ly = pdt.year - 1
-        yki = _year_ki(ly, 2, 4)  # Year Ki that starts at this Lichun
+        ly = pdt.year if (pdt.month > 2 or (pdt.month == 2 and pdt.day >= 4)) else pdt.year - 1
         perihelia_chain.append({
             "perihelion": pdt.strftime("%Y-%m-%d"),
             "lichun_year": ly,
-            "year_ki": yki,
+            "year_ki": _year_ki(ly, 2, 4),
+            "synodic_ki": synodic_ki_for_year(ly),
         })
 
-    # Find our gate in the chain
-    current_gate_idx = None
-    for i, pc in enumerate(perihelia_chain):
-        pdt_check = datetime.fromisoformat(pc["perihelion"])
-        if pdt_check.year == peri_dt.year and abs(pdt_check.month - peri_dt.month) <= 2:
-            current_gate_idx = i
-            break
-
-    # Synodic Ki: the gate_year_ki at the current gate tells us the Earth sub-value
-    # Earth cycle at boundaries: 8, 5, 2, 8, 5, 2... (same pattern as month at Lichun)
-    # Map: gate_year_ki 8 → synodic position in 3-cycle; then extend to 9
-    # The synodic Ki descends. We anchor using the Earth year pattern.
-    # Earth years at gate boundaries cycle: 5, 8, 2, 5, 8, 2... (verified for 2022=5)
-    # Synodic Ki mapping via -3 cascade:
-    #   Synodic 8 → year 5, Synodic 5 → year 2, Synodic 2 → year 8
-    #   Synodic 7 → year 4... wait, 4 isn't Earth.
-    # Actually: at EACH gate boundary, year is Earth. Synodic goes through ALL 9.
-    # The -3 cascade: synodic_ki - 3 → year_ki at boundary (modular within Earth)
-
-    # Derive synodic Ki from gate year Ki using the cascade pattern:
-    # When synodic is Man (1,4,7): year starts 8 (Earth)
-    # When synodic is Earth (2,5,8): year starts 2 (Earth)
-    # When synodic is Heaven (3,6,9): year starts 5 (Earth)
-    # This mirrors: when year is Man→month 8, year Earth→month 2, year Heaven→month 5
-    year_to_synodic = {
-        8: [1, 4, 7],  # Man synodic → year 8
-        2: [2, 5, 8],  # Earth synodic → year 2
-        5: [3, 6, 9],  # Heaven synodic → year 5
-    }
-
-    # But we need to know WHICH of the 3 in each triad. Use the 9-cycle position.
-    # Track the descending pattern across perihelia
-    gate_year_kis = [pc["year_ki"] for pc in perihelia_chain]
-
-    # The synodic Ki descends by 1 each gate. We need one anchor point.
-    # Anchor: current gate (2022/2023) has year_ki = 5, synodic = 8
-    # From this, count forward/backward
-    if current_gate_idx is not None:
-        anchor_synodic = 8  # Verified: Lichun 2022, year Ki 5, synodic 8
-        synodic_ki = ((anchor_synodic - (current_gate_idx - current_gate_idx)) % 9) or 9
-        # Actually, anchor at current gate = synodic 8
-        synodic_ki = 8  # Current gate is 8
-
-        # For other gates, count from anchor
-        gate_synodic_map = {}
-        for i, pc in enumerate(perihelia_chain):
-            offset = i - current_gate_idx
-            ski = ((8 - offset - 1) % 9) + 1
-            gate_synodic_map[i] = ski
-            pc["synodic_ki"] = ski
-
-        synodic_ki = gate_synodic_map.get(current_gate_idx, 8)
-    else:
-        synodic_ki = 8  # fallback
-
     # Progress through current synodic gate
-    current_peri_dt = _jd_to_dt(current_peri)
     orbital_period = (next_peri_jd - peri_jd) / 365.25
     years_into_gate = (now_jd - current_gate_lichun) / 365.25
-    gate_length_years = orbital_period  # ~11.86 years
+    gate_length_years = SYNODIC_GATE_YEARS
 
     # Personal synodic Ki
     personal_synodic = None
@@ -457,6 +422,10 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
         },
         "next_perihelion": {
             "date": next_peri_dt.strftime("%Y-%m-%d"),
+        },
+        "next_gate": {
+            "lichun_date": next_gate_lichun_dt.strftime("%Y-%m-%d"),
+            "ki": synodic_ki_for_year(gate_start_year + SYNODIC_GATE_YEARS),
         },
         "orbital_period_years": round(orbital_period, 3),
         "cycle_108": {
@@ -533,10 +502,10 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     sun_sign = SIGN_NAMES[int(sun_lon / 30)]
     sun_deg = sun_lon % 30
 
-    # Month Ki: determined by year Ki group and which 15° segment Sun is in
-    # The month Ki counts down from a starting value based on year Ki
-    # Year Ki 1/4/7 start month at 5; 2/5/8 start at 8; 3/6/9 start at 2
-    month_starts = {1: 8, 4: 8, 7: 8, 2: 5, 5: 5, 8: 5, 3: 2, 6: 2, 9: 2}
+    # Month Ki: one continuous count, descending 1 per Ki month across every Lichun.
+    # 12 mod 9 = 3, so each Feb starts 3 lower than the last:
+    # year Ki 1/4/7 start month at 8; 9/6/3 start at 5; 8/5/2 start at 2.
+    month_starts = {1: 8, 4: 8, 7: 8, 3: 5, 6: 5, 9: 5, 2: 2, 5: 2, 8: 2}
     month_start_ki = month_starts[yki]
 
     # Which month are we in? Count 15° segments from Lichun (315° = 15° Aquarius)
@@ -693,7 +662,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
             "ki": synodic_ki,
             "triad": synodic_triad,
             "gate": synodic_data.get("current_gate", {}),
-            "anchor": "Jupiter perihelion cycle (~11.86 yr). 9 gates = ~108 years.",
+            "anchor": "Arithmetic 12-year gates from Lichun 2022 = 8. 9 gates = 108 years.",
         },
 
         "year": {

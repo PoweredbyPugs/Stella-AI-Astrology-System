@@ -67,14 +67,19 @@ def ki_to_hexagram(lower_ki: int, upper_ki: int) -> Optional[int]:
     Lower Ki = personal year (lower trigram)
     Upper Ki = personal month (upper trigram)
     
-    Returns hexagram number (1-64) or None if Ki 5 (Center) involved.
+    Returns hexagram number (1-64), or None only for 5 over 5.
     """
     lower_lines = KI_TO_ICHING[lower_ki]["lines"]
     upper_lines = KI_TO_ICHING[upper_ki]["lines"]
-    
-    # Ki 5 (Center) doesn't map to a trigram
-    if lower_lines is None or upper_lines is None:
+
+    # Ki 5 (Center) has no trigram of its own: doubling rule — a single 5
+    # takes the other digit's trigram; only 5 over 5 has no figure.
+    if lower_lines is None and upper_lines is None:
         return None
+    if lower_lines is None:
+        lower_lines = upper_lines
+    elif upper_lines is None:
+        upper_lines = lower_lines
     
     lower_idx = TRIGRAM_TO_INDEX.get(lower_lines)
     upper_idx = TRIGRAM_TO_INDEX.get(upper_lines)

@@ -48,6 +48,17 @@ def test_synodic_gate_next_gate(day, ggy, pgy, gate):
     assert g["next_gate"]["lichun_date"][:4] == str(gate), f"{day} next gate"
 
 
+@pytest.mark.parametrize("day,ggy,pgy,gate", GY_ROWS)
+def test_stacks_agree_on_year_and_month(day, ggy, pgy, gate):
+    from datetime import date
+    from ki import calculate_ki
+
+    r = calculate_ki(date.fromisoformat(day))
+    k = get_convergence_ki(day)
+    assert r["ki_year"] == k["year"]["ki"], f"{day} year digit disagreement"
+    assert r["ki_month"] == k["month"]["ki"], f"{day} month digit disagreement"
+
+
 def test_ki_change_global_reports_exact_gate():
     import stella_server
 

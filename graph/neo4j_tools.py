@@ -4,17 +4,14 @@ Provides traversal, chain walking, and novel interpretation generation.
 """
 
 import json
-from neo4j import GraphDatabase
-
-NEO4J_URI = "bolt://localhost:7687"
-NEO4J_AUTH = ("neo4j", "[REDACTED]")
+from stella_config import open_neo4j_driver
 
 _driver = None
 
 def get_driver():
     global _driver
     if _driver is None:
-        _driver = GraphDatabase.driver(NEO4J_URI, auth=NEO4J_AUTH)
+        _driver, _ = open_neo4j_driver()
     return _driver
 
 

@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 STELLA_DIR = Path(__file__).parent
-EBERTIN_JSON = STELLA_DIR.parent / "reference" / "ebertin" / "ebertin-structured.json"
+EBERTIN_JSON = STELLA_DIR.parent.parent / "NicoRobin" / "reference" / "ebertin" / "ebertin-structured.json"
 
 # ── Body name normalization ──
 # Maps various input formats to the canonical pair names used in COSI

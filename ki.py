@@ -11,15 +11,20 @@ The Lo Shu palace layout (fixed positions):
     ---------
     ⑧ | ① | ⑥
 
-Ki Year: Changes on February 4 (Lichun/Spring Begins)
-Ki Month + Third: Looked up from table based on year Ki and date range
+Ki Year: opens at Lichun, the Sun at 315° (15° Aquarius), Feb 3-5 by the clock
+Ki Month: opens when the Sun reaches 15° of each sign (the twelve "jie" solar terms)
+Both boundaries come from ki_calendar: the local (New York) date of the crossing,
+and the boundary day belongs to the period it opens. Nothing is pinned to Feb 4.
 """
 
 from datetime import datetime, date
 from typing import Tuple, Dict, Optional
 
+from ki_calendar import ki_month_of, ki_year_of, lichun_jd as _lichun_jd
+
 # Year Ki lookup - maps Ki number to list of years
-# Ki years change on Feb 4, so Jan 1 - Feb 3 belongs to previous year
+# A Ki year opens at Lichun (ki_calendar.lichun_date), so Jan 1 up to the day
+# before Lichun belongs to the previous year
 YEAR_TABLE = {
     1: [1909, 1918, 1927, 1936, 1945, 1954, 1963, 1972, 1981, 1990, 1999, 2008, 2017, 2026, 2035, 2044],
     2: [1908, 1917, 1926, 1935, 1944, 1953, 1962, 1971, 1980, 1989, 1998, 2007, 2016, 2025, 2034, 2043],
@@ -38,8 +43,11 @@ for ki, years in YEAR_TABLE.items():
     for y in years:
         YEAR_TO_KI[y] = ki
 
-# Month table: (start_month, start_day, end_month, end_day) -> values for Ki 1-9
-# Values are 3-digit numbers encoding Month.X.Third
+# Month table, one row per Ki month Feb..Jan -> values for Ki 1-9.
+# Values are 3-digit numbers encoding Year.Month.Third.
+# The (start, end) dates are the traditional approximate ranges, kept for
+# reference only; the row is chosen by ki_calendar.ki_month_of (Sun at 15°
+# of each sign), which can fall a day either side of these.
 MONTH_TABLE = [
     # Feb 4 - Mar 5
     ((2, 4), (3, 5), [187, 225, 353, 481, 528, 656, 784, 822, 959]),
@@ -128,12 +136,9 @@ def calculate_ki_year(year: int, month: int, day: int) -> int:
     """
     Calculate the Ki Year number for a given date.
     
-    Ki year changes on February 4 (Lichun).
+    The Ki year opens on the local date of Lichun (Sun at 315°), Feb 3-5.
     """
-    # Adjust year if before Feb 4 (Ki new year)
-    effective_year = year
-    if month < 2 or (month == 2 and day < 4):
-        effective_year = year - 1
+    effective_year = ki_year_of(date(year, month, day))
     
     # Look up in table, or calculate for years outside table range
     if effective_year in YEAR_TO_KI:
@@ -156,22 +161,13 @@ def calculate_ki_all(year: int, month: int, day: int) -> Tuple[int, int, int]:
     """
     year_ki = calculate_ki_year(year, month, day)
     
-    # Find the matching month range
-    for start, end, values in MONTH_TABLE:
-        if _date_in_range(month, day, start, end):
-            # Get the 3-digit value for this year Ki
-            value = values[year_ki - 1]
-            
-            # Parse the three digits: Year.Month.Third
-            value_str = str(value)
-            # First digit = Year Ki (for verification)
-            month_ki = int(value_str[1])  # Second digit = Month Ki
-            third_ki = int(value_str[2])  # Third digit = Third Ki
-            
-            return (year_ki, month_ki, third_ki)
-    
-    # Fallback (shouldn't happen)
-    return (year_ki, 0, 0)
+    # The Ki month row: Feb = 0 … Jan = 11, from the Sun's 15° crossings
+    _, row = ki_month_of(date(year, month, day))
+    value_str = str(MONTH_TABLE[row][2][year_ki - 1])
+    # Digits: Year.Month.Third
+    month_ki = int(value_str[1])
+    third_ki = int(value_str[2])
+    return (year_ki, month_ki, third_ki)
 
 
 def calculate_ki(target_date: date) -> Dict:
@@ -344,45 +340,13 @@ def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None,
     def first_sub(parent):
         return [None, 8, 2, 5, 8, 2, 5, 8, 2, 5][parent]
     
-    # Find Lichun (Sun at 315° = 15° Aquarius) for the Ki year
-    def find_lichun(start_jd):
-        jd = start_jd
-        prev_lon = swe.calc_ut(jd, swe.SUN)[0][0]
-        while True:
-            jd += 0.5
-            lon = swe.calc_ut(jd, swe.SUN)[0][0]
-            dp = (315.0 - prev_lon) % 360
-            dc = (315.0 - lon) % 360
-            if dp < 180 and dp > 0 and dc > 180:
-                lo, hi = jd - 0.5, jd
-                for _ in range(50):
-                    mid = (lo + hi) / 2
-                    m = swe.calc_ut(mid, swe.SUN)[0][0]
-                    d = (315.0 - m) % 360
-                    if d < 180: 
-                        lo = mid
-                    else: 
-                        hi = mid
-                return (lo + hi) / 2
-            prev_lon = lon
+    # Ki year and month from the shared calendar: the local date of each
+    # 15° crossing opens the period (ki_calendar).
+    ki_year, month_idx = ki_month_of(target_date)
+    lichun_jd = _lichun_jd(ki_year)
     
-    # Calculate Julian day for target date
-    target_jd = swe.julday(target_dt.year, target_dt.month, target_dt.day, 
-                          target_dt.hour + target_dt.minute / 60.0)
-    
-    # Find Lichun for this Ki year
-    lichun_jd = find_lichun(swe.julday(target_dt.year, 1, 1, 0.0))
-    if lichun_jd > target_jd:
-        lichun_jd = find_lichun(swe.julday(target_dt.year - 1, 1, 1, 0.0))
-    
-    # Global year Ki: ((2027 - year) % 9) or 9, adjusted for Lichun
-    year_ki = ((2027 - target_dt.year) % 9) or 9
-    if lichun_jd > target_jd:
-        year_ki = ((2027 - (target_dt.year - 1)) % 9) or 9
-    
-    # Current Sun longitude for month calculation
-    sun_lon = swe.calc_ut(target_jd, swe.SUN)[0][0]
-    month_idx = int(((sun_lon - 315 + 360) % 360) / 30)
+    # Global year Ki: ((2027 - year) % 9) or 9
+    year_ki = ((2027 - ki_year) % 9) or 9
     
     # Month Ki: -3 cascade from year Ki
     month_start = first_sub(year_ki)

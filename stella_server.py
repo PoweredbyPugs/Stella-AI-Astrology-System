@@ -640,8 +640,8 @@ async def get_ki_transition(
         target_date: Target date YYYY-MM-DD (default: today)
     """
     from datetime import date as date_type, timedelta
-    from ki import (get_full_profile, KI_TRIGRAMS, calculate_personal_cycle,
-                    calculate_ki, MONTH_TABLE, _date_in_range)
+    from ki import get_full_profile, KI_TRIGRAMS, calculate_personal_cycle
+    from ki_calendar import ki_month_label, ki_month_of, ki_month_span
     from ki_reading import ki_to_hexagram
 
     def _hex_label(n):
@@ -654,14 +654,8 @@ async def get_ki_transition(
     natal = profile['natal']
     cycle = profile['current_cycle']
 
-    # Check if we're near a Ki boundary (within 2 days of a period edge)
-    # Find current period and next period
-    m, d = td.month, td.day
-    current_period_idx = None
-    for i, (start, end, values) in enumerate(MONTH_TABLE):
-        if _date_in_range(m, d, start, end):
-            current_period_idx = i
-            break
+    # The Ki month containing the target date (Sun at 15° of each sign)
+    period_year, current_period_idx = ki_month_of(td)
 
     # Get previous and next period personal months
     prev_date = td - timedelta(days=5)
@@ -719,16 +713,15 @@ async def get_ki_transition(
         lines.append(f"**Personal Month:** {pm} {pm_info['trigram']} {pm_info['name']} ({pm_info['chinese']})")
         lines.append(f"**Hexagram:** {pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(current_hex)}")
 
-    # Find the current period boundaries
-    if current_period_idx is not None:
-        start, end, _ = MONTH_TABLE[current_period_idx]
-        lines.append("")
-        lines.append(f"**Period:** {start[0]}/{start[1]} – {end[0]}/{end[1]}")
+    # The current period's boundaries
+    start, end = ki_month_span(period_year, current_period_idx)
+    lines.append("")
+    lines.append(f"**Period:** {ki_month_label(period_year, current_period_idx)} · {start.isoformat()} – {end.isoformat()}")
 
     lines.append("")
     lines.append("---")
     lines.append(f"*Hexagram = incoming month trigram over personal year trigram*")
-    lines.append(f"*Ki boundaries align with Sun crossing ~15° of each sign*")
+    lines.append(f"*Ki boundaries fall on the Sun crossing 15° of each sign*")
 
     return "\n".join(lines)
 

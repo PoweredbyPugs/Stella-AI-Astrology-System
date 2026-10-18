@@ -254,8 +254,9 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     if next_month_ki <= 0:
         next_month_ki += 9
 
-    # Year: changes at Lichun (~Feb 4)
-    lichun_year = td.year if (td.month > 2 or (td.month == 2 and td.day >= 4)) else td.year - 1
+    # Year: changes at Lichun (Sun at 315°), on its local date
+    from ki_calendar import ki_year_of
+    lichun_year = ki_year_of(td.date())
     next_lichun_jd = _find_lichun(lichun_year + 1)
     next_year_dt = _jd_to_dt(next_lichun_jd)
     next_year_ki = (year_ki - 1) % 9

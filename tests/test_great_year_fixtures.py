@@ -25,10 +25,14 @@ GY_ROWS = [
     # the plan table's "5" contradicts the formula and the other 7 rows.
     ("2009-06-01", 1, 9, 2010),
     ("2018-09-01", 9, 1, 2022),
-    ("2022-02-03", 9, 1, 2022),  # before Lichun 2022
+    # Lichun 2022 fell Feb 3, 3:50 pm New York; the boundary day belongs to the year it opens.
+    ("2022-02-02", 9, 1, 2022),
+    ("2022-02-03", 8, 2, 2034),
     ("2022-02-05", 8, 2, 2034),
     ("2026-10-18", 8, 2, 2034),
-    ("2034-02-03", 8, 2, 2034),
+    # Lichun 2034 falls Feb 3, 1:40 pm New York.
+    ("2034-02-02", 8, 2, 2034),
+    ("2034-02-03", 7, 3, 2046),
     ("2034-02-05", 7, 3, 2046),
 ]
 

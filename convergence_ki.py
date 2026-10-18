@@ -16,10 +16,12 @@ Research: stella/research/convergence-sockets.md
 """
 
 import swisseph as swe
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from typing import Optional
 from pathlib import Path
 from zoneinfo import ZoneInfo
+
+from ki_calendar import ki_month_of, ki_year_of, ki_year_span, lichun_jd as _lichun_jd
 
 # ── Config ──
 EPHE_PATH = "/mnt/baratie/baratie/sweph-service/ephemeris"
@@ -104,8 +106,8 @@ def _jd_to_dt(jd: float, tz: ZoneInfo = TZ) -> datetime:
 
 
 def _year_ki(year: int, month: int, day: int) -> int:
-    """Calculate year Ki for a given date. Ki year changes Feb 4."""
-    ki_year = year if (month > 2 or (month == 2 and day >= 4)) else year - 1
+    """Calculate year Ki for a given date. The Ki year opens on the local date of Lichun."""
+    ki_year = ki_year_of(date(year, month, day))
     digit_sum = sum(int(d) for d in str(ki_year))
     while digit_sum > 9:
         digit_sum = sum(int(d) for d in str(digit_sum))
@@ -213,17 +215,8 @@ def _find_moon_sidereal_month_start(target_jd: float) -> float:
 
 
 def _find_lichun(year: int) -> float:
-    """Find exact Julian Day of Lichun (Sun at 315° ecliptic) for a given year."""
-    jd = swe.julday(year, 2, 4, 0.0)
-    for _ in range(50):
-        sun_lon = swe.calc_ut(jd, swe.SUN)[0][0]
-        diff = (315.0 - sun_lon) % 360
-        if diff > 180:
-            diff -= 360
-        if abs(diff) < 0.0001:
-            break
-        jd += diff / 1.0  # Sun moves ~1°/day
-    return jd
+    """Julian Day of Lichun (Sun at 315°) opening Ki year ``year`` (shared with ki_calendar)."""
+    return _lichun_jd(year)
 
 
 def gate_triad(ecliptic_lon: float) -> str:
@@ -339,7 +332,7 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     now_jd = _dt_to_jd(td)
 
     # Synodic gate Ki: arithmetic 12-year gates (see synodic_ki_for_year).
-    td_ki_year = td.year if (td.month > 2 or (td.month == 2 and td.day >= 4)) else td.year - 1
+    td_ki_year = ki_year_of(td.date())
     synodic_ki = synodic_ki_for_year(td_ki_year)
     gate_start_year = synodic_gate_start(td_ki_year)
     current_gate_lichun = _find_lichun(gate_start_year)
@@ -351,7 +344,7 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     for offset in range(-9, 3):
         pjd = _find_jupiter_perihelion(current_year + offset * 11.86)
         pdt = _jd_to_dt(pjd)
-        ly = pdt.year if (pdt.month > 2 or (pdt.month == 2 and pdt.day >= 4)) else pdt.year - 1
+        ly = ki_year_of(pdt.date())
         perihelia_chain.append({
             "perihelion": pdt.strftime("%Y-%m-%d"),
             "lichun_year": ly,
@@ -464,7 +457,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
     # ── Year Ki ──
     yki = _year_ki(td.year, td.month, td.day)
-    lichun_year = td.year if (td.month > 2 or (td.month == 2 and td.day >= 4)) else td.year - 1
+    lichun_year, months_from_lichun = ki_month_of(td.date())
 
     # ── Month Ki ──
     # Sun position determines month
@@ -479,9 +472,8 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     month_starts = {1: 8, 4: 8, 7: 8, 3: 5, 6: 5, 9: 5, 2: 2, 5: 2, 8: 2}
     month_start_ki = month_starts[yki]
 
-    # Which month are we in? Count 15° segments from Lichun (315° = 15° Aquarius)
-    # Month 1 starts when Sun crosses 315° (15° Aquarius)
-    months_from_lichun = int(((sun_lon - 315) % 360) / 30)
+    # Which month are we in? months_from_lichun counts the Sun's 15°-of-sign crossings
+    # since Lichun, by local date (ki_calendar): 0 = Feb … 11 = Jan.
     mki = (month_start_ki - months_from_lichun) % 9
     if mki <= 0:
         mki += 9
@@ -640,7 +632,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
         "year": {
             "ki": yki,
             "triad": TRIAD_OF[yki],
-            "period": f"Feb 4, {lichun_year} → Feb 3, {lichun_year + 1}",
+            "period": " → ".join(d.strftime("%b %-d, %Y") for d in ki_year_span(lichun_year)),
             "anchor": "Sun at Lichun (15° Aquarius). Apsidal precession (~8.85yr) drives socket asymmetry.",
         },
 

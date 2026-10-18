@@ -46,3 +46,11 @@ def test_get_ki_stack_agrees(day, gy, gm, pm):
     r = calculate_ki(date.fromisoformat(day))
     assert r["ki_year"] == gy, f"{day} global year"
     assert r["ki_month"] == gm, f"{day} global month"
+
+
+def test_convergence_reports_build_identity():
+    """Every convergence payload names the code copy that produced it."""
+    k = get_convergence_ki("2026-10-17")
+    assert "build" in k, list(k)
+    assert k["build"]["code_path"].endswith("convergence_ki.py")
+    assert k["build"]["git"]  # short sha, or 'nogit' inside containers

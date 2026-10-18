@@ -26,6 +26,31 @@ EPHE_PATH = "/mnt/baratie/baratie/sweph-service/ephemeris"
 swe.set_ephe_path(EPHE_PATH)
 TZ = ZoneInfo("America/New_York")
 
+
+def _build_identity() -> dict:
+    """Name the code copy answering: short git sha (or 'nogit') and file path.
+
+    Computed once at import so a long-lived server reports the code it loaded,
+    not whatever is on disk now. Lets a caller tell stale processes apart.
+    """
+    import subprocess
+    here = Path(__file__).resolve()
+    try:
+        sha = subprocess.run(
+            ["git", "-C", str(here.parent), "rev-parse", "--short", "HEAD"],
+            capture_output=True, text=True, timeout=5, check=True,
+        ).stdout.strip() or "nogit"
+    except Exception:
+        sha = "nogit"
+    return {
+        "git": sha,
+        "code_path": str(here),
+        "loaded_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+    }
+
+
+BUILD = _build_identity()
+
 SIGN_NAMES = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
     "Libra", "Scorpio", "Sagittarius", "Capricorn", "Aquarius", "Pisces",
@@ -602,6 +627,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     # ── Build result ──
     result = {
         "timestamp": td.isoformat(),
+        "build": BUILD,
         "location": {"lat": lat, "lon": lon},
 
         "synodic": {

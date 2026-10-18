@@ -29,3 +29,6 @@ ingest-tmp-*
 # Internal/working docs that don't belong in the repo
 ARCHITECTURE.md
 CONSTELLATION-AGENT.md
+
+# Local worktrees
+.worktrees/

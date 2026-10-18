@@ -1,0 +1,13 @@
+.git
+.env
+.env.*
+.venv
+.venv*
+__pycache__
+.pytest_cache
+*.pyc
+charts
+chromadb_store
+autopoietic/sessions
+api_bridge/.pytest_cache
+api_bridge/tests

@@ -312,3 +312,8 @@ loads it at startup.
 - [ ] Framework auto-detection from chart signatures
 - [ ] Geomancy casting tool (rapid-tap or manual count)
 - [ ] Seven Strings seed moment calculator (tiered election system)
+- [ ] Ki boundaries by instant, not day — `ki_calendar` gives the whole boundary day to the
+      period it opens; the strict rule is the Lichun / jie instant itself (e.g. Lichun 2026 is
+      Feb 3, 3:01 pm New York, so a 9 am birth that day is still Ki 2025). Add an optional
+      time-of-day to `ki_year_of` / `ki_month_of` and thread it through natal calculations
+      when a birth time is known. Mirror the same in the octave app (`lib/ki/kimonths.ts`).

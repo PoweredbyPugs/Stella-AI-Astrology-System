@@ -262,8 +262,7 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     if next_year_ki <= 0:
         next_year_ki += 9
 
-    # Synodic: changes at next Jupiter perihelion Lichun (~12 years)
-    # Just note it doesn't change soon
+    # Synodic: changes at the next 12-year gate Lichun (arithmetic, not perihelion)
     next_synodic_ki = (synodic_ki - 1) % 9
     if next_synodic_ki <= 0:
         next_synodic_ki += 9

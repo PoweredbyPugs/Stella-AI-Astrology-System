@@ -794,18 +794,15 @@ async def get_synodic_gate_now(
     target_date: Optional[str] = None,
     birth_date: Optional[str] = None,
 ) -> str:
-    """Get the Synodic Gate Ki — the ~12-year Jupiter cycle (5th level of Ki stack).
+    """Get the Synodic Gate Ki — the 12-year great-year gate (5th level of Ki stack).
 
-    The Sun orbits the solar system's barycenter with a dominant period of
-    ~11.86 years (Jupiter's orbital period). Jupiter's perihelion marks the
-    peak gravitational coupling — the Sun and Jupiter at maximum pull.
-
-    The synodic gate starts at the Lichun preceding perihelion, following
-    the same pattern as all other Ki levels: the gate before the event.
+    Pure arithmetic: 12 Ki years per gate, descending 9 → 1, gates on Lichun,
+    anchored at Lichun 2022 = gate 8. Jupiter's ~11.86-yr cycle is the natural
+    period behind the count, not the anchor; perihelia are informational only.
 
     12 years per gate, 9 Ki count, remainder 3 → triad-locked.
     At each gate boundary, year Ki is always Earth (2, 5, 8).
-    9 synodic gates = ~108 years (a sacred number: 12 × 9).
+    9 synodic gates = 108 years (a sacred number: 12 × 9).
 
     Full stack: Synodic.Year.Month.Day.Hour
 
@@ -5779,11 +5776,11 @@ async def ki_change_global(
     birth_date: str = None,
     include_gnostic: bool = False,
 ) -> str:
-    """Ki change at the SYNODIC (global) level — Jupiter's ~12-year cycle.
+    """Ki change at the SYNODIC (global) level — the 12-year great-year gate.
 
-    Shows current synodic Ki, what it's becoming at the next
-    Jupiter perihelion gate, and the hexagram formed with the year level.
-    Synodic = the slowest Ki pulse, the Great Year (~108 years for full cycle).
+    Shows current synodic Ki, what it's becoming at the next 12-year gate
+    Lichun, and the hexagram formed with the year level.
+    Synodic = the slowest Ki pulse, the Great Year (108 years for full cycle).
 
     Args:
         birth_date: Birth date YYYY-MM-DD for personal Ki

@@ -280,19 +280,18 @@ def synodic_ki_for_year(ki_year: int) -> int:
 
 
 def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
-    """Calculate the Synodic Gate Ki — the ~12-year Jupiter cycle level.
+    """Calculate the Synodic Gate Ki — the 12-year great-year level.
 
-    The Sun orbits the solar system's barycenter with a dominant period of
-    ~11.86 years (Jupiter's orbital period). Jupiter's perihelion marks the
-    peak gravitational coupling. The synodic gate starts at the Lichun
-    preceding perihelion, following the same pattern as all other Ki levels:
-    the gate before the astronomical event.
+    Pure arithmetic: 12 Ki years per gate, descending 9 → 1, gates on Lichun,
+    anchored at Lichun 2022 = gate 8. Jupiter's ~11.86-yr orbital cycle is the
+    natural period behind the count, not the anchor; perihelia are reported as
+    an informational layer only.
 
     12 years per synodic gate, 9 Ki count → remainder 3 → triad-locked.
     At each synodic gate boundary, the year Ki is always Earth (2, 5, 8).
     This mirrors month/day/hour always being Earth at Lichun.
 
-    9 synodic gates = one full cycle = ~108 years.
+    9 synodic gates = one full cycle = 108 years.
 
     Args:
         target_date: ISO date YYYY-MM-DD (default: today)
@@ -305,69 +304,16 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     else:
         td = datetime.now(TZ)
 
-    # Find current and surrounding Jupiter perihelia
+    # Surrounding Jupiter perihelia — informational layer only, never the gate.
     current_year = td.year + td.month / 12
     peri_jd = _find_jupiter_perihelion(current_year)
     peri_dt = _jd_to_dt(peri_jd)
-
-    # Find the Lichun preceding this perihelion
-    # Lichun is ~Feb 4. If perihelion is after Feb 4, use same year's Lichun.
-    # If before, use previous year's Lichun.
-    peri_year = peri_dt.year
-    peri_month = peri_dt.month
-    if peri_month >= 2 and peri_dt.day >= 4:
-        lichun_year_for_gate = peri_year
-    elif peri_month > 2:
-        lichun_year_for_gate = peri_year
-    else:
-        lichun_year_for_gate = peri_year - 1
-
-    gate_lichun_jd = _find_lichun(lichun_year_for_gate)
-    gate_lichun_dt = _jd_to_dt(gate_lichun_jd)
-
-    # Year Ki at the synodic gate boundary (Lichun preceding perihelion)
-    # Use the Ki year that STARTS at this Lichun (the lichun_year itself)
-    gate_year_ki = _year_ki(lichun_year_for_gate, 2, 4)  # Feb 4 ensures we get this year's Ki
-
-    # Are we past this gate's perihelion? If so, check if we're closer to next gate
-    now_jd = _dt_to_jd(td)
-    if now_jd > peri_jd:
-        # We're past perihelion — still in this gate (it runs ~12 years)
-        pass
-
-    # Find previous perihelion to determine gate boundaries
-    prev_peri_jd = _find_jupiter_perihelion(current_year - 12)
-    prev_peri_dt = _jd_to_dt(prev_peri_jd)
     next_peri_jd = _find_jupiter_perihelion(current_year + 12)
     next_peri_dt = _jd_to_dt(next_peri_jd)
 
-    # Determine which synodic gate we're in:
-    # Gate boundary = Lichun preceding each perihelion
-    # Check if we're between current gate Lichun and next gate Lichun
-    if peri_month >= 2:
-        next_gate_lichun_year = peri_year + int(round((next_peri_jd - peri_jd) / 365.25))
-    else:
-        next_gate_lichun_year = peri_year - 1 + int(round((next_peri_jd - peri_jd) / 365.25))
-
-    # Recalculate: find which gate we're actually in
-    # Find the most recent Lichun-before-perihelion that's in the past
-    if now_jd >= gate_lichun_jd:
-        current_gate_lichun = gate_lichun_jd
-        current_gate_year_ki = gate_year_ki
-        current_peri = peri_jd
-    else:
-        # We're before this gate's Lichun — use previous gate
-        current_peri = prev_peri_jd
-        prev_peri_dt_check = _jd_to_dt(prev_peri_jd)
-        if prev_peri_dt_check.month > 2 or (prev_peri_dt_check.month == 2 and prev_peri_dt_check.day >= 4):
-            prev_lichun_year = prev_peri_dt_check.year
-        else:
-            prev_lichun_year = prev_peri_dt_check.year - 1
-        current_gate_lichun = _find_lichun(prev_lichun_year)
-        current_gate_year_ki = _year_ki(prev_peri_dt_check.year, prev_peri_dt_check.month, prev_peri_dt_check.day)
+    now_jd = _dt_to_jd(td)
 
     # Synodic gate Ki: arithmetic 12-year gates (see synodic_ki_for_year).
-    # The perihelion chain is kept as an informational layer only.
     td_ki_year = td.year if (td.month > 2 or (td.month == 2 and td.day >= 4)) else td.year - 1
     synodic_ki = synodic_ki_for_year(td_ki_year)
     gate_start_year = synodic_gate_start(td_ki_year)
@@ -662,7 +608,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
             "ki": synodic_ki,
             "triad": synodic_triad,
             "gate": synodic_data.get("current_gate", {}),
-            "anchor": "Arithmetic 12-year gates from Lichun 2022 = 8. 9 gates = 108 years.",
+            "anchor": "12 Ki years per great year, gates at Lichun on Earth years; Jupiter's ~11.86-yr cycle is the natural period, not the anchor.",
         },
 
         "year": {

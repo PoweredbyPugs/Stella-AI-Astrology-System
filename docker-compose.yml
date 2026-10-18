@@ -6,10 +6,12 @@ services:
     container_name: stella-neo4j
     restart: unless-stopped
     ports:
-      - "7474:7474"   # Browser UI
-      - "7687:7687"   # Bolt protocol
+      # Loopback only — LAN devices must not reach the graph directly
+      - "127.0.0.1:7474:7474"   # Browser UI
+      - "127.0.0.1:7687:7687"   # Bolt protocol
     environment:
-      NEO4J_AUTH: neo4j/[REDACTED]
+      # NEO4J_PASS comes from the gitignored .env in this directory
+      NEO4J_AUTH: neo4j/${NEO4J_PASS:?set NEO4J_PASS in .env}
       NEO4J_PLUGINS: '[]'
       NEO4J_server_memory_heap_initial__size: 256m
       NEO4J_server_memory_heap_max__size: 512m
@@ -26,7 +28,7 @@ services:
     depends_on:
       - neo4j
     ports:
-      - "3010:3010"
+      - "127.0.0.1:3010:3010"
     env_file:
       - api_bridge/.env.api
     environment:
@@ -35,7 +37,7 @@ services:
       SWEPH_API_BASE: http://host.docker.internal:3000
       NEO4J_URI: bolt://neo4j:7687
       NEO4J_USER: neo4j
-      NEO4J_PASS: [REDACTED]
+      NEO4J_PASS: ${NEO4J_PASS:?set NEO4J_PASS in .env}
     volumes:
       - ./charts:/app/stella/charts:ro
       - /Users/punkrecords/services/helios/ephemeris:/mnt/baratie/baratie/sweph-service/ephemeris:ro

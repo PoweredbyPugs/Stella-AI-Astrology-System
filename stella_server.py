@@ -644,6 +644,9 @@ async def get_ki_transition(
                     calculate_ki, MONTH_TABLE, _date_in_range)
     from ki_reading import ki_to_hexagram
 
+    def _hex_label(n):
+        return f"Hexagram {n}" if n is not None else "no figure (5 over 5)"
+
     bd = date_type.fromisoformat(birth_date)
     td = date_type.fromisoformat(target_date) if target_date else date_type.today()
 
@@ -697,24 +700,24 @@ async def get_ki_transition(
         lines.append("")
         lines.append(f"### Previous Hexagram")
         prev_hex = ki_to_hexagram(py, ppm)
-        lines.append(f"**{ppm_info['trigram']} {ppm_info['name']} over {py_info['trigram']} {py_info['name']} → Hexagram {prev_hex}**")
+        lines.append(f"**{ppm_info['trigram']} {ppm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(prev_hex)}**")
         lines.append("")
         lines.append(f"### New Hexagram")
-        lines.append(f"**{pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → Hexagram {current_hex}**")
+        lines.append(f"**{pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(current_hex)}**")
     elif is_transition and pm != npm:
         lines.append(f"## ⚡ Ki Transition Approaching")
         lines.append(f"**Current Month:** {pm} {pm_info['trigram']} {pm_info['name']} ({pm_info['chinese']})")
         lines.append(f"**Incoming Month:** {npm} {npm_info['trigram']} {npm_info['name']} ({npm_info['chinese']})")
         lines.append("")
         lines.append(f"### Current Hexagram")
-        lines.append(f"**{pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → Hexagram {current_hex}**")
+        lines.append(f"**{pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(current_hex)}**")
         lines.append("")
         lines.append(f"### Next Hexagram")
-        lines.append(f"**{npm_info['trigram']} {npm_info['name']} over {py_info['trigram']} {py_info['name']} → Hexagram {next_hex}**")
+        lines.append(f"**{npm_info['trigram']} {npm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(next_hex)}**")
     else:
         lines.append(f"## Current Ki Period (no transition)")
         lines.append(f"**Personal Month:** {pm} {pm_info['trigram']} {pm_info['name']} ({pm_info['chinese']})")
-        lines.append(f"**Hexagram:** {pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → Hexagram {current_hex}")
+        lines.append(f"**Hexagram:** {pm_info['trigram']} {pm_info['name']} over {py_info['trigram']} {py_info['name']} → {_hex_label(current_hex)}")
 
     # Find the current period boundaries
     if current_period_idx is not None:

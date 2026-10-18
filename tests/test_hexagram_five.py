@@ -9,7 +9,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
-from ki_reading import ki_to_hexagram  # noqa: E402
+from ki_reading import get_hexagram_lines, ki_to_hexagram  # noqa: E402
 
 
 def test_five_lower_takes_upper_trigram():
@@ -22,6 +22,23 @@ def test_five_upper_takes_lower_trigram():
 
 def test_five_over_five_has_no_figure():
     assert ki_to_hexagram(5, 5) is None
+
+
+def test_hexagram_lines_follow_doubling_rule():
+    # The lines must agree with the figure ki_to_hexagram produces.
+    assert get_hexagram_lines(5, 3) == get_hexagram_lines(3, 3)
+    assert get_hexagram_lines(9, 5) == get_hexagram_lines(9, 9)
+    assert get_hexagram_lines(5, 5) is None
+
+
+def test_five_over_five_renders_no_figure_not_none():
+    import stella_server
+
+    # birth 1986-05-01 at 2022-08-15: personal year 5, personal month 5
+    out = asyncio.run(stella_server.get_ki_transition(
+        birth_date="1986-05-01", target_date="2022-08-15"))
+    assert "Hexagram None" not in out, out
+    assert "no figure (5 over 5)" in out, out
 
 
 def test_transition_tool_renders_hexagram_for_five():

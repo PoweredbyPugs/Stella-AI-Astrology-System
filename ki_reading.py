@@ -60,6 +60,23 @@ KING_WEN = [
 ]
 
 
+def _resolve_trigram_lines(lower_ki: int, upper_ki: int):
+    """Resolve two Ki digits to trigram lines under the doubling rule.
+
+    Ki 5 (Center) has no trigram of its own: a single 5 takes the other
+    digit's trigram; only 5 over 5 has no figure, returned as (None, None).
+    """
+    lower_lines = KI_TO_ICHING[lower_ki]["lines"]
+    upper_lines = KI_TO_ICHING[upper_ki]["lines"]
+    if lower_lines is None and upper_lines is None:
+        return None, None
+    if lower_lines is None:
+        lower_lines = upper_lines
+    elif upper_lines is None:
+        upper_lines = lower_lines
+    return lower_lines, upper_lines
+
+
 def ki_to_hexagram(lower_ki: int, upper_ki: int) -> Optional[int]:
     """
     Convert two Ki numbers into a hexagram number.
@@ -69,17 +86,9 @@ def ki_to_hexagram(lower_ki: int, upper_ki: int) -> Optional[int]:
     
     Returns hexagram number (1-64), or None only for 5 over 5.
     """
-    lower_lines = KI_TO_ICHING[lower_ki]["lines"]
-    upper_lines = KI_TO_ICHING[upper_ki]["lines"]
-
-    # Ki 5 (Center) has no trigram of its own: doubling rule — a single 5
-    # takes the other digit's trigram; only 5 over 5 has no figure.
-    if lower_lines is None and upper_lines is None:
-        return None
+    lower_lines, upper_lines = _resolve_trigram_lines(lower_ki, upper_ki)
     if lower_lines is None:
-        lower_lines = upper_lines
-    elif upper_lines is None:
-        upper_lines = lower_lines
+        return None
     
     lower_idx = TRIGRAM_TO_INDEX.get(lower_lines)
     upper_idx = TRIGRAM_TO_INDEX.get(upper_lines)
@@ -100,13 +109,12 @@ def get_next_month_ki(natal_year_ki: int, current_date: date) -> int:
 
 
 def get_hexagram_lines(lower_ki: int, upper_ki: int) -> Optional[tuple]:
-    """Get the 6 lines of a hexagram from Ki positions."""
-    lower_lines = KI_TO_ICHING[lower_ki]["lines"]
-    upper_lines = KI_TO_ICHING[upper_ki]["lines"]
-    
-    if lower_lines is None or upper_lines is None:
+    """Get the 6 lines of a hexagram from Ki positions (doubling rule for 5)."""
+    lower_lines, upper_lines = _resolve_trigram_lines(lower_ki, upper_ki)
+
+    if lower_lines is None:
         return None
-    
+
     # Combine: lower trigram (lines 1-3) + upper trigram (lines 4-6)
     return lower_lines + upper_lines
 

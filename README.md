@@ -317,3 +317,48 @@ loads it at startup.
       Feb 3, 3:01 pm New York, so a 9 am birth that day is still Ki 2025). Add an optional
       time-of-day to `ki_year_of` / `ki_month_of` and thread it through natal calculations
       when a birth time is known. Mirror the same in the octave app (`lib/ki/kimonths.ts`).
+
+## Remote access (claude.ai from any device)
+
+Stella's tools are also served over Streamable HTTP so claude.ai can use them as a
+custom connector without the desktop app.
+
+```
+claude.ai ──HTTPS──▶ Tailscale Funnel :10000 ──▶ 127.0.0.1:8811  stella_http.py (fastmcp proxy, GitHub OAuth)
+                                                        │ stdio, persistent child
+                                                        ▼
+                                                 stella_server.py  (unchanged; Hermes still spawns it directly)
+```
+
+- **Single source of truth.** `stella_http.py` is a *proxy*: it spawns `stella_server.py`
+  and discovers its tools at runtime, so new tools appear automatically after a restart
+  of the service. The stdio server and the Hermes/omi path are untouched.
+- **Two venvs on purpose.** `stella_server.py` pins the official SDK (`mcp` 1.x) in
+  `.venv`; the proxy needs `fastmcp` 4.x (`mcp` 2.x) and lives in `.venv-http`
+  (`requirements-http.txt`). The proxy pins the backend to the classic handshake.
+- **Auth.** `GitHubProvider` handles OAuth 2.1 + dynamic client registration (what
+  claude.ai speaks); `stella_http_policy.LoginAllowlist` then admits only the GitHub
+  logins in `STELLA_ALLOWED_GH_LOGINS`. The service refuses to start if any auth setting
+  is missing. `STELLA_HTTP_DENY_TOOLS` (comma list, empty by default) hides/blocks named
+  tools if you ever want fewer than all of them exposed.
+- **Identity check.** Every `get_convergence_ki_now` payload carries a `build` block
+  (git sha, code path, `loaded_at`); if a client ever shows stale behaviour, that block
+  says which process answered.
+
+Setup (once):
+1. GitHub → Settings → Developer settings → OAuth Apps → New. Homepage
+   `https://<magicdns>.ts.net:10000`, callback `https://<magicdns>.ts.net:10000/auth/callback`.
+   Paste the client id/secret into `.env` (see `.env.example`).
+2. `python3.14 -m venv .venv-http && .venv-http/bin/pip install -r requirements-http.txt`
+3. `tailscale funnel --bg --https=10000 http://127.0.0.1:8811` (persists across reboots).
+4. `cp deploy/com.poweredbypugs.stella-http.plist ~/Library/LaunchAgents/ &&
+   launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.poweredbypugs.stella-http.plist`
+   Logs: `~/Library/Logs/stella-http.{log,err.log}`.
+5. claude.ai → Settings → Connectors → Add custom connector → `https://<magicdns>.ts.net:10000/mcp`.
+
+Operations: restart with `launchctl kickstart -k gui/$(id -u)/com.poweredbypugs.stella-http`
+(also how new tools become visible). Rotate the GitHub secret by regenerating it in the
+OAuth App, updating `.env`, and restarting. Tests: `.venv-http/bin/python -m pytest tests/test_stella_http.py`.
+
+Local path note: the canonical checkout is `/Volumes/Shirahoshi/HermesNode/clawd/stella`;
+`~/Documents/Projects/stella` is a symlink to it.

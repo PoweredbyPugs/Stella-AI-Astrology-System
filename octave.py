@@ -1,10 +1,8 @@
 """Octave: Nine Star Ki cycles on Gurdjieff's enneagram, each period read as an I Ching figure.
 
-The math lives in one place, the Nine-Year Spiral app (Docker container `octave`, port 3333).
-These tools call its JSON API, so Stella and the app can never disagree:
-  GET /api/report?birth=YYYY-MM-DD[&octave=N][&date=YYYY-MM-DD][&tz=…][&name=…]
-  GET /api/gnostic/{n}   The Gnostic Book of Changes, one hexagram
-OCTAVE_URL overrides the address. Default: host.docker.internal inside a container, else localhost.
+The math lives in octave_math.py (a port of the Nine-Year Spiral app's library, with hub
+inheritance for Ki 5). The readings come from The Gnostic Book of Changes, read from
+data/gnostic.json (GNOSTIC_JSON overrides the path).
 
 FRAMEWORK is the way of thinking, served as an MCP prompt and resource and used to generate
 the Hermes skill:  python -c "import octave; print(octave.hermes_skill())"
@@ -12,13 +10,15 @@ the Hermes skill:  python -c "import octave; print(octave.hermes_skill())"
 
 import json
 import os
+from datetime import date
+from functools import lru_cache
+from pathlib import Path
 from typing import Optional
 
-import httpx
+from octave_math import build_report
 
-OCTAVE_URL = os.environ.get("OCTAVE_URL") or (
-    "http://host.docker.internal:3333" if os.path.exists("/.dockerenv") else "http://localhost:3333"
-)
+GNOSTIC_JSON = os.environ.get("GNOSTIC_JSON") or str(Path(__file__).parent / "data" / "gnostic.json")
+SUPPORTED_TZ = "America/New_York"
 
 FRAMEWORK = """# The Octave: reading a life as nine-year spirals
 
@@ -37,6 +37,8 @@ the Work of individuation.
   5, 8·5·2 is 2.
 - Great year: 12-year gates, 8 from Lichun 2022 to Lichun 2034, then 7, descending one per gate. Nine
   gates = 108 years.
+- Ki Age: 12 great years = 144 years, 2 from Lichun 2022; great age: 9 Ki Ages = 1,296 years, 5 from
+  Lichun 2022. Each descends one per period. Read upward at Lichun 2022 the stack is 5 · 2 · 8 · 5 · 2.
 - Personal Ki: the natal year number read against any global number, personal = ((n - g + 4) mod 9) + 1.
   The same at every level. Personal months rise by one each month.
 - Natal triple: natal year . natal month . the personal month at birth (e.g. 5.9.1).
@@ -61,8 +63,9 @@ the Work of individuation.
 - A period's hexagram is its own trigram over the trigram of the cycle that contains it. Year figure
   = personal year over personal great year. Month figure = personal month over personal year.
 - Trigrams (Later Heaven): 1 Kan water, 2 Kun earth, 3 Zhen thunder, 4 Sun wind, 6 Qian heaven,
-  7 Dui lake, 8 Gen mountain, 9 Li fire. 5 is the centre and has no trigram: it takes the other
-  digit's, doubling it. 5 over 5 has no figure.
+  7 Dui lake, 8 Gen mountain, 9 Li fire. 5 is the centre and has no trigram: it inherits the trigram
+  of the nearest level above it that is not 5 (month from year, year from great year, great year
+  from Ki Age). A 5 over 5 is the parent's trigram doubled. The output names what was inherited.
 - An echo pair is a change: the earlier year's figure is primary, the later is transformed, and the
   moving lines are exactly the lines that differ. If the great year shifted between them, lower lines
   move too; say so.
@@ -80,24 +83,28 @@ the Work of individuation.
 """
 
 
-def _get(path: str, params: Optional[dict] = None):
-    r = httpx.get(f"{OCTAVE_URL}{path}", params=params, timeout=15)
-    if r.status_code == 404 and path.startswith("/api/gnostic"):
-        return None
-    r.raise_for_status()
-    return r.json()
-
-
 def octave_report(birth_date: str, octave: Optional[int] = None, target_date: Optional[str] = None,
                   tz: Optional[str] = None, name: Optional[str] = None, include_months: bool = False) -> dict:
-    params = {k: v for k, v in {"birth": birth_date, "octave": octave, "date": target_date, "tz": tz, "name": name}.items() if v is not None}
-    data = _get("/api/report", params)
+    if tz and tz != SUPPORTED_TZ:
+        raise ValueError(f"Only {SUPPORTED_TZ} boundaries are supported (got {tz})")
+    today = date.fromisoformat(target_date) if target_date else date.today()
+    data = build_report(date.fromisoformat(birth_date), octave, today, name)
     if not include_months:
         # Months only for the year containing today, to keep the report short.
         for y in data.get("years", []):
             if not any(m.get("now") for m in y.get("months", [])):
                 y.pop("months", None)
     return data
+
+
+@lru_cache(maxsize=1)
+def load_gnostic() -> dict:
+    """The Gnostic Book of Changes keyed by King Wen number; empty if the file is missing."""
+    try:
+        with open(GNOSTIC_JSON, encoding="utf-8") as f:
+            return {int(h["number"]): h for h in json.load(f)}
+    except (OSError, ValueError):
+        return {}
 
 
 def _blocks(blocks: list, limit: Optional[int] = None) -> str:
@@ -118,9 +125,9 @@ def _blocks(blocks: list, limit: Optional[int] = None) -> str:
 
 
 def octave_reading(hexagram: int, lines: Optional[list] = None, full: bool = True) -> str:
-    h = _get(f"/api/gnostic/{int(hexagram)}")
+    h = load_gnostic().get(int(hexagram))
     if h is None:
-        return f"No reading for hexagram {hexagram}: the Gnostic Book of Changes is not synced on the octave app."
+        return f"No reading for hexagram {hexagram}: not in The Gnostic Book of Changes at {GNOSTIC_JSON}."
     parts = [
         f"# {h['number']} {h['title']}",
         f"Other titles: {h['otherTitles']}",
@@ -151,7 +158,6 @@ metadata:
 ---
 
 Use Stella's MCP tools `get_octave` and `get_octave_reading` for every number and text; never compute Ki by hand.
-The web view is the Nine-Year Spiral app on punk, port 3333.
 
 """ + FRAMEWORK
 
@@ -171,8 +177,9 @@ def register_octave(mcp) -> None:
         """Get a person's nine-year octave: natal Ki, all octaves, today's position, the nine years with
         their I Ching figures (year over great year), echo pairs with moving lines, shocks and the next cycle.
 
-        Uses the corrected Ki math (continuous months, 12-year great-year gates). Read it with the
-        `octave_reading` prompt or the octave://framework resource.
+        Computed in Stella: continuous months, 12-year great-year gates, hub inheritance for 5 (a 5
+        forms over the level above it and the figure says so). Read it with the `octave_reading`
+        prompt or the octave://framework resource.
 
         Args:
             birth_date: Birth date YYYY-MM-DD
@@ -184,8 +191,8 @@ def register_octave(mcp) -> None:
         """
         try:
             return json.dumps(octave_report(birth_date, octave, target_date, tz, name, include_months), ensure_ascii=False, indent=1)
-        except httpx.HTTPError as e:
-            return f"Octave app unreachable at {OCTAVE_URL}: {e}"
+        except ValueError as e:
+            return f"Cannot build the octave: {e}"
 
     @mcp.tool()
     async def get_octave_reading(hexagram: int, lines: Optional[str] = None, full: bool = True) -> str:
@@ -197,11 +204,8 @@ def register_octave(mcp) -> None:
             lines: Moving lines, comma separated, e.g. "4,5"
             full: Include the editor's full notes (default true); false gives judgment and lines only
         """
-        try:
-            ls = [int(x) for x in lines.split(",") if x.strip()] if lines else []
-            return octave_reading(hexagram, ls, full)
-        except httpx.HTTPError as e:
-            return f"Octave app unreachable at {OCTAVE_URL}: {e}"
+        ls = [int(x) for x in lines.split(",") if x.strip()] if lines else []
+        return octave_reading(hexagram, ls, full)
 
     @mcp.resource("octave://framework")
     def octave_framework() -> str:

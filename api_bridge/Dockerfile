@@ -27,6 +27,7 @@ COPY graph/*.py ./graph/
 COPY zodiac_data.json planets_data.json houses_data.json aspects_data.json ./
 COPY traditional_astrology_data.json hexagrams.json tao_te_ching.json ./
 COPY data/777-correspondences.json ./data/777-correspondences.json
+COPY data/gnostic.json ./data/gnostic.json
 COPY api_bridge/app.py ./api_bridge/app.py
 
 RUN mkdir -p charts/memory autopoietic/sessions \

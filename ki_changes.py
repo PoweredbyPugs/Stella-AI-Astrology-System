@@ -7,47 +7,35 @@ Mercury reads the transitions, not the states. This module computes:
 4. Cross-references to the Gnostic Book of Changes for interpretation
 
 The I Ching IS Mercury's grid: 64 = 8², and every Ki transition is a hexagram
-because every pair of trigrams (Ki numbers 1-9 map to 8 trigrams + center)
-forms a hexagram in the King Wen sequence.
+because every pair of trigrams forms a hexagram in the King Wen sequence.
 
-Ki 5 (Center/Tai Chi) has no trigram — it is the pivot that generates change
-but doesn't participate in it. When Ki 5 appears, it acts as ☷ Earth (Kun)
-in hexagram formation (the receptive ground).
+Ki 5 (Center/Tai Chi) has no trigram. In the timekeeping stack a 5 inherits the
+trigram of the nearest level above it that is not 5 (hour from day, day from month,
+month from year, year from great year, great year from Ki Age, Ki Age from great
+age). Every figure is formed from the full stack through hub_inheritance, personal
+figures from the personal stack only, and moving lines are always the line-by-line
+difference of two figures. The stack carries the Ki Age (144 years) and great age
+(1,296 years) above the great year ("synodic" in this module's output).
 """
 
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 from zoneinfo import ZoneInfo
 
+from hub_inheritance import (
+    LEVELS as HUB_LEVELS, TRIGRAM_ELEMENT, TRIGRAM_IMAGE, TRIGRAM_LINES, TRIGRAM_PINYIN,
+    TRIGRAM_SYMBOL, HubUnresolvable, hexagram, moving_lines, resolve,
+)
+from ki_levels import gate_start, global_great_age, global_ki_age, personal_stack, PERIOD_YEARS
+
 TZ = ZoneInfo("America/New_York")
 
-# Ki number → I Ching trigram mapping
-# Ki uses Later Heaven (King Wen) arrangement
-# Ki 5 (Center) has no trigram; we map it to Kun (Earth/receptive) — the ground
+# Ki number → trigram (Later Heaven). 5 has no entry: it inherits (see hub_inheritance).
 KI_TO_TRIGRAM = {
-    1: {"idx": 5, "name": "Kan",  "symbol": "☵", "element": "Water",    "lines": [0, 1, 0]},
-    2: {"idx": 7, "name": "Kun",  "symbol": "☷", "element": "Earth",    "lines": [0, 0, 0]},
-    3: {"idx": 3, "name": "Zhen", "symbol": "☳", "element": "Thunder",  "lines": [1, 0, 0]},
-    4: {"idx": 4, "name": "Xun",  "symbol": "☴", "element": "Wind",     "lines": [0, 1, 1]},
-    5: {"idx": 7, "name": "Kun",  "symbol": "☷", "element": "Earth",    "lines": [0, 0, 0]},  # Center → Earth
-    6: {"idx": 0, "name": "Qian", "symbol": "☰", "element": "Heaven",   "lines": [1, 1, 1]},
-    7: {"idx": 1, "name": "Dui",  "symbol": "☱", "element": "Lake",     "lines": [1, 1, 0]},
-    8: {"idx": 6, "name": "Gen",  "symbol": "☶", "element": "Mountain", "lines": [0, 0, 1]},
-    9: {"idx": 2, "name": "Li",   "symbol": "☲", "element": "Fire",     "lines": [1, 0, 1]},
+    k: {"name": TRIGRAM_PINYIN[k], "symbol": TRIGRAM_SYMBOL[k], "element": TRIGRAM_IMAGE[k],
+        "lines": list(TRIGRAM_LINES[k])}
+    for k in TRIGRAM_LINES
 }
-
-# King Wen sequence table (same as stella_server.py)
-KING_WEN = [
-    # Lower→  Qian  Dui   Li  Zhen  Xun   Kan  Gen   Kun
-    [ 1, 10, 13, 25, 44,  6, 33, 12],   # Upper: Qian ☰
-    [43, 58, 49, 17, 28, 47, 31, 45],   # Upper: Dui  ☱
-    [14, 38, 30, 21, 50, 64, 56, 35],   # Upper: Li   ☲
-    [34, 54, 55, 51, 32, 40, 62, 16],   # Upper: Zhen ☳
-    [ 9, 61, 37, 42, 57, 59, 53, 20],   # Upper: Xun  ☴
-    [ 5, 60, 63,  3, 48, 29, 39,  8],   # Upper: Kan  ☵
-    [26, 41, 22, 27, 18,  4, 52, 23],   # Upper: Gen  ☶
-    [11, 19, 36, 24, 46,  7, 15,  2],   # Upper: Kun  ☷
-]
 
 # Wu Xing (Five Phases) productive and controlling cycles
 WU_XING_PRODUCES = {
@@ -60,65 +48,73 @@ WU_XING_CONTROLS = {
 }
 
 LEVEL_NAMES = ["synodic", "year", "month", "day", "hour"]
+UPPER_LEVELS = ["great_age", "ki_age"]
+# Adjacent pairs: (lower = slower/stable, upper = faster/changing)
+PAIRS = [("synodic", "year"), ("year", "month"), ("month", "day"), ("day", "hour")]
+
+_DISPLAY = {"great_year": "synodic"}
+_HUB = {"synodic": "great_year"}
 
 
-def _hexagram_from_ki(lower_ki: int, upper_ki: int) -> dict:
-    """Form a hexagram from two Ki numbers (lower=stable, upper=changing).
+def hub_level(name: str) -> str:
+    """Output level name → hub_inheritance level name ('synodic' → 'great_year')."""
+    return _HUB.get(name, name)
 
-    Returns hexagram number, name, trigram info, and the 6 lines.
-    """
-    lower = KI_TO_TRIGRAM[lower_ki]
-    upper = KI_TO_TRIGRAM[upper_ki]
 
-    hex_num = KING_WEN[upper["idx"]][lower["idx"]]
-    lines = lower["lines"] + upper["lines"]  # bottom 3 + top 3
+def display_level(name: str) -> str:
+    return _DISPLAY.get(name, name)
 
+
+def _descend(k: int) -> int:
+    return (k - 2) % 9 + 1
+
+
+def next_stack(stack_now: dict, level: str, change_times: dict) -> dict:
+    """The stack just after ``level`` changes: that level descends by one, and so does every
+    parent whose change instant equals this level's (a great-year, Ki Age or great-age gate
+    coinciding with the next Lichun). ``change_times`` is keyed by output level names."""
+    lvl = hub_level(level)
+    out = dict(stack_now)
+    out[lvl] = _descend(out[lvl])
+    when = change_times.get(display_level(lvl))
+    for parent in HUB_LEVELS[:HUB_LEVELS.index(lvl)]:
+        if parent in out and when is not None and change_times.get(display_level(parent)) == when:
+            out[parent] = _descend(out[parent])
+    return out
+
+
+def _trigram_view(r) -> dict:
+    tag = f" (inherited from {r.inherited_from})" if r.inherited_from else ""
     return {
-        "hexagram": hex_num,
-        "lower": {
-            "ki": lower_ki,
-            "trigram": lower["name"],
-            "symbol": lower["symbol"],
-            "element": lower["element"],
-        },
-        "upper": {
-            "ki": upper_ki,
-            "trigram": upper["name"],
-            "symbol": upper["symbol"],
-            "element": upper["element"],
-        },
-        "lines": lines,
+        "ki": r.ki,
+        "trigram": TRIGRAM_PINYIN[r.source_ki] + tag,
+        "symbol": TRIGRAM_SYMBOL[r.source_ki],
+        "lines": list(r.lines),
+        "inherited_from": r.inherited_from,
     }
 
 
-def _changing_lines(current_ki: int, next_ki: int) -> dict:
-    """Compute the changing lines between current and next Ki at a single level.
+def _hexagram_from_ki(stack: dict, lower_level: str, upper_level: str) -> dict:
+    """Form the hexagram of upper over lower from a full stack (output level names)."""
+    h = hexagram(stack, upper=hub_level(upper_level), lower=hub_level(lower_level))
+    h["lower"]["level"] = lower_level
+    h["upper"]["level"] = upper_level
+    return h
 
-    Each Ki maps to a trigram (3 lines). The lines that differ are "changing."
-    Returns the primary trigram, transformed trigram, and which lines change.
-    """
-    curr = KI_TO_TRIGRAM[current_ki]
-    nxt = KI_TO_TRIGRAM[next_ki]
 
-    changes = []
-    for i in range(3):
-        if curr["lines"][i] != nxt["lines"][i]:
-            direction = "yin→yang" if nxt["lines"][i] == 1 else "yang→yin"
-            changes.append({"line": i + 1, "direction": direction})
+def _direction(m: dict) -> dict:
+    return {"line": m["line"], "direction": f"{m['from']}→{m['to']}"}
 
+
+def _changing_lines(level: str, stack_now: dict, stack_next: dict) -> dict:
+    """Changing lines of one level: its resolved trigram now against its resolved trigram after
+    the change (parents as they are at that instant)."""
+    curr = resolve(stack_now, hub_level(level))
+    nxt = resolve(stack_next, hub_level(level))
+    changes = [_direction(m) for m in moving_lines(curr.lines, nxt.lines)]
     return {
-        "current": {
-            "ki": current_ki,
-            "trigram": curr["name"],
-            "symbol": curr["symbol"],
-            "lines": curr["lines"],
-        },
-        "next": {
-            "ki": next_ki,
-            "trigram": nxt["name"],
-            "symbol": nxt["symbol"],
-            "lines": nxt["lines"],
-        },
+        "current": _trigram_view(curr),
+        "next": _trigram_view(nxt),
         "changing_lines": changes,
         "num_changes": len(changes),
     }
@@ -139,28 +135,59 @@ def _wu_xing_relationship(elem1: str, elem2: str) -> str:
     return f"{elem1} → {elem2} (no direct cycle relationship)"
 
 
+def _pair_figure(stack_now: dict, lower_name: str, upper_name: str, change_instants: dict) -> dict:
+    """A pair's hexagram now, the figure after the upper level changes, and the lines between."""
+    h = _hexagram_from_ki(stack_now, lower_name, upper_name)
+    after = _hexagram_from_ki(next_stack(stack_now, upper_name, change_instants), lower_name, upper_name)
+    h["transformed"] = {"hexagram": after["hexagram"], "lines": after["lines"]}
+    h["changing"] = [_direction(m) for m in moving_lines(tuple(h["lines"]), tuple(after["lines"]))]
+    h["wu_xing"] = _wu_xing_relationship(h["lower"]["element"], h["upper"]["element"])
+    h["pair"] = f"{lower_name} (stable) / {upper_name} (changing)"
+    return h
+
+
+def _chain(stack_now: dict, change_instants: dict, change_times: dict) -> tuple:
+    """level_changes and hexagrams for one chain (global or personal)."""
+    level_changes = {}
+    for level in LEVEL_NAMES:
+        lc = _changing_lines(level, stack_now, next_stack(stack_now, level, change_instants))
+        lc["changes_at"] = change_times[level]
+        lc["wu_xing"] = _wu_xing_relationship(
+            TRIGRAM_ELEMENT[resolve(stack_now, hub_level(level)).source_ki],
+            TRIGRAM_ELEMENT[resolve(next_stack(stack_now, level, change_instants), hub_level(level)).source_ki],
+        )
+        level_changes[level] = lc
+    hexagrams = {f"{lo}_{up}": _pair_figure(stack_now, lo, up, change_instants) for lo, up in PAIRS}
+    return level_changes, hexagrams
+
+
+def _view(stack: dict) -> dict:
+    """Hub stack → output dict with the great year named 'synodic'."""
+    return {display_level(k): v for k, v in stack.items()}
+
+
 def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     """Compute Ki changes at all levels — Mercury's reading of the Ki field.
 
     For each level (synodic, year, month, day, hour):
     - Current Ki number and when it changes next
     - Next Ki number after the change
-    - Changing lines (trigram transitions)
+    - Changing lines (resolved trigram now → resolved trigram after)
     - Wu Xing phase relationship of the transition
 
     For each adjacent pair of levels:
-    - The hexagram formed (lower=slower/stable, upper=faster/changing)
-    - King Wen number and name
+    - The hexagram formed (lower=slower/stable, upper=faster/changing), its lines,
+      the figure after the upper level changes, the lines between, and any inheritance
 
-    Optionally includes personal Ki if birth_date is provided.
+    The stack also carries ki_age and great_age. Includes personal Ki if birth_date is
+    provided. Returns {"error": ...} if a stack cannot be resolved.
 
     Args:
         target_date: ISO date YYYY-MM-DD (default: now)
         birth_date: Birth date YYYY-MM-DD for personal Ki overlay
     """
     from convergence_ki import (
-        get_convergence_ki, _year_ki, _find_lichun, _flying_star,
-        _dt_to_jd, _jd_to_dt, TRIAD_OF, SIGN_NAMES, TZ as CK_TZ,
+        get_convergence_ki, _find_lichun, _dt_to_jd, _jd_to_dt,
         synodic_gate_start, SYNODIC_GATE_YEARS,
     )
     import swisseph as swe
@@ -178,22 +205,20 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
         birth_date=birth_date,
     )
 
-    # Extract current Ki numbers (global)
-    synodic_ki = ki_data["synodic"]["ki"]
-    year_ki = ki_data["year"]["ki"]
-    month_ki = ki_data["month"]["ki"]
-    day_ki = ki_data["day"]["ki"]
-    hour_ki = ki_data["hour"]["ki"]
+    from ki_calendar import ki_year_of
+    lichun_year = ki_year_of(td.date())
 
-    current_global = {
-        "synodic": synodic_ki,
-        "year": year_ki,
-        "month": month_ki,
-        "day": day_ki,
-        "hour": hour_ki,
+    stack_now = {
+        "great_age": global_great_age(lichun_year),
+        "ki_age": global_ki_age(lichun_year),
+        "great_year": ki_data["synodic"]["ki"],
+        "year": ki_data["year"]["ki"],
+        "month": ki_data["month"]["ki"],
+        "day": ki_data["day"]["ki"],
+        "hour": ki_data["hour"]["ki"],
     }
 
-    # ── Compute NEXT Ki at each level ──
+    # ── When each level changes next ──
 
     # Hour: changes every 2 hours (double-hour boundary)
     local_hour = td.hour
@@ -204,42 +229,28 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     else:
         double_hour = (local_hour + 1) // 2 + 1
 
-    # Next double-hour start time
     dh_starts = [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
     if double_hour < 12:
-        next_dh_hour = dh_starts[double_hour]  # 0-indexed: double_hour is 1-based, next is +1
+        next_dh_hour = dh_starts[double_hour]
         next_hour_dt = td.replace(hour=next_dh_hour, minute=0, second=0, microsecond=0)
         if next_dh_hour <= td.hour:
             next_hour_dt += timedelta(days=1)
     else:
-        # Currently in Pig hour (21-23), next is Rat (23:00)
         next_hour_dt = td.replace(hour=23, minute=0, second=0, microsecond=0)
         if td.hour >= 23:
             next_hour_dt += timedelta(days=1)
 
-    next_hour_ki = (hour_ki - 1) % 9
-    if next_hour_ki <= 0:
-        next_hour_ki += 9
-
     # Day: changes at midnight (solar day boundary)
     next_day_dt = (td + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-    next_day_ki = (day_ki - 1) % 9
-    if next_day_ki <= 0:
-        next_day_ki += 9
 
     # Month: changes when Sun crosses next 30° boundary from Lichun
     now_jd = _dt_to_jd(td)
     sun_lon = swe.calc_ut(now_jd, swe.SUN)[0][0]
-    # Current month segment (from 315° Lichun)
     deg_from_lichun = (sun_lon - 315) % 360
     current_month_seg = int(deg_from_lichun / 30)
     next_month_deg = (315 + (current_month_seg + 1) * 30) % 360
-
-    # Find when Sun hits next_month_deg
-    # Sun moves ~1°/day
     days_to_next = ((next_month_deg - sun_lon) % 360) / 1.0
     approx_jd = now_jd + days_to_next
-    # Refine
     for _ in range(20):
         s = swe.calc_ut(approx_jd, swe.SUN)[0][0]
         diff = (next_month_deg - s) % 360
@@ -250,138 +261,69 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
         approx_jd += diff / 1.0
     next_month_dt = _jd_to_dt(approx_jd)
 
-    next_month_ki = (month_ki - 1) % 9
-    if next_month_ki <= 0:
-        next_month_ki += 9
-
-    # Year: changes at Lichun (Sun at 315°), on its local date
-    from ki_calendar import ki_year_of
-    lichun_year = ki_year_of(td.date())
-    next_lichun_jd = _find_lichun(lichun_year + 1)
-    next_year_dt = _jd_to_dt(next_lichun_jd)
-    next_year_ki = (year_ki - 1) % 9
-    if next_year_ki <= 0:
-        next_year_ki += 9
-
-    # Synodic: changes at the next 12-year gate Lichun (arithmetic, not perihelion)
-    next_synodic_ki = (synodic_ki - 1) % 9
-    if next_synodic_ki <= 0:
-        next_synodic_ki += 9
-
-    next_global = {
-        "synodic": next_synodic_ki,
-        "year": next_year_ki,
-        "month": next_month_ki,
-        "day": next_day_ki,
-        "hour": next_hour_ki,
+    # Year: changes at the next Lichun. Gates above it open at a Lichun too.
+    next_year_dt = _jd_to_dt(_find_lichun(lichun_year + 1))
+    gate_years = {
+        "synodic": synodic_gate_start(lichun_year) + SYNODIC_GATE_YEARS,
+        "ki_age": gate_start(lichun_year, "ki_age") + PERIOD_YEARS["ki_age"],
+        "great_age": gate_start(lichun_year, "great_age") + PERIOD_YEARS["great_age"],
     }
+    # A gate opens at a Lichun; it coincides with the year change exactly when it is the next
+    # Lichun. Far gates (the great age) are beyond the ephemeris, so compare by gate year.
+    gate_instants = {k: next_year_dt if y == lichun_year + 1 else f"Lichun {y}" for k, y in gate_years.items()}
 
+    change_instants = {
+        "hour": next_hour_dt, "day": next_day_dt, "month": next_month_dt, "year": next_year_dt,
+        **gate_instants,
+    }
     change_times = {
         "hour": next_hour_dt.isoformat(),
         "day": next_day_dt.isoformat(),
         "month": next_month_dt.strftime("%Y-%m-%d %I:%M %p"),
         "year": next_year_dt.strftime("%Y-%m-%d %I:%M %p"),
-        "synodic": f"Lichun {synodic_gate_start(lichun_year) + SYNODIC_GATE_YEARS} (next 12-year gate)",
+        "synodic": f"Lichun {gate_years['synodic']} (next 12-year gate)",
+        "ki_age": f"Lichun {gate_years['ki_age']} (next Ki Age gate)",
+        "great_age": f"Lichun {gate_years['great_age']} (next great age gate)",
     }
 
-    # ── Changing lines at each level ──
-    level_changes = {}
-    for level in LEVEL_NAMES:
-        curr = current_global[level]
-        nxt = next_global[level]
-        level_changes[level] = _changing_lines(curr, nxt)
-        level_changes[level]["changes_at"] = change_times[level]
-        # Wu Xing of the transition
-        curr_elem = KI_TO_TRIGRAM[curr]["element"]
-        nxt_elem = KI_TO_TRIGRAM[nxt]["element"]
-        level_changes[level]["wu_xing"] = _wu_xing_relationship(curr_elem, nxt_elem)
+    next_global = {display_level(lvl): next_stack(stack_now, display_level(lvl), change_instants)[lvl]
+                   for lvl in stack_now}
 
-    # ── Hexagrams from adjacent level pairs ──
-    pairs = [
-        ("synodic", "year"),
-        ("year", "month"),
-        ("month", "day"),
-        ("day", "hour"),
-    ]
-
-    hexagrams = {}
-    for lower_name, upper_name in pairs:
-        lower_ki_val = current_global[lower_name]
-        upper_ki_val = current_global[upper_name]
-        pair_key = f"{lower_name}_{upper_name}"
-        hex_info = _hexagram_from_ki(lower_ki_val, upper_ki_val)
-
-        # Wu Xing between the two levels
-        wu_xing = _wu_xing_relationship(
-            hex_info["lower"]["element"],
-            hex_info["upper"]["element"],
-        )
-        hex_info["wu_xing"] = wu_xing
-        hex_info["pair"] = f"{lower_name} (stable) / {upper_name} (changing)"
-        hexagrams[pair_key] = hex_info
+    try:
+        level_changes, hexagrams = _chain(stack_now, change_instants, change_times)
+    except HubUnresolvable as e:
+        return {"error": str(e)}
 
     # ── Personal Ki changes (if birth_date) ──
     personal = None
     if birth_date and "personal" in ki_data:
-        p = ki_data["personal"]
-        natal_yki = p["natal_year_ki"]
-
-        personal_current = {
-            "synodic": p.get("synodic", {}).get("ki") if p.get("synodic") else None,
-            "year": p["year"]["ki"],
-            "month": p["month"]["ki"],
-            "day": p["day"]["ki"],
-            "hour": p["hour"]["ki"],
-        }
-
-        # Personal next Ki via flying star on global next
-        personal_next = {}
-        personal_changes = {}
-        personal_hexagrams = {}
-
-        for level in LEVEL_NAMES:
-            p_curr = personal_current[level]
-            if p_curr is None:
-                continue
-            p_nxt = _flying_star(natal_yki, next_global[level])
-            personal_next[level] = p_nxt
-            personal_changes[level] = _changing_lines(p_curr, p_nxt)
-            personal_changes[level]["changes_at"] = change_times[level]
-            curr_elem = KI_TO_TRIGRAM[p_curr]["element"]
-            nxt_elem = KI_TO_TRIGRAM[p_nxt]["element"]
-            personal_changes[level]["wu_xing"] = _wu_xing_relationship(curr_elem, nxt_elem)
-
-        for lower_name, upper_name in pairs:
-            l_ki = personal_current.get(lower_name)
-            u_ki = personal_current.get(upper_name)
-            if l_ki and u_ki:
-                pair_key = f"{lower_name}_{upper_name}"
-                hex_info = _hexagram_from_ki(l_ki, u_ki)
-                hex_info["wu_xing"] = _wu_xing_relationship(
-                    hex_info["lower"]["element"],
-                    hex_info["upper"]["element"],
-                )
-                hex_info["pair"] = f"{lower_name} (stable) / {upper_name} (changing)"
-                personal_hexagrams[pair_key] = hex_info
-
+        natal_yki = ki_data["personal"]["natal_year_ki"]
+        p_now = personal_stack(natal_yki, stack_now)
+        p_next = {display_level(lvl): personal_stack(natal_yki, next_stack(stack_now, display_level(lvl), change_instants))[lvl]
+                  for lvl in stack_now}
+        try:
+            p_changes, p_hexagrams = _chain(p_now, change_instants, change_times)
+        except HubUnresolvable as e:
+            return {"error": str(e)}
         personal = {
-            "current": personal_current,
-            "next": personal_next,
-            "level_changes": personal_changes,
-            "hexagrams": personal_hexagrams,
+            "natal_year_ki": natal_yki,
+            "current": _view(p_now),
+            "next": p_next,
+            "level_changes": p_changes,
+            "hexagrams": p_hexagrams,
         }
 
     return {
         "timestamp": td.isoformat(),
         "global": {
-            "current": current_global,
+            "current": _view(stack_now),
             "next": next_global,
             "change_times": change_times,
         },
         "level_changes": level_changes,
         "hexagrams": hexagrams,
         "personal": personal,
-        "note": "Mercury reads the delta. Lower trigram = slower level (stable ground). Upper trigram = faster level (what's cycling). Changing lines = the transition within each level from current to next Ki.",
+        "note": "Mercury reads the delta. Lower trigram = slower level (stable ground). Upper trigram = faster level (what's cycling). A 5 inherits the nearest non-5 level above it; changing lines are the difference between the resolved figures.",
     }
 
 
@@ -564,11 +506,34 @@ def lookup_hexagram_gnostic(hex_num: int, changing_lines: list = None) -> dict:
         return {"hexagram": hex_num, "error": str(e), "line_readings": {}}
 
 
-def _get_transformed_hex(lower_ki: int, next_upper_ki: int) -> int:
-    """Get the transformed hexagram number after the upper trigram changes."""
-    lower = KI_TO_TRIGRAM[lower_ki]
-    upper = KI_TO_TRIGRAM[next_upper_ki]
-    return KING_WEN[upper["idx"]][lower["idx"]]
+def _stack_line(cur: dict) -> str:
+    return ".".join(str(cur.get(l, "?")) for l in UPPER_LEVELS + LEVEL_NAMES)
+
+
+def _hexagram_block(hx: dict, lower_name: str, upper_name: str) -> list:
+    """Diagram + changing lines + transformed figure for one pair, from its dict."""
+    out = []
+    out.append(f"{'═' * 60}")
+    out.append(f"HEXAGRAM {hx['hexagram']} — {lower_name.upper()}/{upper_name.upper()}")
+    out.append(f"  {hx['upper']['trigram']} above  (Ki {hx['upper']['ki']})")
+    out.append(f"  {hx['lower']['trigram']} below  (Ki {hx['lower']['ki']})")
+    out.append(f"  Wu Xing: {hx.get('wu_xing', '')}")
+    out.append("")
+    changing = hx["changing"]
+    for i in range(5, -1, -1):
+        val = hx["lines"][i]
+        sym = "━━━━━" if val == 1 else "━━ ━━"
+        ch = next((c for c in changing if c["line"] == i + 1), None)
+        marker = f" ← ({ch['direction']})" if ch else ""
+        out.append(f"  Line {i+1}: {sym}{marker}")
+    out.append("")
+    if changing:
+        out.append(f"  Changing lines: {', '.join(str(c['line']) for c in changing)}")
+        out.append(f"  → Transforms to: Hexagram {hx['transformed']['hexagram']}")
+    else:
+        out.append("  No changing lines (pure hexagram)")
+    out.append("")
+    return out
 
 
 def format_ki_changes_full(data: dict, personal: bool = True) -> str:
@@ -582,112 +547,38 @@ def format_ki_changes_full(data: dict, personal: bool = True) -> str:
         data: Output from get_ki_changes()
         personal: If True and personal data exists, show personal hexagrams
     """
+    if "error" in data:
+        return f"Ki stack unresolvable: {data['error']}"
     lines = []
     lines.append("═══ KI CHANGES — MERCURY'S READING ═══")
     lines.append(f"Timestamp: {data['timestamp']}")
     lines.append("")
 
-    # Determine which hexagram set to use
     if personal and data.get("personal"):
         p = data["personal"]
-        pc = p["current"]
-        pn = p["next"]
-        levels_str = ".".join(str(pc.get(l, "?")) for l in LEVEL_NAMES)
-        next_str = ".".join(str(pn.get(l, "?")) for l in LEVEL_NAMES)
-        lines.append(f"PERSONAL: {levels_str}")
-        lines.append(f"NEXT:     {next_str}")
-        lines.append("")
-
+        lines.append(f"PERSONAL: {_stack_line(p['current'])}")
+        lines.append(f"NEXT:     {_stack_line(p['next'])}")
         hex_source = p.get("hexagrams", {})
-        ki_current = pc
-        ki_next = pn
     else:
         g = data["global"]
-        curr = g["current"]
-        nxt = g["next"]
-        lines.append(f"GLOBAL: {curr['synodic']}.{curr['year']}.{curr['month']}.{curr['day']}.{curr['hour']}")
-        lines.append(f"NEXT:   {nxt['synodic']}.{nxt['year']}.{nxt['month']}.{nxt['day']}.{nxt['hour']}")
-        lines.append("")
-
+        lines.append(f"GLOBAL: {_stack_line(g['current'])}")
+        lines.append(f"NEXT:   {_stack_line(g['next'])}")
         hex_source = data.get("hexagrams", {})
-        ki_current = curr
-        ki_next = nxt
+    lines.append("  (great age . Ki Age . great year . year . month . day . hour)")
+    lines.append("")
 
-    pairs = [
-        ("synodic", "year", "synodic_year"),
-        ("year", "month", "year_month"),
-        ("month", "day", "month_day"),
-        ("day", "hour", "day_hour"),
-    ]
-
-    for lower_name, upper_name, pair_key in pairs:
-        if pair_key not in hex_source:
+    for lower_name, upper_name in PAIRS:
+        hx = hex_source.get(f"{lower_name}_{upper_name}")
+        if not hx:
             continue
+        lines.extend(_hexagram_block(hx, lower_name, upper_name))
 
-        hx = hex_source[pair_key]
-        lower_ki = hx["lower"]["ki"]
-        upper_ki = hx["upper"]["ki"]
-
-        # Get next upper Ki for this pair
-        next_upper_ki = ki_next.get(upper_name)
-        if next_upper_ki is None:
-            continue
-
-        lower_tri = KI_TO_TRIGRAM[lower_ki]
-        upper_tri = KI_TO_TRIGRAM[upper_ki]
-        next_upper_tri = KI_TO_TRIGRAM[next_upper_ki]
-
-        # Full hexagram lines and changing lines
-        hex_lines = lower_tri["lines"] + upper_tri["lines"]
-        next_hex_lines = lower_tri["lines"] + next_upper_tri["lines"]
-
-        changing = []
-        for i in range(6):
-            if hex_lines[i] != next_hex_lines[i]:
-                direction = "yin→yang" if next_hex_lines[i] == 1 else "yang→yin"
-                changing.append({"line": i + 1, "direction": direction})
-
-        # Transformed hexagram
-        transformed_num = _get_transformed_hex(lower_ki, next_upper_ki)
-
-        lines.append(f"{'═' * 60}")
-        lines.append(f"HEXAGRAM {hx['hexagram']} — {lower_name.upper()}/{upper_name.upper()}")
-        lines.append(f"  {upper_tri['symbol']} {upper_tri['name']} above  (Ki {upper_ki})")
-        lines.append(f"  {lower_tri['symbol']} {lower_tri['name']} below  (Ki {lower_ki})")
-        lines.append(f"  Wu Xing: {hx.get('wu_xing', '')}")
-        lines.append("")
-
-        # Line diagram (top to bottom)
-        for i in range(5, -1, -1):
-            val = hex_lines[i]
-            is_changing = any(c["line"] == i + 1 for c in changing)
-            sym = "━━━━━" if val == 1 else "━━ ━━"
-            marker = ""
-            if is_changing:
-                ch = [c for c in changing if c["line"] == i + 1][0]
-                marker = f" ← ({ch['direction']})"
-            lines.append(f"  Line {i+1}: {sym}{marker}")
-
-        lines.append("")
-
-        if changing:
-            ch_str = ", ".join(str(c["line"]) for c in changing)
-            lines.append(f"  Changing lines: {ch_str}")
-            lines.append(f"  → Transforms to: Hexagram {transformed_num}")
-        else:
-            lines.append(f"  No changing lines (pure hexagram)")
-        lines.append("")
-
-        # ── Gnostic I Ching lookup (judgment only for full stack) ──
         gnostic = lookup_hexagram_gnostic(hx["hexagram"])
-
         if gnostic.get("judgment"):
-            lines.append(f"  JUDGMENT:")
-            judgment = gnostic["judgment"][:800]
-            for jl in judgment.split("\n"):
+            lines.append("  JUDGMENT:")
+            for jl in gnostic["judgment"][:800].split("\n"):
                 lines.append(f"  {jl}")
             lines.append("")
-
         lines.append("")
 
     return "\n".join(lines)
@@ -700,59 +591,51 @@ def format_ki_changes(data: dict, include_gnostic: bool = True) -> str:
         data: Output from get_ki_changes()
         include_gnostic: Ignored (kept for backward compat). Use format_ki_changes_full for Gnostic text.
     """
+    if "error" in data:
+        return f"Ki stack unresolvable: {data['error']}"
     lines = []
     lines.append("═══ KI CHANGES — MERCURY'S READING ═══")
     lines.append(f"Timestamp: {data['timestamp']}")
     lines.append("")
 
-    # Global current state
     g = data["global"]
-    curr = g["current"]
-    lines.append(f"CURRENT: {curr['synodic']}.{curr['year']}.{curr['month']}.{curr['day']}.{curr['hour']}")
-    nxt = g["next"]
-    lines.append(f"NEXT:    {nxt['synodic']}.{nxt['year']}.{nxt['month']}.{nxt['day']}.{nxt['hour']}")
+    lines.append(f"CURRENT: {_stack_line(g['current'])}")
+    lines.append(f"NEXT:    {_stack_line(g['next'])}")
+    lines.append("  (great age . Ki Age . great year . year . month . day . hour)")
     lines.append("")
 
-    # Level changes
     lines.append("── TRANSITIONS (when each level shifts) ──")
     for level in LEVEL_NAMES:
         lc = data["level_changes"][level]
         curr_t = lc["current"]
         next_t = lc["next"]
-        n_ch = lc["num_changes"]
         changes_str = ", ".join(
             f"L{c['line']} {c['direction']}" for c in lc["changing_lines"]
-        ) if n_ch > 0 else "no change (same trigram)"
-
+        ) if lc["num_changes"] > 0 else "no change (same trigram)"
         lines.append(f"  {level.upper():>8}: {curr_t['ki']} {curr_t['symbol']} {curr_t['trigram']}"
                       f" → {next_t['ki']} {next_t['symbol']} {next_t['trigram']}"
                       f"  [{changes_str}]")
         lines.append(f"           Wu Xing: {lc['wu_xing']}")
         lines.append(f"           Changes: {lc['changes_at']}")
         lines.append("")
+    for level in UPPER_LEVELS:
+        lines.append(f"  {level.upper():>9}: {g['current'][level]} → {g['next'][level]}  Changes: {g['change_times'][level]}")
+    lines.append("")
 
-    # Hexagrams
     lines.append("── HEXAGRAMS (level pairs) ──")
     for pair_key, hx in data["hexagrams"].items():
         lines.append(f"  {hx['pair']}")
-        lines.append(f"    {hx['upper']['symbol']} {hx['upper']['trigram']} (above)"
-                      f"  Ki {hx['upper']['ki']}")
-        lines.append(f"    {hx['lower']['symbol']} {hx['lower']['trigram']} (below)"
-                      f"  Ki {hx['lower']['ki']}")
+        lines.append(f"    {hx['upper']['trigram']} (above)  Ki {hx['upper']['ki']}")
+        lines.append(f"    {hx['lower']['trigram']} (below)  Ki {hx['lower']['ki']}")
         lines.append(f"    = Hexagram {hx['hexagram']}")
         lines.append(f"    Wu Xing: {hx['wu_xing']}")
         lines.append("")
 
-    # Personal
     if data.get("personal"):
         p = data["personal"]
         lines.append("── PERSONAL KI CHANGES ──")
-        pc = p["current"]
-        pn = p["next"]
-        levels_str = ".".join(str(pc.get(l, "?")) for l in LEVEL_NAMES)
-        next_str = ".".join(str(pn.get(l, "?")) for l in LEVEL_NAMES)
-        lines.append(f"  CURRENT: {levels_str}")
-        lines.append(f"  NEXT:    {next_str}")
+        lines.append(f"  CURRENT: {_stack_line(p['current'])}")
+        lines.append(f"  NEXT:    {_stack_line(p['next'])}")
         lines.append("")
 
         for level in LEVEL_NAMES:
@@ -761,12 +644,11 @@ def format_ki_changes(data: dict, include_gnostic: bool = True) -> str:
             lc = p["level_changes"][level]
             curr_t = lc["current"]
             next_t = lc["next"]
-            n_ch = lc["num_changes"]
             changes_str = ", ".join(
                 f"L{c['line']} {c['direction']}" for c in lc["changing_lines"]
-            ) if n_ch > 0 else "no change"
-            lines.append(f"  {level.upper():>8}: {curr_t['ki']} {curr_t['symbol']}"
-                          f" → {next_t['ki']} {next_t['symbol']}"
+            ) if lc["num_changes"] > 0 else "no change"
+            lines.append(f"  {level.upper():>8}: {curr_t['ki']} {curr_t['symbol']} {curr_t['trigram']}"
+                          f" → {next_t['ki']} {next_t['symbol']} {next_t['trigram']}"
                           f"  [{changes_str}]")
         lines.append("")
 

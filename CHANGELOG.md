@@ -1,5 +1,38 @@
 # Stella Changelog
 
+## 2026.10.20 — Hub inheritance, Ki Age and great age, octave in Stella
+
+### The 5 rule (`hub_inheritance.py`, new)
+- Ki 5 has no trigram. In the timekeeping stack it inherits the trigram of the nearest level above it that is not 5, walking up as far as needed (hour → day → month → year → great year → Ki Age → great age). If the whole chain is 5, `HubUnresolvable` is raised instead of guessing.
+- The old mapping 5 → ☷ Kun in `ki_changes.py` is removed. It was the great year 2 leaking into the hub.
+- A 5 over 5 is the parent's trigram doubled. Every figure that inherited carries `"inherited": [{"level": …, "from": …}]` and the trigram name reads `☵ Kan (inherited from month)`.
+- Moving lines are always the line-by-line difference between two six-line figures. No fixed tables anywhere. 1↔4 and 2↔8 stay line 6 under any parent; 5↔7 varies with the parent (lines 4–5 under Kun, nothing under Dui).
+- The three-number reading path (`ki_reading.py`, `get_ki`, `get_ki_cycle`, `get_ki_reading`, `get_ki_transition`) is unchanged: a reading has no hierarchy, so a 5 there keeps taking the other numbers' character.
+
+### Levels above the great year (`ki_levels.py`, new)
+- Ki Age = 12 great years = 144 years; great age = 9 Ki Ages = 1,296 years. Each descends 1 per period.
+- Anchors: Lichun 2022 opens great year 8, Ki Age 2, great age 5. Read upward at that instant the stack is 5 · 2 · 8 · 5 · 2, each level the next Earth number in the cycle 2 → 5 → 8 → 2. The two other lattices the arithmetic allows (Ki Age opening 1914 or 1950) are documented beside the constants.
+- One module now holds the arithmetic for every level; `convergence_ki.py`'s synodic functions delegate to it.
+
+### Ki Changes (`ki_changes.py`, rewritten formation)
+- Every figure is formed from the full stack, personal figures from the personal stack only. Personal numbers rise by one where global numbers fall by one.
+- Single-level changing lines compare the resolved trigram now against the resolved trigram after the change. When a parent turns at or before the child (month and year together at Lichun, the day at midnight before the 01:00 hour, a gate on that Lichun), the parent is advanced too.
+- `get_ki_changes` output gains `ki_age` and `great_age` in the stack, and `lines`, `transformed`, `changing` and `inherited` on every hexagram. Returns `{"error": …}` instead of raising.
+- `get_ki_change_schedule` reads its parents from the calendar at each step; a 5 along the way shows what it inherits.
+- `get_daily_ki` shows all seven levels and names what a 5 inherits.
+
+### Octave (`octave_math.py`, new; `octave.py`)
+- The Nine-Year Spiral library is ported to Python. `get_octave` computes in Stella; no HTTP call to the app. Same JSON shape, plus `inherited` on every figure. A 5 year or month forms over the level above it, so there is no "no figure (5 over 5)" case.
+- `get_octave_reading` reads The Gnostic Book of Changes from `data/gnostic.json` (`GNOSTIC_JSON` overrides the path). The API container copies it in.
+
+### Tests
+- New: `tests/test_hub_inheritance.py`, `test_ki_levels.py`, `test_ki_changes_hub.py`, `test_ki_change_tools.py`, `test_daily_ki_hub.py`, `test_octave_math.py`. `tests/test_octave.py` runs without the app. 155 tests pass.
+
+### Docs
+- `docs/KI_REFERENCE.md` gains the timekeeping stack and the 5 rule. Spec and plan under `docs/superpowers/`.
+
+---
+
 ## 2026-03-27 — Ki Changes (Mercury's Reading)
 
 ### New Module: `ki_changes.py`

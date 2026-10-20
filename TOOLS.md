@@ -72,14 +72,25 @@
 | 33 | `cast_hexagram` | Cast I Ching hexagram (coins or yarrow) |
 | 34 | `retrieve_wisdom` | Search Gnostic Book of Changes + I Ching texts |
 
+The three-number reading has no hierarchy: a 5 in the middle takes the other numbers' character (`ki_reading.py`). This is different from the timekeeping rule below.
+
+## Octave *(computed in Stella since 2026.10.20)*
+
+| # | Tool | Description |
+|---|------|-------------|
+| — | `get_octave` | A life as nine-year octaves on Gurdjieff's enneagram: natal triple, every octave, today's position, the nine years with their figures (year over great year), echo pairs with moving lines, shocks, the next cycle. Months of the current year by default, all 108 with `include_months=true`. |
+| — | `get_octave_reading` | A hexagram from The Gnostic Book of Changes: judgment, superior-man line, editor's notes, moving lines. |
+
+Math in `octave_math.py`; text in `data/gnostic.json`. Framework as the `octave://framework` resource and the `octave_reading` prompt.
+
 ## Convergence Ki (5-level solar-terrestrial cascade)
 
 Based on the -3 cascade and 365-day continuity breakthrough (March 6, 2026). Research: `stella/research/convergence-sockets.md`
 
 | # | Tool | Description |
 |---|------|-------------|
-| 35 | `get_convergence_ki_now` | Full 5-level Ki state with personal transformation. Synodic (Jupiter gate), Year, Month, Day, Hour. Location-aware. |
-| 36 | `get_synodic_gate_now` | Jupiter's ~12-year orbital gate Ki with perihelion chain |
+| 35 | `get_convergence_ki_now` | Full 5-level Ki state with personal transformation. Great year (synodic), Year, Month, Day, Hour. Location-aware. Carries a `build` block (git sha, load time). |
+| 36 | `get_synodic_gate_now` | The 12-year great-year gate: arithmetic from Lichun 2022 = 8, gates always on Earth years |
 | 37 | `get_natal_gates` | Map a chart's planets to their permanent 15° gates and San Cai triads |
 
 ## Ki Changes — Mercury's Reading *(NEW 2026-03-27)*
@@ -93,24 +104,28 @@ Mercury reads the delta, not the state. These tools show what's transitioning at
 | 40 | `ki_change_hour` | Hour-level Ki change (~2h cycle). Hexagram with day level. Fastest pulse. |
 | 41 | `ki_change_day` | Day-level Ki change (midnight). Hexagrams with month and hour levels. |
 | 42 | `ki_change_month` | Month-level Ki change (Sun crosses 30° boundary). Hexagrams with year and day levels. |
-| 43 | `ki_change_year` | Year-level Ki change (Lichun ~Feb 4). Hexagrams with synodic and month levels. |
-| 44 | `ki_change_global` | Synodic (global) Ki change (~12yr Jupiter cycle). Hexagram with year level. Slowest pulse. |
+| 43 | `ki_change_year` | Year-level Ki change (Lichun, Sun at 15° Aquarius). Hexagrams with great-year and month levels. |
+| 44 | `ki_change_global` | Great-year (synodic) change at the next 12-year gate Lichun. Hexagram with year level. Slowest pulse; the Ki Age and great age above it are reported in the stack. |
 
 ### Ki Changes — Architecture
 
-**Core insight:** Ki numbers map to I Ching trigrams (1=Kan☵, 2=Kun☷, 3=Zhen☳, 4=Xun☴, 5=Kun☷, 6=Qian☰, 7=Dui☱, 8=Gen☶, 9=Li☲). Two adjacent Ki levels form a hexagram: slower level = lower trigram (stable ground), faster level = upper trigram (what's cycling).
+**Core insight:** Ki numbers map to I Ching trigrams (1=Kan☵, 2=Kun☷, 3=Zhen☳, 4=Xun☴, 6=Qian☰, 7=Dui☱, 8=Gen☶, 9=Li☲). Two adjacent Ki levels form a hexagram: slower level = lower trigram (stable ground), faster level = upper trigram (what's cycling).
 
-**Changing lines:** When a Ki level transitions (e.g. day Ki 9☲→8☶), the trigram lines that differ are "changing lines" in I Ching terms. This gives direction of change (yin→yang or yang→yin).
+**The 5 rule (2026.10.20):** 5 has no trigram. It inherits the trigram of the nearest level above it that is not 5 (`hub_inheritance.py`), and the output names what was inherited. A personal 5 inherits up the personal chain only. Moving lines are always the difference between two resolved figures; there are no fixed tables.
+
+**Changing lines:** When a Ki level transitions (e.g. day Ki 9☲→8☶), the trigram lines that differ are "changing lines" in I Ching terms. This gives direction of change (yin→yang or yang→yin). Both figures are resolved from the full stack at their own instant, so a parent that turns first (month and year at Lichun, the day at midnight before the 01:00 hour) is already advanced.
 
 **64 = Mercury's grid:** Mercury's magic square is 8×8 = 64 cells = 64 hexagrams. The I Ching IS Mercury's square. Every Ki transition is a hexagram reading.
 
-**Module:** `ki_changes.py`
+**Modules:** `ki_changes.py`, `hub_inheritance.py`, `ki_levels.py`
 
 ### Ki — Key Architecture (Definitive, March 6 2026)
 
-**5 levels, -3 cascade:**
+**7 levels, -3 cascade:**
 ```
-Synodic Ki  — Jupiter perihelion cycle (~11.86 yr), 9 gates = ~108 years
+Great age   — 9 Ki Ages = 1,296 years, Lichun 2022 opens 5
+Ki Age      — 12 great years = 144 years, Lichun 2022 opens 2
+Great year  — 12 Ki years, Lichun 2022 opens 8, gates always on Earth years; 9 gates = 108 years
 Year Ki     — Sun completes orbit, ticks at Lichun (15° Aquarius), ~365 days
 Month Ki    — Sun crosses 15° of each sign, ~30 days
 Day Ki      — Solar day, descends 1/day from Lichun, 365 mod 9 = 5 → full continuity

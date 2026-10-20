@@ -1,6 +1,6 @@
 # Stella — Unified Astrology & Divination MCP Server 🌙
 
-**Repo:** [PoweredbyPugs/Stella-Astrological-System](https://github.com/PoweredbyPugs/Stella-Astrological-System)
+**Repo:** [PoweredbyPugs/Stella-AI-Astrology-System](https://github.com/PoweredbyPugs/Stella-AI-Astrology-System) · **Version:** 2026.10.20 · [Changelog](CHANGELOG.md)
 
 Stella is a single Python MCP server that gives an AI assistant a complete astrological
 practice: **89 tools** spanning ephemeris computation, Hellenistic and Vedic timing
@@ -43,10 +43,33 @@ It is the reasoning layer of a three-part system:
   returns, progressions, eclipses, elections, VOC moons, ingresses, planetary hours,
   and the entire Ki stack.
 
+## What's New (2026.10.20)
+
+The Ki timekeeping math was reworked. In plain terms:
+
+- **Ki 5 no longer pretends to be Earth.** 5 is the hub of the Lo Shu and has no trigram.
+  In every timing tool it now borrows the trigram of the nearest level above it that is
+  not 5, and the output says what it borrowed and from where. The old 5 → ☷ Kun shortcut is gone.
+- **Two new levels above the great year.** A Ki Age is 12 great years (144 years) and a
+  great age is 9 Ki Ages (1,296 years). The daily stack is now seven levels deep.
+- **Personal and global never mix.** A personal 5 borrows up the personal chain only.
+  Personal numbers rise by one where global numbers fall by one.
+- **Moving lines are computed, not looked up.** The lines that change between two figures
+  are always the lines that differ. The old fixed table for echo pairs is gone.
+- **The octave is computed in Stella.** `get_octave` no longer calls the Nine-Year Spiral
+  app. The math was ported to `octave_math.py` and the Gnostic Book of Changes text ships
+  in `data/gnostic.json`.
+- **The three-number reading is unchanged.** `get_ki`, `get_ki_cycle`, `get_ki_reading` and
+  `get_ki_transition` keep their rule for 5, because a reading has no hierarchy.
+
+Full detail in [CHANGELOG.md](CHANGELOG.md) and [docs/KI_REFERENCE.md](docs/KI_REFERENCE.md).
+
+---
+
 ## Quick Start
 
 ```bash
-git clone https://github.com/PoweredbyPugs/Stella-Astrological-System.git stella
+git clone https://github.com/PoweredbyPugs/Stella-AI-Astrology-System.git stella
 cd stella
 bash setup.sh
 ```
@@ -72,8 +95,9 @@ The full catalog with per-tool descriptions lives in [TOOLS.md](TOOLS.md).
 | **Timing Techniques** | 7 | Profections, Zodiacal Releasing (L1–L5) + Brennan-style ZR reports, transits, essential dignity scoring |
 | **Dasha & Timing Stack** | 3 | 5-level Vimshottari dasha, live nakshatra transit, and `get_timing_stack` — dasha + ZR + nakshatra + Ki in one call with cross-system resonance detection |
 | **9 Star Ki & I Ching** | 6 | Natal Ki profile, cycles, narrative readings, hexagram casting (coins/yarrow), wisdom-text search |
-| **Convergence Ki** | 3 | Experimental 5-level astronomical Ki: Jupiter synodic gate → year → month → day → hour, built on 15° gates and the −3 cascade |
-| **Ki Changes** | 7 | "Mercury's reading" — Ki transitions rendered as I Ching hexagrams with changing lines and Wu Xing phase analysis, at every level from hour to the ~12-year synodic |
+| **Octave** | 2 | `get_octave` and `get_octave_reading` — a life as nine-year octaves on the enneagram, every year and month an I Ching figure, read through the Gnostic Book of Changes |
+| **Convergence Ki** | 3 | Experimental astronomical Ki: great year → year → month → day → hour, built on 15° gates and the −3 cascade |
+| **Ki Changes** | 7 | "Mercury's reading" — Ki transitions rendered as I Ching hexagrams with changing lines and Wu Xing phase analysis, at every level from the hour to the 12-year great year, with the Ki Age and great age above |
 | **Midpoints & Cosmobiology** | 4 | Ebertin 90° dial: natal midpoint pictures, COSI interpretations, midpoint transits, solar arc directions |
 | **Chart Reading** | 1 | `chart_reading` — the three-axis generator (see below) |
 | **Knowledge Graph** | 4 | Semantic search and multi-layer placement interpretation over Neo4j |
@@ -81,7 +105,7 @@ The full catalog with per-tool descriptions lives in [TOOLS.md](TOOLS.md).
 | **Chart Storage** | 4 | Local chart persistence in `charts/` (with Helios fallback) |
 | **Emergent Triad** | 5 | `discover` / `reflect` / `recall` / `validate` / `chart_memory_stats` |
 | **Autopoietic** | 4 | Self-creating reading sessions (diverge/converge protocol) |
-| **Sweph Passthroughs** | 9+ | Direct Helios endpoints: retrogrades, stations, ingresses, daily transits, moon-for-date — plus auto-discovery of anything new Helios exposes |
+| **Sweph Passthroughs** | 7+ | Direct Helios endpoints: retrogrades, stations, ingresses, daily transits, moon-for-date — plus auto-discovery of anything new Helios exposes |
 
 ---
 
@@ -174,21 +198,56 @@ reports the resonance. Quick references: [docs/ZR_REFERENCE.md](docs/ZR_REFERENC
 
 ## The Ki Family
 
-Three related systems, from traditional to experimental:
+Four related systems, from traditional to experimental:
 
 - **9 Star Ki** (`get_ki`, `get_ki_cycle`, `get_ki_reading`, `get_daily_ki`) — the
-  traditional Lo Shu cascade. Year Ki turns at Lichun (~Feb 4), months at solar
-  terms. The three numbers: **Essence** (invisible to self), **Emotion** (internal
-  processing), **Life Path** (how the world sees you). `get_daily_ki` is the
-  **authoritative** daily number.
+  traditional Lo Shu cascade. Year Ki turns at Lichun (the Sun at 15° Aquarius, about
+  Feb 3–5), months when the Sun reaches 15° of each sign. The three numbers: **Essence**
+  (invisible to self), **Emotion** (internal processing), **Life Path** (how the world
+  sees you). `get_daily_ki` is the **authoritative** daily number and shows all seven levels.
+- **The Octave** (`get_octave`, `get_octave_reading`) — a life read as nine-year octaves
+  on Gurdjieff's enneagram. Each year is an I Ching figure formed over its great year,
+  each month over its year; echo pairs (1↔4, 2↔8, 5↔7) are read as changes with moving
+  lines. The text is The Gnostic Book of Changes. Math in `octave_math.py`.
 - **Convergence Ki** (`get_convergence_ki_now`, `get_synodic_gate_now`,
-  `get_natal_gates`) — an experimental astronomical reformulation: five nested
-  levels driven by real bodies crossing the 15° mid-sign gates, from Jupiter's
-  ~12-year synodic gate down to the Chinese double-hour, each level starting at its
-  parent minus 3. Theory in `research/convergence-sockets.md`.
+  `get_natal_gates`) — an experimental astronomical reformulation driven by real bodies
+  crossing the 15° mid-sign gates. Theory in `research/convergence-sockets.md`.
 - **Ki Changes** (`get_ki_changes` and the `ki_change_*` family) — reads the
   *transitions* between Ki states as I Ching hexagrams with changing lines and
   Wu Xing phase relationships. The state is the trigram; the change is the reading.
+
+### The timekeeping stack
+
+Every level is twelve of the one below (the great age is nine Ki Ages), and every level
+counts down by one per period without ever resetting at a seam. Global anchors live in
+`ki_levels.py`:
+
+| Level | Length | Global anchor |
+|---|---|---|
+| hour | 12 double-hours per day | from the day, −3 cascade |
+| day | one solar day | from the month, −3 cascade |
+| month | Sun at 15° of each sign | Feb 2026 = 8 |
+| year | Lichun to Lichun | 2026 = 1 |
+| great year | 12 years | Lichun 2022 opens 8 |
+| Ki Age | 144 years | Lichun 2022 opens 2 |
+| great age | 1,296 years | Lichun 2022 opens 5 |
+
+Personal numbers at every level are the natal year read against the matching global
+level: `personal = ((natal − global + 4) mod 9) + 1`.
+
+### The 5 rule
+
+Ki 5 is the centre of the Lo Shu and has no trigram. Two different uses, kept apart:
+
+- **Reading** (the three-number natal triple and the `get_ki*` reading tools): no
+  hierarchy, just the numbers. A 5 in the middle takes on the other numbers' character.
+- **Timekeeping** (the octave, Ki Changes, the daily stack): a 5 inherits the trigram of
+  the nearest level above it that is not 5, walking up as far as needed. A 5 over 5 is the
+  parent's trigram doubled. A personal 5 inherits up the personal chain only. Every figure
+  that inherited says so (`"inherited": [{"level": "day", "from": "month"}]`).
+
+Rule and resolver in `hub_inheritance.py`; the full account in
+[docs/KI_REFERENCE.md](docs/KI_REFERENCE.md).
 
 ---
 
@@ -243,11 +302,16 @@ scaffolding — only the human portrait shows.
 ```
 stella/
 ├── stella_server.py        # MCP server — all 89 tools (FastMCP, stdio)
+├── stella_http.py          # Streamable HTTP proxy with GitHub OAuth (remote claude.ai access)
 ├── stella_config.py        # Env/config resolution (.env aware)
 ├── stella_doctor.py        # Health checks + MCP client config output
 ├── ephemeris.py            # pyswisseph: returns, progressions, elections, eclipses…
-├── ki.py / ki_reading.py   # 9 Star Ki calculation + narrative readings
+├── ki.py / ki_reading.py   # 9 Star Ki calculation + the three-number readings
+├── ki_calendar.py          # When Ki years and months open (Sun at 15° of each sign)
+├── ki_levels.py            # Lo Shu arithmetic for every level, Ki Age and great age anchors
+├── hub_inheritance.py      # The 5 rule: trigram resolution, hexagram lines, moving lines
 ├── ki_changes.py           # Ki transitions as hexagrams ("Mercury's reading")
+├── octave.py / octave_math.py  # Nine-year octaves on the enneagram, Gnostic readings
 ├── convergence_ki.py       # Experimental astronomical Ki (15° gates)
 ├── dasha.py                # Vimshottari dasha + nakshatra transit
 ├── zr.py / zr_report.py    # Zodiacal Releasing + Brennan-style reports
@@ -255,16 +319,19 @@ stella/
 ├── midpoints.py            # 90° dial: pictures, transits, solar arcs
 ├── build_graph.py          # Neo4j knowledge graph builder
 ├── graph/                  # Ingestion, seeding, traversal, synthesis scripts
+├── api_bridge/             # HTTP API bridge service (Docker)
+├── deploy/                 # launchd plist for the remote HTTP service
+├── tests/                  # pytest suites (Ki fixtures, hub inheritance, octave, HTTP)
 ├── autopoietic/            # Self-creating reading framework config + sessions
 ├── charts/                 # Chart JSON + memory + readings (gitignored)
-├── data/                   # Structured reference (777 correspondences, …)
+├── data/                   # Structured reference (777 correspondences, Gnostic Book of Changes)
 ├── texts/                  # Source texts (Waite tarot)
 ├── research/               # Theory: convergence sockets, Lo Shu harmonics, …
 ├── elections/              # 2026 electional data
 ├── synodic-cycles/         # Per-planet synodic cycle references
-├── docs/                   # KI_REFERENCE.md, ZR_REFERENCE.md
+├── docs/                   # KI_REFERENCE.md, ZR_REFERENCE.md, specs and plans
 ├── setup.sh                # Automated setup
-└── docker-compose.yml      # Neo4j container (optional)
+└── docker-compose.yml      # Neo4j + API bridge containers
 ```
 
 Docs: [SETUP.md](SETUP.md) · [TOOLS.md](TOOLS.md) ·
@@ -300,6 +367,7 @@ loads it at startup.
 - [x] Emergent pattern detection + learning memory (`discover`/`reflect`/`recall`/`validate`)
 - [x] Vimshottari dasha + unified timing stack with resonance detection
 - [x] Ki Changes — transitions as hexagrams, all five levels
+- [x] Hub inheritance for Ki 5, the Ki Age and great age levels, octave math in Stella (2026.10.20)
 - [x] Standalone midpoint pictures, midpoint transits, and solar arc tools
 - [x] Autopoietic (self-creating) readings
 - [x] Agrippa + Crowley 777 ingested (structured correspondences in `data/`)

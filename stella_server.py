@@ -5431,79 +5431,71 @@ async def get_ki_change_schedule(
     """Show the next N Ki changes at a specific level with hexagram transitions.
 
     Useful for seeing the rhythm of changes — when does Ki cycle through
-    all 9 numbers? What hexagrams form along the way?
+    all 9 numbers? What hexagrams form along the way? A 5 along the way
+    inherits the trigram of the level above it.
 
     Args:
         birth_date: Birth date YYYY-MM-DD for personal Ki
         level: Which level to track: 'hour', 'day', 'month', 'year'
         count: Number of upcoming changes to show (default 9 = one full cycle)
     """
-    from ki_changes import get_ki_changes as _get_ki_changes, _changing_lines, _hexagram_from_ki, KI_TO_TRIGRAM
-    from convergence_ki import _flying_star, _year_ki
-    from datetime import datetime, timedelta
-    from zoneinfo import ZoneInfo
-
-    tz = ZoneInfo("America/New_York")
-    now = datetime.now(tz)
+    from ki_changes import get_ki_changes as _get_ki_changes, hub_level
+    from hub_inheritance import HubUnresolvable, moving_lines, resolve
+    from ki_levels import personal_stack
 
     if level not in ("hour", "day", "month", "year"):
         return f"Invalid level '{level}'. Use: hour, day, month, year"
 
-    # Get current state
     data = _get_ki_changes(birth_date=birth_date)
-    current_ki = data["global"]["current"][level]
+    if "error" in data:
+        return f"Ki stack unresolvable: {data['error']}"
 
+    lvl = hub_level(level)
+    stack = {hub_level(k): v for k, v in data["global"]["current"].items()}
+    natal_yki = data["personal"]["natal_year_ki"] if data.get("personal") else None
+
+    def label(st):
+        r = resolve(st, lvl)
+        tag = f" (inherits {r.inherited_from})" if r.inherited_from else ""
+        return f"Ki {st[lvl]} {r.name.split(' (')[0]}{tag}", r
+
+    first, _ = label(stack)
     lines = []
     lines.append(f"═══ KI CHANGE SCHEDULE — {level.upper()} ═══")
-    lines.append(f"Starting: Ki {current_ki} {KI_TO_TRIGRAM[current_ki]['symbol']} {KI_TO_TRIGRAM[current_ki]['name']}")
+    lines.append(f"Starting: {first}")
     lines.append(f"Next {count} changes:\n")
 
-    ki = current_ki
-    # Determine step interval
-    if level == "hour":
-        step = timedelta(hours=2)
-    elif level == "day":
-        step = timedelta(days=1)
-    elif level == "month":
-        step = timedelta(days=30)  # approximate
-    elif level == "year":
-        step = timedelta(days=365)
+    try:
+        for i in range(count):
+            nxt = {**stack, lvl: (stack[lvl] - 2) % 9 + 1}
+            cur_label, cur_r = label(stack)
+            nxt_label, nxt_r = label(nxt)
+            moves = moving_lines(cur_r.lines, nxt_r.lines)
+            changes_str = ", ".join(f"L{m['line']} {m['from']}→{m['to']}" for m in moves) if moves else "same trigram"
+            line = f"  {i+1}. {cur_label} → {nxt_label}  [{changes_str}]"
+            if natal_yki:
+                p_cur = personal_stack(natal_yki, stack)[lvl]
+                p_nxt = personal_stack(natal_yki, nxt)[lvl]
+                line += f"  (personal: {p_cur}→{p_nxt})"
+            lines.append(line)
+            stack = nxt
+    except HubUnresolvable as e:
+        return f"Ki stack unresolvable: {e}"
 
-    cursor = now
-    natal_yki = None
-    if birth_date:
-        from datetime import date
-        bd = date.fromisoformat(birth_date)
-        natal_yki = _year_ki(bd.year, bd.month, bd.day)
-
-    for i in range(count):
-        next_ki = (ki - 1) % 9
-        if next_ki <= 0:
-            next_ki += 9
-
-        change = _changing_lines(ki, next_ki)
-        changes_str = ", ".join(
-            f"L{c['line']} {c['direction']}" for c in change["changing_lines"]
-        ) if change["num_changes"] > 0 else "same trigram"
-
-        cursor += step
-        line = (f"  {i+1}. Ki {ki} {KI_TO_TRIGRAM[ki]['symbol']}"
-                f" → {next_ki} {KI_TO_TRIGRAM[next_ki]['symbol']}"
-                f"  [{changes_str}]")
-
-        if natal_yki:
-            p_curr = _flying_star(natal_yki, ki)
-            p_next = _flying_star(natal_yki, next_ki)
-            line += f"  (personal: {p_curr}→{p_next})"
-
-        lines.append(line)
-        ki = next_ki
-
-    lines.append(f"\n9 changes = one full cycle. Ki descends by 1 each {level}.")
+    lines.append(f"\n9 changes = one full cycle. Ki descends by 1 each {level}; a 5 inherits the level above.")
     return "\n".join(lines)
 
 
 # ── Individual Ki change tools (one per level) ──
+
+_KI_PAIR_MAP = {
+    "synodic": [("synodic", "year")],
+    "year": [("synodic", "year"), ("year", "month")],
+    "month": [("year", "month"), ("month", "day")],
+    "day": [("month", "day"), ("day", "hour")],
+    "hour": [("day", "hour")],
+}
+
 
 def _ki_change_single_level(level: str, birth_date: str = None,
                              include_gnostic: bool = False) -> str:
@@ -5514,44 +5506,26 @@ def _ki_change_single_level(level: str, birth_date: str = None,
     all translator versions, Editor commentary, and lettered statements.
     """
     from ki_changes import (
-        get_ki_changes as _get_ki_changes,
-        format_ki_changes_full as _format_full,
-        _changing_lines, _hexagram_from_ki, _wu_xing_relationship,
-        KI_TO_TRIGRAM, lookup_hexagram_gnostic, LEVEL_NAMES,
-        _get_transformed_hex,
+        get_ki_changes as _get_ki_changes, lookup_hexagram_gnostic, _hexagram_block,
     )
     from convergence_ki import TRIAD_OF
 
     data = _get_ki_changes(birth_date=birth_date)
+    if "error" in data:
+        return f"Ki stack unresolvable: {data['error']}"
 
-    # If gnostic requested, use the full format filtered to this level's pairs
     if include_gnostic:
-        # Use full format but we'll build it for just this level
         use_personal = bool(birth_date) and data.get("personal")
-
         if use_personal:
             p = data["personal"]
-            ki_current = p["current"]
-            ki_next = p["next"]
             hex_source = p.get("hexagrams", {})
+            lc = p["level_changes"].get(level, data["level_changes"][level])
         else:
-            ki_current = data["global"]["current"]
-            ki_next = data["global"]["next"]
             hex_source = data.get("hexagrams", {})
-
-        pair_map = {
-            "synodic": [("synodic", "year", "synodic_year")],
-            "year": [("synodic", "year", "synodic_year"), ("year", "month", "year_month")],
-            "month": [("year", "month", "year_month"), ("month", "day", "month_day")],
-            "day": [("month", "day", "month_day"), ("day", "hour", "day_hour")],
-            "hour": [("day", "hour", "day_hour")],
-        }
+            lc = data["level_changes"][level]
 
         lines = []
         lines.append(f"═══ KI CHANGE — {level.upper()} ═══")
-
-        # Show current level info
-        lc = data["level_changes"][level] if not use_personal else p["level_changes"].get(level, data["level_changes"][level])
         curr = lc["current"]
         nxt = lc["next"]
         lines.append(f"  Current: {curr['ki']} {curr['symbol']} {curr['trigram']} ({TRIAD_OF[curr['ki']]})")
@@ -5559,83 +5533,31 @@ def _ki_change_single_level(level: str, birth_date: str = None,
         lines.append(f"  Changes: {lc['changes_at']}")
         lines.append("")
 
-        for lower_name, upper_name, pair_key in pair_map.get(level, []):
-            if pair_key not in hex_source:
+        for lower_name, upper_name in _KI_PAIR_MAP.get(level, []):
+            hx = hex_source.get(f"{lower_name}_{upper_name}")
+            if not hx:
                 continue
+            lines.extend(_hexagram_block(hx, lower_name, upper_name))
 
-            hx = hex_source[pair_key]
-            lower_ki = hx["lower"]["ki"]
-            upper_ki = hx["upper"]["ki"]
-            next_upper_ki = ki_next.get(upper_name)
-            if next_upper_ki is None:
-                continue
-
-            lower_tri = KI_TO_TRIGRAM[lower_ki]
-            upper_tri = KI_TO_TRIGRAM[upper_ki]
-            next_upper_tri = KI_TO_TRIGRAM[next_upper_ki]
-
-            hex_lines_val = lower_tri["lines"] + upper_tri["lines"]
-            next_hex_lines = lower_tri["lines"] + next_upper_tri["lines"]
-
-            changing = []
-            for i in range(6):
-                if hex_lines_val[i] != next_hex_lines[i]:
-                    direction = "yin→yang" if next_hex_lines[i] == 1 else "yang→yin"
-                    changing.append({"line": i + 1, "direction": direction})
-
-            transformed_num = _get_transformed_hex(lower_ki, next_upper_ki)
-
-            lines.append(f"{'═' * 60}")
-            lines.append(f"HEXAGRAM {hx['hexagram']} — {lower_name.upper()}/{upper_name.upper()}")
-            lines.append(f"  {upper_tri['symbol']} {upper_tri['name']} above  (Ki {upper_ki})")
-            lines.append(f"  {lower_tri['symbol']} {lower_tri['name']} below  (Ki {lower_ki})")
-            lines.append(f"  Wu Xing: {hx.get('wu_xing', '')}")
-            lines.append("")
-
-            for i in range(5, -1, -1):
-                val = hex_lines_val[i]
-                is_changing = any(c["line"] == i + 1 for c in changing)
-                sym = "━━━━━" if val == 1 else "━━ ━━"
-                marker = ""
-                if is_changing:
-                    ch = [c for c in changing if c["line"] == i + 1][0]
-                    marker = f" ← ({ch['direction']})"
-                lines.append(f"  Line {i+1}: {sym}{marker}")
-
-            lines.append("")
-            if changing:
-                ch_str = ", ".join(str(c["line"]) for c in changing)
-                lines.append(f"  Changing lines: {ch_str}")
-                lines.append(f"  → Transforms to: Hexagram {transformed_num}")
-            else:
-                lines.append(f"  No changing lines (pure hexagram)")
-            lines.append("")
-
-            # Gnostic lookup
-            cl = [c["line"] for c in changing] if changing else None
+            cl = [c["line"] for c in hx["changing"]] or None
             gnostic = lookup_hexagram_gnostic(hx["hexagram"], changing_lines=cl)
-
             if gnostic.get("judgment"):
-                lines.append(f"  JUDGMENT:")
+                lines.append("  JUDGMENT:")
                 for jl in gnostic["judgment"][:800].split("\n"):
                     lines.append(f"  {jl}")
                 lines.append("")
-
             if gnostic.get("line_readings"):
                 for line_num, reading in sorted(gnostic["line_readings"].items()):
                     lines.append(f"  ── LINE {line_num} ──")
                     for rl in reading.split("\n"):
                         lines.append(f"  {rl}")
                     lines.append("")
-
             lines.append("")
 
         return "\n".join(lines)
 
-    # Non-gnostic compact format (original)
-    g = data["global"]
+    # Non-gnostic compact format
     lc = data["level_changes"][level]
-
     lines = []
     curr = lc["current"]
     nxt = lc["next"]
@@ -5646,30 +5568,23 @@ def _ki_change_single_level(level: str, birth_date: str = None,
     lines.append(f"  Wu Xing: {lc['wu_xing']}")
 
     if lc["num_changes"] > 0:
-        ch_str = ", ".join(f"L{c['line']} {c['direction']}" for c in lc["changing_lines"])
-        lines.append(f"  Lines:   {ch_str}")
+        lines.append("  Lines:   " + ", ".join(f"L{c['line']} {c['direction']}" for c in lc["changing_lines"]))
     else:
-        lines.append(f"  Lines:   no change (same trigram)")
+        lines.append("  Lines:   no change (same trigram)")
 
     lines.append("")
     lines.append("── HEXAGRAMS ──")
-
-    pair_map = {
-        "synodic": [("synodic", "year", "synodic_year")],
-        "year": [("synodic", "year", "synodic_year"), ("year", "month", "year_month")],
-        "month": [("year", "month", "year_month"), ("month", "day", "month_day")],
-        "day": [("month", "day", "month_day"), ("day", "hour", "day_hour")],
-        "hour": [("day", "hour", "day_hour")],
-    }
-
-    for lower_name, upper_name, pair_key in pair_map.get(level, []):
-        if pair_key in data["hexagrams"]:
-            hx = data["hexagrams"][pair_key]
-            lines.append(f"  {hx['pair']}:")
-            lines.append(f"    {hx['upper']['symbol']} {hx['upper']['trigram']} above  (Ki {hx['upper']['ki']})")
-            lines.append(f"    {hx['lower']['symbol']} {hx['lower']['trigram']} below  (Ki {hx['lower']['ki']})")
-            lines.append(f"    = Hexagram {hx['hexagram']}  |  {hx['wu_xing']}")
-            lines.append("")
+    for lower_name, upper_name in _KI_PAIR_MAP.get(level, []):
+        hx = data["hexagrams"].get(f"{lower_name}_{upper_name}")
+        if not hx:
+            continue
+        lines.append(f"  {hx['pair']}:")
+        lines.append(f"    {hx['upper']['trigram']} above  (Ki {hx['upper']['ki']})")
+        lines.append(f"    {hx['lower']['trigram']} below  (Ki {hx['lower']['ki']})")
+        lines.append(f"    = Hexagram {hx['hexagram']}  |  {hx['wu_xing']}")
+        if hx["changing"]:
+            lines.append(f"    → {', '.join(str(c['line']) for c in hx['changing'])} moving → Hexagram {hx['transformed']['hexagram']}")
+        lines.append("")
 
     if data.get("personal"):
         p = data["personal"]
@@ -5682,15 +5597,13 @@ def _ki_change_single_level(level: str, birth_date: str = None,
             lines.append(f"  Next:    {pn['ki']} {pn['symbol']} {pn['trigram']}")
             lines.append(f"  Wu Xing: {plc['wu_xing']}")
             if plc["num_changes"] > 0:
-                ch_str = ", ".join(f"L{c['line']} {c['direction']}" for c in plc["changing_lines"])
-                lines.append(f"  Lines:   {ch_str}")
+                lines.append("  Lines:   " + ", ".join(f"L{c['line']} {c['direction']}" for c in plc["changing_lines"]))
 
-        if p.get("hexagrams"):
-            for lower_name, upper_name, pair_key in pair_map.get(level, []):
-                if pair_key in p["hexagrams"]:
-                    hx = p["hexagrams"][pair_key]
-                    lines.append(f"  Personal {hx['pair']}: Hex {hx['hexagram']}"
-                                  f" ({hx['lower']['symbol']}/{hx['upper']['symbol']})")
+        for lower_name, upper_name in _KI_PAIR_MAP.get(level, []):
+            hx = p.get("hexagrams", {}).get(f"{lower_name}_{upper_name}")
+            if hx:
+                lines.append(f"  Personal {hx['pair']}: Hex {hx['hexagram']}"
+                              f" ({hx['lower']['trigram']} / {hx['upper']['trigram']})")
 
     return "\n".join(lines)
 

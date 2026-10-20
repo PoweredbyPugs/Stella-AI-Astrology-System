@@ -324,7 +324,7 @@ Stella's tools are also served over Streamable HTTP so claude.ai can use them as
 custom connector without the desktop app.
 
 ```
-claude.ai ──HTTPS──▶ Tailscale Funnel :10000 ──▶ 127.0.0.1:8811  stella_http.py (fastmcp proxy, GitHub OAuth)
+claude.ai ──HTTPS :443──▶ Tailscale Funnel (path mounts) ──▶ 127.0.0.1:8811  stella_http.py (fastmcp proxy, GitHub OAuth)
                                                         │ stdio, persistent child
                                                         ▼
                                                  stella_server.py  (unchanged; Hermes still spawns it directly)
@@ -347,14 +347,28 @@ claude.ai ──HTTPS──▶ Tailscale Funnel :10000 ──▶ 127.0.0.1:8811 
 
 Setup (once):
 1. GitHub → Settings → Developer settings → OAuth Apps → New. Homepage
-   `https://<magicdns>.ts.net:10000`, callback `https://<magicdns>.ts.net:10000/auth/callback`.
+   `https://<magicdns>.ts.net`, callback `https://<magicdns>.ts.net/auth/callback`.
    Paste the client id/secret into `.env` (see `.env.example`).
 2. `python3.14 -m venv .venv-http && .venv-http/bin/pip install -r requirements-http.txt`
-3. `tailscale funnel --bg --https=10000 http://127.0.0.1:8811` (persists across reboots).
+3. Publish on **port 443** — claude.ai's connector fetcher never connected to a
+   non-standard port (10000 was tried first and got "No server responded"). Port 443 can
+   be shared with another site: mount only Stella's paths, each with the same path on the
+   backend URL so Tailscale forwards it unstripped. Use `tailscale funnel`, not
+   `tailscale serve` — `serve` on a Funnel port silently turns Funnel *off* for that port.
+   ```
+   for p in /mcp /.well-known/oauth-authorization-server /.well-known/oauth-protected-resource \
+            /authorize /consent /register /token /auth/callback; do
+     tailscale funnel --bg --https=443 --set-path $p http://127.0.0.1:8811$p
+   done
+   tailscale funnel status   # the 443 block must say "(Funnel on)"
+   ```
+   Persists across reboots. Remove one mount with `tailscale funnel --https=443 --set-path <path> off`.
 4. `cp deploy/com.poweredbypugs.stella-http.plist ~/Library/LaunchAgents/ &&
    launchctl bootstrap gui/$(id -u) ~/Library/LaunchAgents/com.poweredbypugs.stella-http.plist`
    Logs: `~/Library/Logs/stella-http.{log,err.log}`.
-5. claude.ai → Settings → Connectors → Add custom connector → `https://<magicdns>.ts.net:10000/mcp`.
+5. claude.ai → Settings → Connectors → Add custom connector → `https://<magicdns>.ts.net/mcp`.
+   claude.ai seems to cache a failed probe per URL, so if a first attempt failed, change
+   the URL rather than retrying it.
 
 Operations: restart with `launchctl kickstart -k gui/$(id -u)/com.poweredbypugs.stella-http`
 (also how new tools become visible). Rotate the GitHub secret by regenerating it in the

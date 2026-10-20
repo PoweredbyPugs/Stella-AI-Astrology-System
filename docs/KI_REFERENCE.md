@@ -126,3 +126,34 @@ The 9 Ki trigrams map directly to I Ching trigrams. A reading can combine:
 3. I Ching hexagram (specific guidance)
 
 The trigrams in a cast hexagram can be interpreted through Ki lens for elemental synthesis.
+
+## Timekeeping Stack and the 5 Rule
+
+Two different uses of 5, kept apart:
+
+- **Reading** (the natal triple; `get_ki`, `get_ki_cycle`, `get_ki_reading`, `get_ki_transition`):
+  three numbers, no hierarchy. A 5 in the middle takes on the other numbers' character; the
+  doubling rule in `ki_reading.py` stays. What a 5 in the first position means (e.g. 5.9.1) is a
+  doctrinal question, not decided in code.
+- **Timekeeping** (`get_octave`, `get_ki_changes`, `ki_change_*`, `get_ki_change_schedule`,
+  `get_daily_ki`): the chain hour → day → month → year → great year → Ki Age → great age. Ki 5 has
+  no trigram and inherits the trigram of the nearest level above it that is not 5
+  (`hub_inheritance.py`). A 5 over 5 is the parent's trigram doubled. Every figure names what was
+  inherited. Moving lines are always the line-by-line difference between two figures.
+
+Two chains, never mixed: every global level is a Lo Shu number descending 1 per period; every
+personal level is the natal year read against the matching global level by
+`personal(natal, global) = ki(natal − global + 5)`. A personal 5 inherits up the personal chain only.
+
+| Level | Length | Global anchor (`ki_levels.py`) |
+|---|---|---|
+| month | Sun at 15° of each sign | Feb 2026 = 8, one continuous count |
+| year | Lichun to Lichun | 2026 = 1 |
+| great year | 12 years | Lichun 2022 opens 8 |
+| Ki Age | 144 years | Lichun 2022 opens 2 |
+| great age | 1,296 years | Lichun 2022 opens 5 |
+
+Read upward at Lichun 2022 the stack is 5 · 2 · 8 · 5 · 2: each level the next Earth number in
+the cycle 2 → 5 → 8 → 2. That is the whole justification for the Ki Age and great age anchors; the
+arithmetic alone would also allow a Ki Age opening in 1914 (next 2058) or 1950 (next 2094), and
+the constants are one line each if a fact turns up.

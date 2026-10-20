@@ -281,20 +281,24 @@ def _find_jupiter_perihelion(near_year: float) -> float:
 # great year descends 1 per gate. 12 mod 9 = 3 keeps every gate on an Earth year (2, 5, 8),
 # as 12 months keep every Lichun on an Earth month. 9 gates = 108 years.
 # Jupiter's ~11.86-year perihelion cycle lands near these gates but is not the clock.
-SYNODIC_ANCHOR_YEAR = 2022
-SYNODIC_ANCHOR_KI = 8
+from ki_levels import (
+    GREAT_YEAR_ANCHOR_KI as SYNODIC_ANCHOR_KI,
+    GREAT_YEAR_ANCHOR_YEAR as SYNODIC_ANCHOR_YEAR,
+    gate_start as _gate_start,
+    global_great_year as _global_great_year,
+)
+
 SYNODIC_GATE_YEARS = 12
 
 
 def synodic_gate_start(ki_year: int) -> int:
     """Ki year (Lichun) that opens the synodic gate containing ki_year."""
-    return SYNODIC_ANCHOR_YEAR + ((ki_year - SYNODIC_ANCHOR_YEAR) // SYNODIC_GATE_YEARS) * SYNODIC_GATE_YEARS
+    return _gate_start(ki_year, "great_year")
 
 
 def synodic_ki_for_year(ki_year: int) -> int:
     """Global great-year Ki for a Ki year: 2010-2021 = 9, 2022-2033 = 8, 2034-2045 = 7."""
-    gate = (ki_year - SYNODIC_ANCHOR_YEAR) // SYNODIC_GATE_YEARS
-    return (SYNODIC_ANCHOR_KI - gate - 1) % 9 + 1
+    return _global_great_year(ki_year)
 
 
 def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:

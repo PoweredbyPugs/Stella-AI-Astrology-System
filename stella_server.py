@@ -5445,9 +5445,11 @@ async def get_ki_change_schedule(
         level: Which level to track: 'hour', 'day', 'month', 'year'
         count: Number of upcoming changes to show (default 9 = one full cycle)
     """
+    from datetime import datetime, timedelta
     from ki_changes import get_ki_changes as _get_ki_changes, hub_level
     from hub_inheritance import HubUnresolvable, moving_lines, resolve
-    from ki_levels import personal_stack
+    from ki_calendar import ki_month_of, ki_year_of
+    from ki_levels import global_stack, personal_stack
 
     if level not in ("hour", "day", "month", "year"):
         return f"Invalid level '{level}'. Use: hour, day, month, year"
@@ -5458,7 +5460,29 @@ async def get_ki_change_schedule(
 
     lvl = hub_level(level)
     stack = {hub_level(k): v for k, v in data["global"]["current"].items()}
+    start = dict(stack)
     natal_yki = data["personal"]["natal_year_ki"] if data.get("personal") else None
+    now = datetime.fromisoformat(data["timestamp"])
+    ki_year, month_idx = ki_month_of(now.date())
+    first_change = data["global"]["change_instants"][level]
+
+    def stack_after(i: int) -> dict:
+        """The global stack just after the i-th change of the tracked level (1-based): the tracked
+        level has descended i times and every parent reads what the calendar says at that instant."""
+        if level == "year":
+            return global_stack(ki_year + i)
+        if level == "month":
+            abs_month = ki_year * 12 + month_idx + i
+            return global_stack(abs_month // 12, abs_month)
+        if level == "day":
+            d = now.date() + timedelta(days=i)
+            y, m = ki_month_of(d)
+            return {**global_stack(y, y * 12 + m), "day": (start["day"] - i - 1) % 9 + 1}
+        at = first_change + timedelta(hours=2 * (i - 1))
+        y, m = ki_month_of(at.date())
+        days = (at.date() - now.date()).days
+        return {**global_stack(y, y * 12 + m), "day": (start["day"] - days - 1) % 9 + 1,
+                "hour": (start["hour"] - i - 1) % 9 + 1}
 
     def label(st):
         r = resolve(st, lvl)
@@ -5473,7 +5497,7 @@ async def get_ki_change_schedule(
 
     try:
         for i in range(count):
-            nxt = {**stack, lvl: (stack[lvl] - 2) % 9 + 1}
+            nxt = stack_after(i + 1)
             cur_label, cur_r = label(stack)
             nxt_label, nxt_r = label(nxt)
             moves = moving_lines(cur_r.lines, nxt_r.lines)

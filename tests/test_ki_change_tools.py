@@ -34,6 +34,16 @@ def test_schedule_steps_through_five_with_inheritance(monkeypatch):
     assert "☷" not in out.split("Ki 5")[1].split("\n")[0]
 
 
+def test_schedule_steps_parents_as_they_turn(monkeypatch):
+    _pin(monkeypatch, "2026-10-20")
+    out = asyncio.run(stella_server.get_ki_change_schedule(level="year", count=15))
+    row14 = [l for l in out.split("\n") if l.strip().startswith("14.")][0]
+    assert "Ki 5 ☱ Dui (inherits great_year)" in row14, row14   # 2040: year 5 under great year 7
+    out = asyncio.run(stella_server.get_ki_change_schedule(level="month", count=9))
+    feb = [l for l in out.split("\n") if "Ki 5" in l and "→ Ki 5" in l][0]
+    assert "Ki 5 ☲ Li (inherits year)" in feb, feb              # Feb 2027: month 5 under year 9
+
+
 def test_tools_surface_hub_error(monkeypatch):
     import ki_changes
     monkeypatch.setattr(ki_changes, "get_ki_changes", lambda **kw: {"error": "day is 5 and every parent above it is 5"})

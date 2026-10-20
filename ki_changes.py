@@ -69,16 +69,30 @@ def _descend(k: int) -> int:
     return (k - 2) % 9 + 1
 
 
+_COINCIDENCE = timedelta(seconds=60)  # two solar-term searches for the same instant differ by less
+
+
+def _turns_before(parent_when, child_when) -> bool:
+    """True when the parent's next change is at or before the child's (datetimes, with tolerance)."""
+    if parent_when is None or child_when is None:
+        return False
+    try:
+        return parent_when - _COINCIDENCE <= child_when
+    except (TypeError, OverflowError):
+        return parent_when == child_when
+
+
 def next_stack(stack_now: dict, level: str, change_times: dict) -> dict:
-    """The stack just after ``level`` changes: that level descends by one, and so does every
-    parent whose change instant equals this level's (a great-year, Ki Age or great-age gate
-    coinciding with the next Lichun). ``change_times`` is keyed by output level names."""
+    """The global stack just after ``level`` changes: that level descends by one, and so does every
+    parent whose own next change is at or before that instant (the day turning at midnight before
+    the 01:00 hour, the month and year turning together at Lichun, a gate on that Lichun).
+    ``change_times`` is keyed by output level names and holds comparable instants."""
     lvl = hub_level(level)
     out = dict(stack_now)
     out[lvl] = _descend(out[lvl])
     when = change_times.get(display_level(lvl))
     for parent in HUB_LEVELS[:HUB_LEVELS.index(lvl)]:
-        if parent in out and when is not None and change_times.get(display_level(parent)) == when:
+        if parent in out and _turns_before(change_times.get(display_level(parent)), when):
             out[parent] = _descend(out[parent])
     return out
 
@@ -135,10 +149,10 @@ def _wu_xing_relationship(elem1: str, elem2: str) -> str:
     return f"{elem1} → {elem2} (no direct cycle relationship)"
 
 
-def _pair_figure(stack_now: dict, lower_name: str, upper_name: str, change_instants: dict) -> dict:
+def _pair_figure(stack_now: dict, lower_name: str, upper_name: str, next_for) -> dict:
     """A pair's hexagram now, the figure after the upper level changes, and the lines between."""
     h = _hexagram_from_ki(stack_now, lower_name, upper_name)
-    after = _hexagram_from_ki(next_stack(stack_now, upper_name, change_instants), lower_name, upper_name)
+    after = _hexagram_from_ki(next_for(upper_name), lower_name, upper_name)
     h["transformed"] = {"hexagram": after["hexagram"], "lines": after["lines"]}
     h["changing"] = [_direction(m) for m in moving_lines(tuple(h["lines"]), tuple(after["lines"]))]
     h["wu_xing"] = _wu_xing_relationship(h["lower"]["element"], h["upper"]["element"])
@@ -146,18 +160,20 @@ def _pair_figure(stack_now: dict, lower_name: str, upper_name: str, change_insta
     return h
 
 
-def _chain(stack_now: dict, change_instants: dict, change_times: dict) -> tuple:
-    """level_changes and hexagrams for one chain (global or personal)."""
+def _chain(stack_now: dict, next_for, change_times: dict) -> tuple:
+    """level_changes and hexagrams for one chain. ``next_for(level)`` returns that chain's stack just
+    after ``level`` changes (for the personal chain: the personal reading of the global next stack)."""
     level_changes = {}
     for level in LEVEL_NAMES:
-        lc = _changing_lines(level, stack_now, next_stack(stack_now, level, change_instants))
+        stack_next = next_for(level)
+        lc = _changing_lines(level, stack_now, stack_next)
         lc["changes_at"] = change_times[level]
         lc["wu_xing"] = _wu_xing_relationship(
             TRIGRAM_ELEMENT[resolve(stack_now, hub_level(level)).source_ki],
-            TRIGRAM_ELEMENT[resolve(next_stack(stack_now, level, change_instants), hub_level(level)).source_ki],
+            TRIGRAM_ELEMENT[resolve(stack_next, hub_level(level)).source_ki],
         )
         level_changes[level] = lc
-    hexagrams = {f"{lo}_{up}": _pair_figure(stack_now, lo, up, change_instants) for lo, up in PAIRS}
+    hexagrams = {f"{lo}_{up}": _pair_figure(stack_now, lo, up, next_for) for lo, up in PAIRS}
     return level_changes, hexagrams
 
 
@@ -270,7 +286,8 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     }
     # A gate opens at a Lichun; it coincides with the year change exactly when it is the next
     # Lichun. Far gates (the great age) are beyond the ephemeris, so compare by gate year.
-    gate_instants = {k: next_year_dt if y == lichun_year + 1 else f"Lichun {y}" for k, y in gate_years.items()}
+    far = datetime.max.replace(tzinfo=TZ)
+    gate_instants = {k: next_year_dt if y == lichun_year + 1 else far for k, y in gate_years.items()}
 
     change_instants = {
         "hour": next_hour_dt, "day": next_day_dt, "month": next_month_dt, "year": next_year_dt,
@@ -286,11 +303,13 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
         "great_age": f"Lichun {gate_years['great_age']} (next great age gate)",
     }
 
-    next_global = {display_level(lvl): next_stack(stack_now, display_level(lvl), change_instants)[lvl]
-                   for lvl in stack_now}
+    def global_next(level):
+        return next_stack(stack_now, level, change_instants)
+
+    next_global = {display_level(lvl): global_next(display_level(lvl))[lvl] for lvl in stack_now}
 
     try:
-        level_changes, hexagrams = _chain(stack_now, change_instants, change_times)
+        level_changes, hexagrams = _chain(stack_now, global_next, change_times)
     except HubUnresolvable as e:
         return {"error": str(e)}
 
@@ -299,10 +318,15 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     if birth_date and "personal" in ki_data:
         natal_yki = ki_data["personal"]["natal_year_ki"]
         p_now = personal_stack(natal_yki, stack_now)
-        p_next = {display_level(lvl): personal_stack(natal_yki, next_stack(stack_now, display_level(lvl), change_instants))[lvl]
-                  for lvl in stack_now}
+
+        def personal_next(level):
+            # The personal chain is the global chain read through the natal year: it rises by one
+            # where the global chain descends by one.
+            return personal_stack(natal_yki, global_next(level))
+
+        p_next = {display_level(lvl): personal_next(display_level(lvl))[lvl] for lvl in stack_now}
         try:
-            p_changes, p_hexagrams = _chain(p_now, change_instants, change_times)
+            p_changes, p_hexagrams = _chain(p_now, personal_next, change_times)
         except HubUnresolvable as e:
             return {"error": str(e)}
         personal = {
@@ -319,6 +343,7 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
             "current": _view(stack_now),
             "next": next_global,
             "change_times": change_times,
+            "change_instants": change_instants,
         },
         "level_changes": level_changes,
         "hexagrams": hexagrams,

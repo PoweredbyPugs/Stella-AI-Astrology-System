@@ -359,8 +359,6 @@ loads it at startup.
 
 - **ChromaDB broken on Python 3.14** — pydantic v1 incompatible. The `.ingest-venv`
   (Python 3.13) works for ingestion; all runtime queries route through Neo4j.
-- **Poneglyph cron uses `convergence_ki` for day Ki** — should use `get_daily_ki`
-  (traditional cascade). Pending update.
 
 ## Roadmap
 

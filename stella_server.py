@@ -603,23 +603,29 @@ async def get_daily_ki(
     lines.append(f"**Local Time:** {result['local_time']}")
     lines.append("")
     
+    def level_lines(stack):
+        out = []
+        for key, label in (("great_age", "Great Age"), ("ki_age", "Ki Age"), ("great_year", "Great Year"),
+                           ("year", "Year"), ("month", "Month"), ("day", "Day"), ("hour", "Hour")):
+            lv = stack[key]
+            info = lv["info"]
+            line = f"- **{label}:** {lv['ki']} {info['trigram']} {info['name']} ({info['element']})"
+            if lv["hub"]["inherited_from"]:
+                line += f" → inherits {lv['hub']['trigram'].split(' (')[0]} from {lv['hub']['inherited_from']}"
+            out.append(line)
+        return out
+
     lines.append("## Global Ki (Traditional Cascade)")
-    g = result['global']
-    lines.append(f"**Sequence:** {result['sequences']['global']}")
-    lines.append(f"- **Year:** {g['year']['ki']} {g['year']['info']['trigram']} {g['year']['info']['name']} ({g['year']['info']['element']})")
-    lines.append(f"- **Month:** {g['month']['ki']} {g['month']['info']['trigram']} {g['month']['info']['name']} ({g['month']['info']['element']})")
-    lines.append(f"- **Day:** {g['day']['ki']} {g['day']['info']['trigram']} {g['day']['info']['name']} ({g['day']['info']['element']})")
-    lines.append(f"- **Hour:** {g['hour']['ki']} {g['hour']['info']['trigram']} {g['hour']['info']['name']} ({g['hour']['info']['element']})")
+    lines.append(f"**Sequence:** {result['sequences']['global']}  (great age . Ki Age . great year . year . month . day . hour)")
+    lines.extend(level_lines(result['global']))
     lines.append("")
-    
+
     lines.append("## Personal Ki (Flying Star Method)")
-    p = result['personal']
     lines.append(f"**Sequence:** {result['sequences']['personal']}")
-    lines.append(f"- **Year:** {p['year']['ki']} {p['year']['info']['trigram']} {p['year']['info']['name']} ({p['year']['info']['element']})")
-    lines.append(f"- **Month:** {p['month']['ki']} {p['month']['info']['trigram']} {p['month']['info']['name']} ({p['month']['info']['element']})")
-    lines.append(f"- **Day:** {p['day']['ki']} {p['day']['info']['trigram']} {p['day']['info']['name']} ({p['day']['info']['element']})")
-    lines.append(f"- **Hour:** {p['hour']['ki']} {p['hour']['info']['trigram']} {p['hour']['info']['name']} ({p['hour']['info']['element']})")
-    
+    lines.extend(level_lines(result['personal']))
+    lines.append("")
+    lines.append("*A 5 has no trigram of its own: it inherits the nearest level above it that is not 5.*")
+
     return "\n".join(lines)
 
 

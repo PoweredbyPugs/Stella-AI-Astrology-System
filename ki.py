@@ -385,6 +385,34 @@ def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None,
     personal_day_ki = flying_star(natal_year_ki, day_ki)
     personal_hour_ki = flying_star(natal_year_ki, hour_ki)
     
+    # Upper levels (great year, Ki Age, great age) from the Ki year; personal by the same formula.
+    from ki_levels import global_great_age, global_great_year, global_ki_age, personal as _personal
+    from hub_inheritance import resolve as _resolve
+
+    upper_global = {
+        "great_age": global_great_age(ki_year),
+        "ki_age": global_ki_age(ki_year),
+        "great_year": global_great_year(ki_year),
+    }
+    upper_personal = {k: _personal(natal_year_ki, v) for k, v in upper_global.items()}
+
+    global_stack = {**upper_global, "year": year_ki, "month": month_ki, "day": day_ki, "hour": hour_ki}
+    personal_stack = {**upper_personal, "year": personal_year_ki, "month": personal_month_ki,
+                      "day": personal_day_ki, "hour": personal_hour_ki}
+    order = ["great_age", "ki_age", "great_year", "year", "month", "day", "hour"]
+
+    def levels(stack):
+        out = {}
+        for lvl in order:
+            if lvl == order[0] and stack[lvl] == 5:
+                # The top of the stack has no parent: a 5 there is the bare hub.
+                hub = {"trigram": "☯ hub (no trigram)", "inherited_from": None}
+            else:
+                r = _resolve(stack, lvl)
+                hub = {"trigram": r.name, "inherited_from": r.inherited_from}
+            out[lvl] = {"ki": stack[lvl], "info": KI_TRIGRAMS[stack[lvl]], "hub": hub}
+        return out
+
     # Build result structure
     result = {
         "target_date": target_date.isoformat(),
@@ -393,24 +421,14 @@ def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None,
         "lichun_date": lichun_local.date().isoformat(),
         "days_since_lichun": days_since_lichun,
         "local_time": target_local.strftime("%H:%M"),
-        "global": {
-            "year": {"ki": year_ki, "info": KI_TRIGRAMS[year_ki]},
-            "month": {"ki": month_ki, "info": KI_TRIGRAMS[month_ki]},
-            "day": {"ki": day_ki, "info": KI_TRIGRAMS[day_ki]},
-            "hour": {"ki": hour_ki, "info": KI_TRIGRAMS[hour_ki]},
-        },
-        "personal": {
-            "year": {"ki": personal_year_ki, "info": KI_TRIGRAMS[personal_year_ki]},
-            "month": {"ki": personal_month_ki, "info": KI_TRIGRAMS[personal_month_ki]},
-            "day": {"ki": personal_day_ki, "info": KI_TRIGRAMS[personal_day_ki]},
-            "hour": {"ki": personal_hour_ki, "info": KI_TRIGRAMS[personal_hour_ki]},
-        },
+        "global": levels(global_stack),
+        "personal": levels(personal_stack),
         "sequences": {
-            "global": f"{year_ki}.{month_ki}.{day_ki}.{hour_ki}",
-            "personal": f"{personal_year_ki}.{personal_month_ki}.{personal_day_ki}.{personal_hour_ki}",
+            "global": ".".join(str(global_stack[l]) for l in order),
+            "personal": ".".join(str(personal_stack[l]) for l in order),
         }
     }
-    
+
     return result
 
 

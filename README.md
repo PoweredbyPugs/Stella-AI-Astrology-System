@@ -3,7 +3,7 @@
 **Repo:** [PoweredbyPugs/Stella-AI-Astrology-System](https://github.com/PoweredbyPugs/Stella-AI-Astrology-System) · **Version:** 2026.10.20 · [Changelog](CHANGELOG.md)
 
 Stella is a single Python MCP server that gives an AI assistant a complete astrological
-practice: **89 tools** spanning ephemeris computation, Hellenistic and Vedic timing
+practice: **88 tools** spanning ephemeris computation, Hellenistic and Vedic timing
 techniques, cosmobiology, 9 Star Ki, the I Ching, a Neo4j knowledge graph built from
 38 source texts, a three-axis chart reading generator, and a learning memory system
 that gets smarter with every validated reading.
@@ -84,7 +84,7 @@ generation and current-sky tools; the native pyswisseph tools work without it.
 
 ---
 
-## Tool Domains (89 tools)
+## Tool Domains (88 tools)
 
 The full catalog with per-tool descriptions lives in [TOOLS.md](TOOLS.md).
 
@@ -301,7 +301,7 @@ scaffolding — only the human portrait shows.
 
 ```
 stella/
-├── stella_server.py        # MCP server — all 89 tools (FastMCP, stdio)
+├── stella_server.py        # MCP server — all 88 tools (FastMCP, stdio)
 ├── stella_http.py          # Streamable HTTP proxy with GitHub OAuth (remote claude.ai access)
 ├── stella_config.py        # Env/config resolution (.env aware)
 ├── stella_doctor.py        # Health checks + MCP client config output

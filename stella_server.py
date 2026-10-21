@@ -2347,53 +2347,6 @@ def graph_planet_condition(planet: str, sign: str) -> str:
     return json.dumps(output, indent=2)
 
 
-@mcp.tool()
-def graph_stats() -> str:
-    """Get statistics about the Neo4j knowledge graph."""
-    stats = {}
-
-    counts = neo4j_query("""
-        MATCH (i:Interpretation) WITH count(i) AS interps
-        MATCH (p:Planet) WITH interps, count(p) AS planets
-        MATCH (s:Sign) WITH interps, planets, count(s) AS signs
-        MATCH (h:House) WITH interps, planets, signs, count(h) AS houses
-        MATCH (a:Author) WITH interps, planets, signs, houses, count(a) AS authors
-        MATCH ()-[r:DESCRIBES]->() WITH interps, planets, signs, houses, authors, count(r) AS describes
-        MATCH ()-[r2:RULES]->() WITH interps, planets, signs, houses, authors, describes, count(r2) AS rules
-        RETURN interps, planets, signs, houses, authors, describes, rules
-    """)
-
-    if counts:
-        c = counts[0]
-        stats = {
-            "interpretations": c["interps"],
-            "planets": c["planets"],
-            "signs": c["signs"],
-            "houses": c["houses"],
-            "authors": c["authors"],
-            "describes_relationships": c["describes"],
-            "rules_relationships": c["rules"],
-        }
-
-    # Author breakdown
-    authors = neo4j_query("""
-        MATCH (i:Interpretation)-[:AUTHORED_BY]->(a:Author)
-        RETURN a.name AS author, count(i) AS chunks
-        ORDER BY chunks DESC
-    """)
-    stats["authors_detail"] = {a["author"]: a["chunks"] for a in authors}
-
-    # Layer breakdown
-    layers = neo4j_query("""
-        MATCH (i:Interpretation)-[:IN_LAYER]->(l:Layer)
-        RETURN l.id AS layer, count(i) AS chunks
-        ORDER BY chunks DESC
-    """)
-    stats["layers"] = {l["layer"]: l["chunks"] for l in layers}
-
-    return json.dumps(stats, indent=2)
-
-
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # SECTION 6: CHART READING — Full Computation + Knowledge-Grounded Narrative
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

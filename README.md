@@ -303,6 +303,7 @@ scaffolding — only the human portrait shows.
 stella/
 ├── stella_server.py        # MCP server — all 88 tools (FastMCP, stdio)
 ├── stella_http.py          # Streamable HTTP proxy with GitHub OAuth (remote claude.ai access)
+├── stella_ws.py            # WebSocket↔stdio bridge, tailnet-only (Obsidian Bulbasaur from any device)
 ├── stella_config.py        # Env/config resolution (.env aware)
 ├── stella_doctor.py        # Health checks + MCP client config output
 ├── ephemeris.py            # pyswisseph: returns, progressions, elections, eclipses…
@@ -349,6 +350,8 @@ Docs: [SETUP.md](SETUP.md) · [TOOLS.md](TOOLS.md) ·
 | `NEO4J_USER` | No | `neo4j` | Neo4j auth |
 | `NEO4J_PASS` | No | `[REDACTED]` | Neo4j auth |
 | `OPENAI_API_KEY` | No | — | Only for graph-ingestion embeddings |
+| `STELLA_WS_TOKEN` | For `stella_ws.py` | — | Shared secret in the Bulbasaur URL (`openssl rand -hex 24`) |
+| `STELLA_WS_PORT` | No | `8812` | WebSocket bridge port, loopback; `tailscale serve` fronts it |
 
 Set them in a `.env` at the repo root (see `.env.example`) — `stella_config.py`
 loads it at startup.
@@ -383,6 +386,32 @@ loads it at startup.
       Feb 3, 3:01 pm New York, so a 9 am birth that day is still Ki 2025). Add an optional
       time-of-day to `ki_year_of` / `ki_month_of` and thread it through natal calculations
       when a birth time is known. Mirror the same in the octave app (`lib/ki/kimonths.ts`).
+
+## Obsidian from any device (`stella_ws.py`)
+
+The Bulbasaur Chat plugin's "http" transport is a bare WebSocket carrying stdio-style
+JSON-RPC frames: no headers, no OAuth. So it cannot use the claude.ai endpoint, and
+spawning `ssh` from inside Obsidian needed Remote Login on the mini. `stella_ws.py`
+bridges instead: each WebSocket connection gets its own `stella_server.py` child,
+frame ↔ line, and the child dies with the socket.
+
+```
+Obsidian ──WSS :8812──▶ tailscale serve (tailnet only, TLS) ──▶ 127.0.0.1:8812  stella_ws.py
+                                                              │ one stdio child per socket
+                                                              ▼
+                                                       stella_server.py
+```
+
+- **Auth.** The plugin cannot send headers, so the secret rides as `?token=` in the
+  URL and is compared constant-time. The port is published tailnet-only, never Funnel,
+  so the tailnet is the outer wall and the token the inner one. Wrong or missing token
+  gets HTTP 401 before any child is spawned.
+- **Service.** `deploy/com.poweredbypugs.stella-ws.plist` → `scripts/run-stella-ws.sh`
+  (loads `.env`, runs under `.venv-http`). Logs in `~/Library/Logs/stella-ws*.log`.
+- **Publish once:** `tailscale serve --bg --https=8812 http://127.0.0.1:8812`.
+- **Plugin entry** (same on every computer, including the mini): transport `http`,
+  endpoint `wss://<magicdns>.ts.net:8812/mcp?token=<STELLA_WS_TOKEN>`.
+- Tests: `tests/test_stella_ws.py` (runs under `.venv-http`).
 
 ## Remote access (claude.ai from any device)
 

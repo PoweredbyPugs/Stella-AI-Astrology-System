@@ -1,5 +1,14 @@
 # Stella Changelog
 
+## 2026.10.21 — WebSocket bridge for Obsidian
+
+### `stella_ws.py` (new)
+- Bulbasaur Chat's "http" transport is a bare WebSocket of stdio-style JSON-RPC frames, with no headers and no OAuth, so it could reach Stella only by spawning `ssh` to the mini. That broke when Remote Login was switched off.
+- The bridge spawns one `stella_server.py` child per WebSocket connection, maps frames to stdin lines and back, and terminates the child when the socket closes. Line limit raised to 16 MiB: a `tools/list` reply already passes asyncio's 64 KiB default.
+- Auth is a shared `STELLA_WS_TOKEN` carried as `?token=` (the plugin cannot send headers), compared constant-time, 401 before any child starts. Bound to loopback; `tailscale serve --https=8812` publishes it tailnet-only, never Funnel.
+- launchd `com.poweredbypugs.stella-ws` via `scripts/run-stella-ws.sh`, under `.venv-http`. Eight tests in `tests/test_stella_ws.py` against a fake stdio child.
+- The claude.ai endpoint (`stella_http.py`) and the Hermes stdio path are untouched.
+
 ## 2026.10.20 — Hub inheritance, Ki Age and great age, octave in Stella
 
 ### The 5 rule (`hub_inheritance.py`, new)

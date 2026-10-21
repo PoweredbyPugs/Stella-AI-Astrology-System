@@ -824,13 +824,12 @@ async def get_synodic_gate_now(
 
 @mcp.tool()
 async def get_natal_gates(name: str) -> str:
-    """Map a natal chart's planets to their 15° gates and permanent San Cai triads.
+    """Map a natal chart's planets and angles to their 15° gates.
 
-    Shows which gate each planet falls in, its locked triad (Man/Earth/Heaven),
-    possible Ki numbers, and whether it sits on a convergence socket.
-
-    The 24 gates (every 15° of the ecliptic) each permanently belong to one triad.
-    This mapping is structural — it doesn't change with time or location.
+    Shows which gate each body falls in, the family of three Ki numbers that gate carries
+    (with their trigrams; which one is live depends on the cycle), and whether it sits on a
+    convergence socket. The 24 gates (every 15° of the ecliptic) each carry one family.
+    This mapping is structural: it doesn't change with time or location.
 
     Args:
         name: Chart name (e.g., 'chris', 'lisa', 'betsy')

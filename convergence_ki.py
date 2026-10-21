@@ -5,7 +5,7 @@ Three bodies cross the same 12 mid-sign gates (15° of each sign) at three speed
   Moon:      12 gates in 1 sid. month  → each gate = 1 lunar gate (~2.3 days)
   Ascendant: 12 gates in 1 sid. day   → each gate = 1 mid-sign hour (~2 hrs)
 
-Same grid. Same 12. Same 15°. Same 9 Ki numbers. Same remainder 3. Same triad lock.
+Same grid. Same 12. Same 15°. Same 9 Ki numbers. Same remainder 3.
 One relationship, three octaves.
 
 Convergence sockets (15° Aquarius, Gemini, Libra) are a subset of the 12 mid-sign gates
@@ -63,14 +63,6 @@ CONVERGENCE_SOCKETS = {
     75.0:  {"name": "S2", "sign": "15° Gemini",   "role": "Center / Pivot"},
     195.0: {"name": "S3", "sign": "15° Libra",    "role": "Completion"},
 }
-
-TRIAD_OF = {1: "Man", 2: "Earth", 3: "Heaven", 4: "Man", 5: "Earth",
-            6: "Heaven", 7: "Man", 8: "Earth", 9: "Heaven"}
-
-TRIAD_NUMBERS = {"Man": [1, 4, 7], "Earth": [2, 5, 8], "Heaven": [3, 6, 9]}
-
-# Gate triad: cycles Man → Heaven → Earth every 15° starting from 0° Aries
-GATE_TRIAD_CYCLE = ["Man", "Heaven", "Earth"]
 
 # Mid-sign gates: 15° of each sign (the 12 gates shared by all three bodies)
 MID_SIGN_GATES = {
@@ -219,12 +211,6 @@ def _find_lichun(year: int) -> float:
     return _lichun_jd(year)
 
 
-def gate_triad(ecliptic_lon: float) -> str:
-    """Get the permanently locked triad for any ecliptic longitude."""
-    gate_idx = int(ecliptic_lon / 15) % 24
-    return GATE_TRIAD_CYCLE[gate_idx % 3]
-
-
 def gate_label(ecliptic_lon: float) -> str:
     """Human-readable gate label for an ecliptic longitude."""
     gate = int(ecliptic_lon / 15) * 15
@@ -309,7 +295,7 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     natural period behind the count, not the anchor; perihelia are reported as
     an informational layer only.
 
-    12 years per synodic gate, 9 Ki count → remainder 3 → triad-locked.
+    12 years per synodic gate, 9 Ki count → remainder 3.
     At each synodic gate boundary, the year Ki is always Earth (2, 5, 8).
     This mirrors month/day/hour always being Earth at Lichun.
 
@@ -438,7 +424,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     For traditional personal daily Ki, use `get_daily_ki` instead.
 
     Returns year, month, day, and hour Ki with astronomical positions,
-    socket crossings, gate triads, and timing. If birth_date is provided,
+    socket crossings, gates, and timing. If birth_date is provided,
     also returns personal Ki (year/day/hour offset by natal year Ki).
 
     Args:
@@ -723,34 +709,33 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     return result
 
 
-def get_natal_gates(name: str) -> dict:
-    """Map a natal chart's planets to their 15° gates and permanent triads.
+# The 24 gates (0° and 15° of each sign) carry one number family each, in rotation from 0° Aries.
+GATE_FAMILIES = ([1, 4, 7], [3, 6, 9], [2, 5, 8])
 
-    Shows which gate each planet falls in, its locked triad, possible Ki numbers,
-    and whether it sits on a convergence socket.
 
-    Args:
-        name: Chart name (e.g., 'chris', 'lisa')
-    """
-    import json
+def gate_family(ecliptic_lon: float) -> list:
+    """The three Ki numbers a 15° gate can carry. Which one is live depends on the cycle."""
+    return GATE_FAMILIES[(int(ecliptic_lon / 15) % 24) % 3]
 
-    charts_dir = Path(__file__).parent / "charts"
-    chart_path = charts_dir / f"{name}.json"
-    if not chart_path.exists():
-        return {"error": f"Chart '{name}' not found. Available: {[f.stem for f in charts_dir.glob('*.json')]}"}
 
-    chart = json.loads(chart_path.read_text())
+def _family_label(nums: list) -> str:
+    from hub_inheritance import TRIGRAM_NAME
+    return " · ".join(f"{n} {TRIGRAM_NAME[n]}" if n != 5 else "5 ☯" for n in nums)
+
+
+def natal_gates_from_chart(name: str, chart: dict) -> dict:
+    """Map a chart's planets and angles to their 15° gates, each gate's number family (with
+    trigrams), and the convergence sockets. Structural: it does not change with time or place."""
     planets_raw = chart.get("planets", [])
     angles_raw = chart.get("angles", {})
 
     results = []
-    triad_counts = {"Man": 0, "Earth": 0, "Heaven": 0}
+    family_counts = {" · ".join(map(str, f)): 0 for f in GATE_FAMILIES}
 
-    # Helper to process a single body
     def _process_body(body_name, lon):
         lon = float(lon)
         gate = int(lon / 15) * 15
-        triad = gate_triad(lon)
+        family = gate_family(lon)
         is_socket = gate in [315, 75, 195]
         socket_name = CONVERGENCE_SOCKETS[float(gate)]["name"] if is_socket else None
         sign_idx = int(lon / 30)
@@ -760,13 +745,12 @@ def get_natal_gates(name: str) -> dict:
             "position": f"{deg:.1f}° {SIGN_NAMES[sign_idx]}",
             "ecliptic": round(lon, 2),
             "gate": gate_label(gate),
-            "triad": triad,
-            "ki_numbers": TRIAD_NUMBERS[triad],
+            "ki": _family_label(family),
+            "ki_numbers": family,
             "convergence_socket": socket_name,
         })
-        triad_counts[triad] += 1
+        family_counts[" · ".join(map(str, family))] += 1
 
-    # Process planets (list of dicts with 'name' and 'longitude')
     if isinstance(planets_raw, list):
         for p in planets_raw:
             if isinstance(p, dict) and "longitude" in p:
@@ -778,7 +762,6 @@ def get_natal_gates(name: str) -> dict:
             elif isinstance(data, (int, float)):
                 _process_body(body_name, data)
 
-    # Process angles (dict with 'ASC', 'MC', etc. or list)
     if isinstance(angles_raw, dict):
         for angle_name, data in angles_raw.items():
             if isinstance(data, dict) and "longitude" in data:
@@ -793,6 +776,21 @@ def get_natal_gates(name: str) -> dict:
     return {
         "chart": name,
         "planets": results,
-        "triad_balance": triad_counts,
+        "family_balance": family_counts,
         "socket_planets": [p for p in results if p["convergence_socket"]],
     }
+
+
+def get_natal_gates(name: str) -> dict:
+    """Map a stored chart's planets to their 15° gates and number families.
+
+    Args:
+        name: Chart name (e.g., 'chris', 'lisa')
+    """
+    import json
+
+    charts_dir = Path(__file__).parent / "charts"
+    chart_path = charts_dir / f"{name}.json"
+    if not chart_path.exists():
+        return {"error": f"Chart '{name}' not found. Available: {[f.stem for f in charts_dir.glob('*.json')]}"}
+    return natal_gates_from_chart(name, json.loads(chart_path.read_text()))

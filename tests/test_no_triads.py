@@ -34,3 +34,18 @@ def test_ki_change_text_has_no_triads(monkeypatch):
     out = asyncio.run(stella_server.ki_change_day(birth_date="1986-05-01"))
     assert "(Man)" not in out and "(Heaven)" not in out and "(Earth)" not in out
     assert "Current: 7 ☱ Dui" in out
+
+
+def test_natal_gates_show_number_families_with_trigrams():
+    from convergence_ki import natal_gates_from_chart
+    chart = {"planets": [{"name": "Sun", "longitude": 41.08}, {"name": "Moon", "longitude": 319.01}],
+             "angles": {"ascendant": 150.87}}
+    r = natal_gates_from_chart("test", chart)
+    text = json.dumps(r, ensure_ascii=False)
+    assert "Man" not in text and "Heaven" not in text and "Earth" not in text and "triad" not in text.lower()
+    sun, moon, asc = r["planets"]
+    assert sun["gate"] == "0° Taurus" and sun["ki"] == "2 ☷ Kun · 5 ☯ · 8 ☶ Gen" and sun["ki_numbers"] == [2, 5, 8]
+    assert moon["ki"] == "1 ☵ Kan · 4 ☴ Xun · 7 ☱ Dui" and moon["convergence_socket"] == "S1"
+    assert asc["ki"] == "3 ☳ Zhen · 6 ☰ Qian · 9 ☲ Li"
+    assert r["family_balance"] == {"1 · 4 · 7": 1, "2 · 5 · 8": 1, "3 · 6 · 9": 1}
+    assert [p["planet"] for p in r["socket_planets"]] == ["Moon"]

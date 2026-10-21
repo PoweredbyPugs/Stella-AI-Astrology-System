@@ -749,7 +749,7 @@ async def get_convergence_ki_now(
     For traditional personal daily Ki, use `get_daily_ki` instead.
 
     Three bodies cross the same 12 mid-sign gates (15° of each sign) at three speeds.
-    Same grid, same 12, same 15°, same 9 Ki, same remainder 3, same triad lock.
+    Same grid, same 12, same 15°, same 9 Ki, same remainder 3.
     One relationship, three octaves.
 
     The 7 levels:
@@ -765,7 +765,7 @@ async def get_convergence_ki_now(
       7. Minute Ki — 1/9th subdivision of gate crossing (~6.7 min)
 
     12-fold layers (year→month, sidereal month→lunar gate, sidereal day→mid-sign hour)
-    have remainder 3 → triad-locked, 3 unique sequences.
+    have remainder 3, so each opens on one of three sequences.
     9-fold layers (socket period, gate/minute) have all 9 numbers once.
 
     If birth_date is provided, also returns personal Ki (year/month/day) with
@@ -802,7 +802,7 @@ async def get_synodic_gate_now(
     anchored at Lichun 2022 = gate 8. Jupiter's ~11.86-yr cycle is the natural
     period behind the count, not the anchor; perihelia are informational only.
 
-    12 years per gate, 9 Ki count, remainder 3 → triad-locked.
+    12 years per gate, 9 Ki count, remainder 3.
     At each gate boundary, year Ki is always Earth (2, 5, 8).
     9 synodic gates = 108 years (a sacred number: 12 × 9).
 
@@ -5538,7 +5538,6 @@ def _ki_change_single_level(level: str, birth_date: str = None,
     from ki_changes import (
         get_ki_changes as _get_ki_changes, lookup_hexagram_gnostic, _hexagram_block,
     )
-    from convergence_ki import TRIAD_OF
 
     data = _get_ki_changes(birth_date=birth_date)
     if "error" in data:
@@ -5558,8 +5557,8 @@ def _ki_change_single_level(level: str, birth_date: str = None,
         lines.append(f"═══ KI CHANGE — {level.upper()} ═══")
         curr = lc["current"]
         nxt = lc["next"]
-        lines.append(f"  Current: {curr['ki']} {curr['symbol']} {curr['trigram']} ({TRIAD_OF[curr['ki']]})")
-        lines.append(f"  Next:    {nxt['ki']} {nxt['symbol']} {nxt['trigram']} ({TRIAD_OF[nxt['ki']]})")
+        lines.append(f"  Current: {curr['ki']} {curr['symbol']} {curr['trigram']}")
+        lines.append(f"  Next:    {nxt['ki']} {nxt['symbol']} {nxt['trigram']}")
         lines.append(f"  Changes: {lc['changes_at']}")
         lines.append("")
 
@@ -5592,8 +5591,8 @@ def _ki_change_single_level(level: str, birth_date: str = None,
     curr = lc["current"]
     nxt = lc["next"]
     lines.append(f"═══ KI CHANGE — {level.upper()} ═══")
-    lines.append(f"  Current: {curr['ki']} {curr['symbol']} {curr['trigram']} ({TRIAD_OF[curr['ki']]})")
-    lines.append(f"  Next:    {nxt['ki']} {nxt['symbol']} {nxt['trigram']} ({TRIAD_OF[nxt['ki']]})")
+    lines.append(f"  Current: {curr['ki']} {curr['symbol']} {curr['trigram']}")
+    lines.append(f"  Next:    {nxt['ki']} {nxt['symbol']} {nxt['trigram']}")
     lines.append(f"  Changes: {lc['changes_at']}")
     lines.append(f"  Wu Xing: {lc['wu_xing']}")
 

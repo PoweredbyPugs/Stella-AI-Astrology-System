@@ -371,7 +371,6 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     result = {
         "synodic_gate": {
             "ki": synodic_ki,
-            "triad": TRIAD_OF[synodic_ki],
             "element": "Earth" if synodic_ki in [2, 5, 8] else ("Man" if synodic_ki in [1, 4, 7] else "Heaven"),
         },
         "current_perihelion": {
@@ -381,7 +380,6 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
         "gate_boundary": {
             "lichun_date": gate_lichun_dt.strftime("%Y-%m-%d"),
             "year_ki_at_boundary": gate_year_ki,
-            "year_ki_triad": TRIAD_OF[gate_year_ki],
         },
         "progress": {
             "years_into_gate": round(years_into_gate, 2),
@@ -407,7 +405,6 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     if personal_synodic is not None:
         result["personal_synodic"] = {
             "ki": personal_synodic,
-            "triad": TRIAD_OF[personal_synodic],
             "natal_year_ki": natal_yki,
         }
 
@@ -507,7 +504,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     dki = (day_start_ki - (days_since_lichun % 9)) % 9
     if dki <= 0:
         dki += 9
-    day_triad = TRIAD_OF[dki]
 
     # ── Hour Ki ──
     # Hour Ki uses the -3 cascade: hour_start = day_ki - 3 (mod 9).
@@ -531,7 +527,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     hki = (hour_start_ki - (double_hour - 1)) % 9
     if hki <= 0:
         hki += 9
-    hour_triad = TRIAD_OF[hki]
 
     DOUBLE_HOUR_NAMES = ['Rat','Ox','Tiger','Rabbit','Dragon','Snake',
                          'Horse','Goat','Monkey','Rooster','Dog','Pig']
@@ -555,7 +550,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     min_ki = (minute_start_ki - (minute_segment - 1)) % 9
     if min_ki <= 0:
         min_ki += 9
-    minute_triad = TRIAD_OF[min_ki]
 
     # Also compute ascendant for observation (parallel layer, not structural)
     houses = swe.houses(now_jd, lat, lon, b'P')
@@ -591,7 +585,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
     lunar_gate_ki = (sid_month_start_ki - (lunar_gate_count - 1)) % 9
     if lunar_gate_ki <= 0:
         lunar_gate_ki += 9
-    lunar_gate_triad = TRIAD_OF[lunar_gate_ki]
 
     # Current and next lunar gate
     last_lunar_gate = lunar_gates_passed[-1] if lunar_gates_passed else None
@@ -618,7 +611,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
         birth_date=birth_date,
     )
     synodic_ki = synodic_data.get("synodic_gate", {}).get("ki", None)
-    synodic_triad = TRIAD_OF[synodic_ki] if synodic_ki else None
 
     # ── Build result ──
     result = {
@@ -628,21 +620,18 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
         "synodic": {
             "ki": synodic_ki,
-            "triad": synodic_triad,
             "gate": synodic_data.get("current_gate", {}),
             "anchor": "12 Ki years per great year, gates at Lichun on Earth years; Jupiter's ~11.86-yr cycle is the natural period, not the anchor.",
         },
 
         "year": {
             "ki": yki,
-            "triad": TRIAD_OF[yki],
             "period": " → ".join(d.strftime("%b %-d, %Y") for d in ki_year_span(lichun_year)),
             "anchor": "Sun at Lichun (15° Aquarius). Apsidal precession (~8.85yr) drives socket asymmetry.",
         },
 
         "month": {
             "ki": mki,
-            "triad": TRIAD_OF[mki],
             "sun": f"{sun_deg:.1f}° {sun_sign}",
             "sun_ecliptic": round(sun_lon, 2),
             "anchor": "Sun crossing 15° of each sign",
@@ -650,7 +639,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
         "lunar_gate": {
             "ki": lunar_gate_ki,
-            "triad": lunar_gate_triad,
             "gates_since_sid_month": lunar_gate_count,
             "sid_month_start": _jd_to_dt(sid_month_start_jd).strftime("%Y-%m-%d %I:%M %p"),
             "last_gate": {
@@ -663,13 +651,12 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
                 "date": _jd_to_dt(next_lunar_gate["jd"]).strftime("%Y-%m-%d %I:%M %p") if next_lunar_gate else None,
                 "is_socket": next_lunar_gate["is_socket"] if next_lunar_gate else None,
             },
-            "math": "12 gates per sidereal month, 12/9 = remainder 3, triad-locked",
+            "math": "12 gates per sidereal month, 12/9 = remainder 3",
             "anchor": "Moon crossing 15° of each sign (~2.3 days per gate)",
         },
 
         "day": {
             "ki": dki,
-            "triad": day_triad,
             "day_start_ki": day_start_ki,
             "days_since_lichun": days_since_lichun,
             "lichun": _jd_to_dt(lichun_jd).strftime("%Y-%m-%d %I:%M %p"),
@@ -678,7 +665,6 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
         "hour": {
             "ki": hki,
-            "triad": hour_triad,
             "double_hour": double_hour,
             "double_hour_name": current_dh_name,
             "hour_start_ki": hour_start_ki,
@@ -695,15 +681,10 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
             "note": "Apogee determines which day Ki leg is longest",
         },
 
-        "socket_triad_lock": {
-            "day_level": {"S1": "Man (1,4,7)", "S2": "Heaven (9,6,3)", "S3": "Earth (8,5,2)"},
-            "hour_level": "All 24 gates locked: Man→Heaven→Earth cycling every 15°",
-        },
-
-        "summary": f"Synodic {synodic_ki}({synodic_triad}) · Year {yki}({TRIAD_OF[yki]}) · Month {mki}({TRIAD_OF[mki]}) · Day {dki}({day_triad}) · Hour {hki}({hour_triad})",
+        "summary": f"Synodic {synodic_ki} · Year {yki} · Month {mki} · Day {dki} · Hour {hki}",
 
         "framework": {
-            "note": "Three bodies, same 12 mid-sign gates, same 15°, same 9 Ki, same remainder 3, same triad lock. One relationship, three octaves.",
+            "note": "Three bodies, same 12 mid-sign gates, same 15°, same 9 Ki, same remainder 3. One relationship, three octaves.",
             "solar":      {"body": "Sun",       "cycle": "Tropical year",    "gates_per_cycle": 12, "gate_duration": "~30 days",  "repeats_after": "9 years"},
             "lunar":      {"body": "Moon",      "cycle": "Sidereal month",   "gates_per_cycle": 12, "gate_duration": "~2.3 days", "repeats_after": "9 sidereal months"},
             "terrestrial":{"body": "Ascendant", "cycle": "Sidereal day",     "gates_per_cycle": 12, "gate_duration": "~2 hours",  "repeats_after": "9 sidereal days"},
@@ -727,18 +708,16 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
         personal_month = _flying_star(natal_yki, mki)
         personal_dki = _flying_star(natal_yki, dki)
         personal_hki = _flying_star(natal_yki, hki)
-        personal_day_triad = TRIAD_OF[personal_dki]
-        personal_hour_triad = TRIAD_OF[personal_hki]
 
         result["personal"] = {
             "natal_ki": profile['natal']['sequence'],
             "natal_year_ki": natal_yki,
-            "synodic": {"ki": personal_synodic, "triad": TRIAD_OF[personal_synodic]} if personal_synodic else None,
-            "year": {"ki": personal_year, "triad": TRIAD_OF[personal_year]},
-            "month": {"ki": personal_month, "triad": TRIAD_OF[personal_month]},
-            "day": {"ki": personal_dki, "triad": personal_day_triad},
-            "hour": {"ki": personal_hki, "triad": personal_hour_triad},
-            "summary": f"Personal: Synodic {personal_synodic}({TRIAD_OF[personal_synodic] if personal_synodic else '?'}) · Year {personal_year}({TRIAD_OF[personal_year]}) · Month {personal_month}({TRIAD_OF[personal_month]}) · Day {personal_dki}({personal_day_triad}) · Hour {personal_hki}({personal_hour_triad})",
+            "synodic": {"ki": personal_synodic} if personal_synodic else None,
+            "year": {"ki": personal_year},
+            "month": {"ki": personal_month},
+            "day": {"ki": personal_dki},
+            "hour": {"ki": personal_hki},
+            "summary": f"Personal: Synodic {personal_synodic} · Year {personal_year} · Month {personal_month} · Day {personal_dki} · Hour {personal_hki}",
         }
 
     return result

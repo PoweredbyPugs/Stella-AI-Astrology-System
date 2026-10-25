@@ -43,26 +43,32 @@ It is the reasoning layer of a three-part system:
   returns, progressions, eclipses, elections, VOC moons, ingresses, planetary hours,
   and the entire Ki stack.
 
-## What's New (2026.10.20)
+## What's New (2026.10.25)
 
-The Ki timekeeping math was reworked. In plain terms:
+The Ki timekeeping stack reads one hand: the Sun.
 
-- **Ki 5 no longer pretends to be Earth.** 5 is the hub of the Lo Shu and has no trigram.
-  In every timing tool it now borrows the trigram of the nearest level above it that is
-  not 5, and the output says what it borrowed and from where. The old 5 → ☷ Kun shortcut is gone.
-- **Two new levels above the great year.** A Ki Age is 12 great years (144 years) and a
-  great age is 12 Ki Ages (1,728 years). The daily stack is now seven levels deep.
-- **Personal and global never mix.** A personal 5 borrows up the personal chain only.
-  Personal numbers rise by one where global numbers fall by one.
-- **Moving lines are computed, not looked up.** The lines that change between two figures
-  are always the lines that differ. The old fixed table for echo pairs is gone.
-- **The octave is computed in Stella.** `get_octave` no longer calls the Nine-Year Spiral
-  app. The math was ported to `octave_math.py` and the Gnostic Book of Changes text ships
-  in `data/gnostic.json`.
-- **The three-number reading is unchanged.** `get_ki`, `get_ki_cycle`, `get_ki_reading` and
-  `get_ki_transition` keep their rule for 5, because a reading has no hierarchy.
+- **Seven levels, one clock.** Year, month, day and hour are the Sun's longitude past
+  Lichun (15° Aquarius): 360°, 30°, 1° and 5′. A day is a degree, about 24 hours and longer
+  in summer; an hour is five arcminutes, about two hours. Above the year sit the great year
+  (12 years), the Ki Age (144 years) and the great age (1,728 years, 24° of precession).
+- **The lock is the count.** Twelve of anything is its parent and nine of anything is one
+  cycle of its numbers, so every level opens on an Earth number (2, 5, 8) and the running
+  count lands on exactly that number at every seam. Nothing resets, nothing turns at midnight.
+- **An astronomical anchor at the top.** The great age is one fifteenth of the precession
+  cycle; the vernal point reached 24° past the Lahiri sidereal zero in 2010, and Lichun 2010
+  opened the great age, the Ki Age and the great year together: 8 · 5 · 2 · 8 · 2 · 8 · 5.
+- **Every timing tool takes an instant.** `get_daily_ki`, `get_convergence_ki_now`,
+  `get_ki_changes`, the `ki_change_*` family and `get_ki_change_schedule` accept an ISO
+  datetime and report when the current degree-day and degree-hour began and end, and when
+  the next change falls. A bare date is read at local noon.
+- **Ki 5 is the hub.** It has no trigram and borrows the nearest level above it that is not
+  5; every figure names what it borrowed. Personal and global chains never mix. Moving lines
+  are always the lines that differ between two figures.
+- **The three-number reading keeps its own rule.** `get_ki`, `get_ki_cycle`, `get_ki_reading`
+  and `get_ki_transition` read a natal triple, which has no hierarchy.
 
-Full detail in [CHANGELOG.md](CHANGELOG.md) and [docs/KI_REFERENCE.md](docs/KI_REFERENCE.md).
+History and the reasoning behind each change live in [CHANGELOG.md](CHANGELOG.md);
+the full rules in [docs/KI_REFERENCE.md](docs/KI_REFERENCE.md).
 
 ---
 

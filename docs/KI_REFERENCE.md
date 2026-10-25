@@ -145,15 +145,22 @@ Two chains, never mixed: every global level is a Lo Shu number descending 1 per 
 personal level is the natal year read against the matching global level by
 `personal(natal, global) = ki(natal − global + 5)`. A personal 5 inherits up the personal chain only.
 
-| Level | Length | Global anchor (`ki_levels.py`) |
+| Level | Length | Global anchor (`ki_levels.py`, `ki_solar.py`) |
 |---|---|---|
+| hour | 5′ of the Sun, 12 per day | opening = 3·day + 8 (day 8 opens hour 5) |
+| day | 1° of the Sun, 30 per month | every Lichun opens day 8 |
 | month | Sun at 15° of each sign | Feb 2026 = 8, one continuous count |
-| year | Lichun to Lichun | 2026 = 1 |
-| great year | 12 years | Lichun 2022 opens 8 |
-| Ki Age | 144 years | Lichun 2022 opens 2 |
-| great age | 1,296 years | Lichun 2022 opens 5 |
+| year | Lichun to Lichun, 360° of the Sun | 2026 = 1 |
+| great year | 12 years | Lichun 2010 opens 2 (2022 opens 1, 2034 opens 9) |
+| Ki Age | 144 years | Lichun 2010 opens 5 |
+| great age | 1,728 years, 24° of precession | Lichun 2010 opens 8 |
 
-Read upward at Lichun 2022 the stack is 5 · 2 · 8 · 5 · 2: each level the next Earth number in
-the cycle 2 → 5 → 8 → 2. That is the whole justification for the Ki Age and great age anchors; the
-arithmetic alone would also allow a Ki Age opening in 1914 (next 2058) or 1950 (next 2094), and
-the constants are one line each if a fact turns up.
+The day and hour are the Sun too, not the clock: a day is one degree past Lichun (23.5 to 25.2
+hours, breathing with the Sun's speed) and an hour one twelfth of that. Twelve of anything is its
+parent, nine of anything is one cycle of its numbers, so every level opens on an Earth number and
+the running count is the lock. The great age is one fifteenth of the 25,920-year precession cycle;
+the vernal point reached 24° past the Lahiri sidereal zero (285 CE) in 2010, and the gate is the
+Lichun before the crossing. Lichun 2010 therefore opened the great age, the Ki Age and the great
+year together and the stack read 8 · 5 · 2 · 8 · 2 · 8 · 5, each level three below the one above.
+A level is Earth at its own seam only when its parent turns too. The remaining choice is the
+sidereal zero (Krishnamurti also gives 2010; Fagan-Bradley 1938; Raman 2106).

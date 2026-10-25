@@ -18,9 +18,9 @@ def test_convergence_payload_has_no_triads():
     text = json.dumps(r)
     assert "triad" not in text.lower()
     assert "(Man)" not in text and "(Heaven)" not in text and "(Earth)" not in text
-    # the hour follows the clock at run time, so only the levels above it are pinned
-    assert r["summary"].startswith("Synodic 8 · Year 1 · Month 9 · Day 7 · Hour ")
-    assert r["personal"]["summary"].startswith("Personal: Synodic 2 · Year 9 · Month 1 · Day 3 · Hour ")
+    # a bare date is read at local noon, so the whole stack is pinned
+    assert r["summary"] == "Synodic 1 · Year 1 · Month 9 · Day 8 · Hour 2"
+    assert r["personal"]["summary"] == "Personal: Synodic 9 · Year 9 · Month 1 · Day 2 · Hour 8"
 
 
 def test_synodic_gate_has_no_triads():
@@ -33,7 +33,7 @@ def test_ki_change_text_has_no_triads(monkeypatch):
     monkeypatch.setattr(ki_changes, "get_ki_changes", lambda **kw: real(target_date="2026-10-20", **kw))
     out = asyncio.run(stella_server.ki_change_day(birth_date="1986-05-01"))
     assert "(Man)" not in out and "(Heaven)" not in out and "(Earth)" not in out
-    assert "Current: 7 ☱ Dui" in out
+    assert "Current: 8 ☶ Gen" in out
 
 
 def test_natal_gates_show_number_families_with_trigrams():

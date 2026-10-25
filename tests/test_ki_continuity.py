@@ -37,16 +37,16 @@ def test_birth_and_now():
     assert get_convergence_ki("1986-05-01")["month"]["ki"] == 9
     k = get_convergence_ki("2026-10-16", birth_date=BIRTH)
     p = k["personal"]
-    assert (k["synodic"]["ki"], k["year"]["ki"], k["month"]["ki"]) == (8, 1, 9)
-    assert (p["synodic"]["ki"], p["year"]["ki"], p["month"]["ki"]) == (2, 9, 1)
+    assert (k["synodic"]["ki"], k["year"]["ki"], k["month"]["ki"]) == (1, 1, 9)
+    assert (p["synodic"]["ki"], p["year"]["ki"], p["month"]["ki"]) == (9, 9, 1)
 
 
 def test_great_year_gates():
-    assert [synodic_ki_for_year(y) for y in (1986, 1997, 1998, 2010, 2021, 2022, 2033, 2034)] == [2, 2, 1, 9, 9, 8, 8, 7]
+    assert [synodic_ki_for_year(y) for y in (1986, 1997, 1998, 2010, 2021, 2022, 2033, 2034)] == [4, 4, 3, 2, 2, 1, 1, 9]
     for start in range(1806, 2300, 12):
         assert _year_ki(start, 2, 4) in (2, 5, 8), start
-    assert get_convergence_ki("2018-06-01")["synodic"]["ki"] == 9
-    assert get_convergence_ki("2034-06-01")["synodic"]["ki"] == 7
+    assert get_convergence_ki("2018-06-01")["synodic"]["ki"] == 2
+    assert get_convergence_ki("2034-06-01")["synodic"]["ki"] == 9
 
 
 if __name__ == "__main__":

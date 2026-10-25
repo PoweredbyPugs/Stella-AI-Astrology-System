@@ -401,51 +401,46 @@ You are not seeking wholeness with nature. You are remembering that you never le
 
 ## Part X: The Four Levels — Day Ki and Hour Ki
 
-*Added March 6, 2026 — the definitive structure.*
+*Added March 6, 2026; rewritten October 25, 2026 — the day and hour are the Sun too.*
 
-Everything above describes the Sun's journey through the 15° grid. The Ki system has four levels, all flowing from one seed at Lichun:
+Everything above describes the Sun's journey through the 15° grid. The Ki system has four levels below the great year, all read from one hand: how far the Sun has moved past Lichun.
 
 ```
-Level 1: YEAR Ki    — Sun completes full orbit (Lichun to Lichun)     ~365 days
-Level 2: MONTH Ki   — Sun crosses 15° of each sign                    ~30 days
-Level 3: DAY Ki     — One solar day                                    ~24 hours
-Level 4: HOUR Ki    — One double-hour (12 per day)                     ~2 hours
+Level 1: YEAR Ki    — 360° of the Sun (Lichun to Lichun)              ~365 days
+Level 2: MONTH Ki   — 30° of the Sun (15° of each sign)                ~30 days
+Level 3: DAY Ki     — 1° of the Sun (a degree-day)                     23.5–25.2 hours
+Level 4: HOUR Ki    — 5′ of the Sun (a degree-hour, 12 per day)         ~2 hours
 ```
 
-**Two motions, four levels.** The Sun through the zodiac gives year, month, and day. The Earth spinning under it gives the hour — 12 double-hours per day (the Chinese 時辰, shíchén).
+**One motion, four levels.** The old reading gave the day to the clock (a solar day) and the hour to the Earth's spin (the Chinese double-hour). Neither fits: a year holds 365 clock days, which leaves 5 against 9, so the day could never open on Earth at Lichun without a reset. A degree-day fits. A month is then exactly 30 of them, 30 leaves 3, and the day joins the system; the hour, one twelfth of a degree, follows for free. The degree-day breathes with the Sun's speed: shortest in early January, longest in early July. Nothing turns at midnight.
 
-### The -3 Cascade
+### The Openings
 
-Each level's starting Ki at Lichun is the previous level minus 3:
+Twelve of anything is its parent; nine of anything is one cycle of its numbers. Each level opens on an Earth number, and which one depends on the parent in threes:
 
-**Year 1 → Month 8 → Day 5 → Hour 2**
+| Parent (any level) | 1 · 4 · 7 | 2 · 5 · 8 | 3 · 6 · 9 |
+|---|---|---|---|
+| Month under year (classical) | 8 | 2 | 5 |
+| Hour under day | 2 | 5 | 8 |
 
-This holds for all years:
+The day's opening is fixed: 360 ≡ 0, so every Lichun opens day 8 (month 2 opened day 8 at the 2010 seam, and the count carries it round). Each month seam then opens its day on an Earth number by the running count.
 
-| Year | Month Start | Day Start | Hour Start |
-|------|-------------|-----------|------------|
-| 1 | 8 | 5 | 2 |
-| 9 | 5 | 9 | 5 |
-| 8 | 2 | 4 | 8 |
-| 7 | 8 | 8 | 2 |
-| 6 | 5 | 3 | 5 |
-| 5 | 2 | 7 | 8 |
-| 4 | 8 | 2 | 2 |
-| 3 | 5 | 6 | 5 |
-| 2 | 2 | 1 | 8 |
+| Year | Month at Lichun | Day at Lichun | Hour at Lichun |
+|------|-----------------|---------------|----------------|
+| 1, 4, 7 | 8 | 8 | 5 |
+| 9, 6, 3 | 5 | 8 | 5 |
+| 8, 5, 2 | 2 | 8 | 5 |
 
 ### The Remainders
 
-What makes the system continuous across boundaries:
+- **12 months mod 9 = 3** → the month opening shifts by 3 each year (8 → 5 → 2)
+- **30 degree-days mod 9 = 3** → the day opening shifts by 3 each month
+- **12 degree-hours mod 9 = 3** → the hour opening shifts by 3 each day
+- **360 degree-days mod 9 = 0** → the day at Lichun never moves
 
-- **12 months mod 9 = 3** → month starting Ki shifts by 3 each year (cycles 8→5→2)
-- **365 days mod 9 = 5** → day starting Ki shifts by 5 each year (all 9 values appear)
-- **12 hours mod 9 = 3** → hour starting Ki shifts by 3 each day
-- **4,380 hours mod 9 = 6** → hour starting Ki shifts by 6 each year
+The lock and the flow are the same thing: counting straight through any seam lands on exactly the Earth number the seam demands. No resets, no jumps, at any level.
 
-Every boundary — day to day, year to year — is continuous. No resets. No jumps. The count flows down forever. After 9 years, all four levels return to their starting values. 3,285 days mod 9 = 0. 39,420 hours mod 9 = 0. Perfect closure.
-
-**Why 365, not 360:** 360 degrees per circle is elegant, but 360 mod 9 = 0 — zero shift, broken continuity. The system needs actual solar days (365), whose remainder of 5 against 9 generates a full cycle of all starting values. A day is a day.
+**Why 360, not 365:** 365 leaves 5, which forces a reset at every Lichun to keep the day on Earth. 360 leaves 0, which is closure, not broken continuity. The day is a degree.
 
 ### The Moon
 
@@ -475,7 +470,7 @@ Jupiter's perihelion (closest approach) occurs at **~14-16° Aries** — right o
 | Years | Earth/Sun | 12 months | ~365 days |
 | Months | Sun/signs | 12 gates | ~30 days |
 | Lunar gates | Moon/signs | 12 per sidereal month | ~2.3 days |
-| Hours | Earth/spin | 12 double-hours | ~2 hours |
+| Hours | Sun/degree | 12 degree-hours of 5′ | ~2 hours |
 
 The Moon fills the gap between days and months: 12 lunar gates × ~2.3 days = sidereal month. It does double duty — creates months AND subdivides its own month into 12. No other scale lacks a 12-fold subdivision.
 
@@ -483,18 +478,19 @@ The Moon fills the gap between days and months: 12 lunar gates × ~2.3 days = si
 
 The synodic gate starts at the **Lichun preceding perihelion**, following the same pattern as all other levels: the gate before the astronomical event.
 
-- Hour starts at the double-hour boundary before the next hour
-- Day starts at midnight before the next day
+- Hour starts when the Sun reaches the next 5′ past Lichun
+- Day starts when the Sun reaches the next whole degree past Lichun
 - Year starts at Lichun (15° Aquarius) before the equinox (0° Aries)
 - **Synodic gate starts at Lichun before perihelion (~14° Aries)**
+- **Great age starts at Lichun before the vernal point reaches the next 24° of precession**
 
-### The -3 Cascade Extends
+### The Staircase at a Grand Seam
 
-At every Lichun, month, day, and hour are **always Earth** (2, 5, 8). At the current synodic gate boundary (Lichun 2022), the year Ki was **5 (Earth)**. The cascade holds:
+At every Lichun, month, day and hour are **always Earth** (2, 5, 8). When a higher level turns on that Lichun, everything below it opens on Earth too, each level three below the one above. The great age (1,728 years, one fifteenth of the 25,920-year precession cycle), the Ki Age (144 years) and the great year (12 years) all turned at **Lichun 2010**, the gate before the vernal point passed 24° beyond the Lahiri sidereal zero of 285 CE:
 
-**Synodic 8 → Year 5 → Month 2 → Day 8 → Hour 5** — all Earth.
+**Great age 8 → Ki Age 5 → Great year 2 → Year 8 → Month 2 → Day 8 → Hour 5** — all Earth.
 
-12 years per gate, 9 Ki count → remainder 3 → triad-locked. Same mathematics at every scale.
+A level is Earth at its own seam only when its parent turns too. The great year that opened at Lichun 2022 is 1, with year 5, month 2, day 8 and hour 5 beneath it. 12 years per gate, 9 Ki count → remainder 3 → triad-locked. Same mathematics at every scale.
 
 ### 108 Years
 

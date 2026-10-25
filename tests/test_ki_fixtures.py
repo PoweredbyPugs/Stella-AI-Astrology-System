@@ -32,12 +32,12 @@ MONTH_ROWS = [
     ("2027-03-15", 9, 4, 6),
     # Boundary days, New York local: the day a 15° crossing falls on belongs to the period it opens.
     ("2026-02-02", 2, 9, 1),  # Jan of Ki 2025; Lichun 2026 is Feb 3, 3:01 pm
-    ("2026-02-03", 1, 8, 2),  # Feb 2026 opens
+    ("2026-02-03T16:00", 1, 8, 2),  # Feb 2026 opens at the instant of Lichun, 3:01 pm
     ("2026-10-07", 1, 1, 9),  # Sep 2026; Oct opens Oct 8, 2:29 am
     ("2026-10-08", 1, 9, 1),
     ("2026-11-06", 1, 9, 1),  # Nov opens Nov 7, 4:52 am
     ("2026-11-07", 1, 8, 2),
-    ("2026-12-06", 1, 7, 3),  # Dec opens Dec 6, 8:52 pm: the fixed table said Dec 7
+    ("2026-12-06T22:00", 1, 7, 3),  # Dec opens Dec 6, 9:52 pm EST: the fixed table said Dec 7
 ]
 
 
@@ -51,7 +51,7 @@ def test_convergence_month_seed(day, gy, gm, pm):
 
 @pytest.mark.parametrize("day,gy,gm,pm", MONTH_ROWS)
 def test_get_ki_stack_agrees(day, gy, gm, pm):
-    r = calculate_ki(date.fromisoformat(day))
+    r = calculate_ki(date.fromisoformat(day[:10]))
     assert r["ki_year"] == gy, f"{day} global year"
     assert r["ki_month"] == gm, f"{day} global month"
 
@@ -59,8 +59,9 @@ def test_get_ki_stack_agrees(day, gy, gm, pm):
 @pytest.mark.parametrize("day,gy,gm,pm", MONTH_ROWS)
 def test_daily_cascade_agrees(day, gy, gm, pm):
     from ki import calculate_daily_ki
+    from ki_solar import parse_target
 
-    r = calculate_daily_ki(date.fromisoformat(BIRTH), date.fromisoformat(day))
+    r = calculate_daily_ki(date.fromisoformat(BIRTH), parse_target(day))
     assert r["global"]["year"]["ki"] == gy, f"{day} global year"
     assert r["global"]["month"]["ki"] == gm, f"{day} global month"
     assert r["personal"]["month"]["ki"] == pm, f"{day} personal month"
@@ -82,6 +83,8 @@ def test_octave_app_agrees_on_every_row():
     import octave
 
     for day, gy, gm, pm in MONTH_ROWS:
+        if "T" in day:
+            continue  # the app reads dates; boundary instants are checked in Stella alone
         try:
             r = octave.octave_report(BIRTH, target_date=day)
         except httpx.HTTPError:

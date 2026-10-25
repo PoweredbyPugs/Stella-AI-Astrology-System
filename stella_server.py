@@ -551,58 +551,42 @@ async def get_daily_ki(
     lat: Optional[float] = None,
     lon: Optional[float] = None,
 ) -> str:
-    """Calculate traditional daily Ki cascade with 4-level global and personal Ki.
-    
-    This implements the traditional -3 descending pattern from classical 9 Star Ki:
-    - Year Ki: Adjusted for Lichun (Sun at 315° / 15° Aquarius)
-    - Month Ki: First_sub pattern, counts down by Sun's 30° segments from 315°
-    - Day Ki: Day_starts_by_year lookup, counts days since Lichun, descends by 1
-    - Hour Ki: First_sub from day Ki, counts down by 2-hour blocks
-    
-    Personal Ki at each level uses Flying Star method: natal year Ki flying to 
-    global Ki positions. Returns both global and personal Ki at all 4 levels.
-    
-    For traditional personal daily Ki, use this tool.
-    For experimental astronomical day Ki (Moon socket crossings), use get_convergence_ki_now.
-    
+    """The seven-level Ki cascade, global and personal, read from the Sun.
+
+    Year, month, day and hour are the Sun's longitude past Lichun (15° Aquarius): a year is
+    360°, a month 30°, a day 1° (about 24 hours, longer in summer), an hour 5′ (about two
+    hours). The great year, Ki Age and great age sit above. Every level opens on an Earth
+    number (2, 5, 8) and the count never resets.
+
+    Personal Ki at each level is the natal year read against the global number.
+
     Args:
         birth_date: Birth date YYYY-MM-DD (required)
-        target_date: Target date YYYY-MM-DD (optional, defaults to today)
-        lat: Latitude for precise Lichun timing (optional, default: Orlando)
-        lon: Longitude for precise Lichun timing (optional, default: Orlando)
-    
+        target_date: ISO datetime (e.g. 2026-10-25T14:07, New York if no zone), or a bare
+            date read at local noon; default now
+        lat, lon: accepted for compatibility; the stack does not depend on location
+
     Returns:
-        Global and personal Ki at year/month/day/hour levels with full cascade details.
+        Global and personal Ki at all seven levels, where the Sun is, and when the current
+        degree-day and degree-hour began and end.
     """
     from datetime import date as date_type
     from ki import calculate_daily_ki
-    
-    # Parse dates
+    from ki_solar import parse_target
+
     bd = date_type.fromisoformat(birth_date)
-    td = date_type.fromisoformat(target_date) if target_date else None
-    
-    # Set up kwargs
-    kwargs = {"birth_date": bd}
-    if td:
-        kwargs["target_date"] = td
-    if lat is not None:
-        kwargs["lat"] = lat
-    if lon is not None:
-        kwargs["lon"] = lon
-    
-    # Calculate daily Ki
-    result = calculate_daily_ki(**kwargs)
-    
-    # Format output
+    result = calculate_daily_ki(birth_date=bd, target_date=parse_target(target_date))
+
     lines = []
-    lines.append("# Traditional Daily Ki Cascade")
-    lines.append(f"**Target Date:** {result['target_date']}")
+    lines.append("# Ki Cascade (solar degrees)")
+    lines.append(f"**Target:** {result['target_time']}")
     lines.append(f"**Birth Date:** {result['birth_date']}")
     lines.append(f"**Natal Year Ki:** {result['natal_year_ki']}")
-    lines.append(f"**Lichun Date:** {result['lichun_date']} ({result['days_since_lichun']} days ago)")
-    lines.append(f"**Local Time:** {result['local_time']}")
+    lines.append(f"**Sun:** {result['sun_longitude']}° ecliptic, {result['degrees_past_lichun']}° past Lichun ({result['lichun_date']})")
+    lines.append(f"**Degree-day:** {result['degree_day']} of 30 in the month, {result['day_span'][0]} → {result['day_span'][1]}")
+    lines.append(f"**Degree-hour:** {result['degree_hour']} of 12, {result['hour_span'][0]} → {result['hour_span'][1]} (arcminute {result['arcminute']} of 5)")
     lines.append("")
-    
+
     def level_lines(stack):
         out = []
         for key, label in (("great_age", "Great Age"), ("ki_age", "Ki Age"), ("great_year", "Great Year"),
@@ -615,12 +599,12 @@ async def get_daily_ki(
             out.append(line)
         return out
 
-    lines.append("## Global Ki (Traditional Cascade)")
+    lines.append("## Global Ki")
     lines.append(f"**Sequence:** {result['sequences']['global']}  (great age . Ki Age . great year . year . month . day . hour)")
     lines.extend(level_lines(result['global']))
     lines.append("")
 
-    lines.append("## Personal Ki (Flying Star Method)")
+    lines.append("## Personal Ki")
     lines.append(f"**Sequence:** {result['sequences']['personal']}")
     lines.extend(level_lines(result['personal']))
     lines.append("")
@@ -739,42 +723,20 @@ async def get_convergence_ki_now(
     lon: Optional[float] = None,
     birth_date: Optional[str] = None,
 ) -> str:
-    """Get the full 7-level Ki stack using convergence socket theory.
+    """The full Ki stack at an instant, read from the Sun, with observational layers.
 
-    **EXPERIMENTAL ASTRONOMICAL MODEL** — This day Ki calculation (Socket Period)
-    uses Moon crossings of convergence sockets (~9 days) instead of the traditional
-    daily cascade. This is a modern astronomical interpretation, not classical
-    9 Star Ki practice.
+    Year, month, day and hour are the Sun's longitude past Lichun (15° Aquarius): 360°, 30°,
+    1° (a degree-day, about 24 hours) and 5′ (a degree-hour, about two hours). The great year,
+    Ki Age and great age sit above (Lichun 2010 opened 2 · 5 · 8 together). Every level opens
+    on an Earth number and the count never resets.
 
-    For traditional personal daily Ki, use `get_daily_ki` instead.
-
-    Three bodies cross the same 12 mid-sign gates (15° of each sign) at three speeds.
-    Same grid, same 12, same 15°, same 9 Ki, same remainder 3.
-    One relationship, three octaves.
-
-    The 7 levels:
-    ☉ SOLAR:
-      1. Year Ki — Sun completes orbit, ticks at Lichun (15° Aquarius)
-      2. Month Ki — Sun crosses 15° of each sign (~30 days)
-    ☽ LUNAR:
-      3. Lunar Gate — Moon crosses 15° of each sign (~2.3 days, 12 per sidereal month)
-      4. Socket Period (Day Ki) — Moon crosses convergence sockets (~9 days)
-    ⊕ TERRESTRIAL:
-      5. Mid-Sign Hour — Ascendant crosses 15° of each sign (~2 hrs)
-      6. Gate Ki — Ascendant crosses any 15° gate (~60 min)
-      7. Minute Ki — 1/9th subdivision of gate crossing (~6.7 min)
-
-    12-fold layers (year→month, sidereal month→lunar gate, sidereal day→mid-sign hour)
-    have remainder 3, so each opens on one of three sequences.
-    9-fold layers (socket period, gate/minute) have all 9 numbers once.
-
-    If birth_date is provided, also returns personal Ki (year/month/day) with
-    full audit trail showing global vs personal Ki at each socket crossing.
+    Also reports the Moon's 15° gate crossings and the ascendant as observation layers; they
+    do not drive the numbers. With birth_date, adds the personal stack.
 
     Args:
-        target_date: ISO date YYYY-MM-DD (default: today)
-        lat: Latitude for hour Ki (default: 28.5383 / Orlando)
-        lon: Longitude for hour Ki (default: -81.3792 / Orlando)
+        target_date: ISO datetime (New York if no zone) or a bare date read at local noon; default now
+        lat: Latitude for the ascendant layer (default: 28.5383 / Orlando)
+        lon: Longitude for the ascendant layer (default: -81.3792 / Orlando)
         birth_date: Birth date YYYY-MM-DD for personal Ki calculation
     """
     from convergence_ki import get_convergence_ki
@@ -5298,11 +5260,11 @@ async def get_ki_change_schedule(
         level: Which level to track: 'hour', 'day', 'month', 'year'
         count: Number of upcoming changes to show (default 9 = one full cycle)
     """
-    from datetime import datetime, timedelta
+    from datetime import datetime
     from ki_changes import get_ki_changes as _get_ki_changes, hub_level
     from hub_inheritance import HubUnresolvable, moving_lines, resolve
-    from ki_calendar import ki_month_of, ki_year_of
-    from ki_levels import global_stack, personal_stack
+    from ki_levels import personal_stack
+    from ki_solar import dt_to_jd, stack_after as _solar_stack_after
 
     if level not in ("hour", "day", "month", "year"):
         return f"Invalid level '{level}'. Use: hour, day, month, year"
@@ -5315,27 +5277,12 @@ async def get_ki_change_schedule(
     stack = {hub_level(k): v for k, v in data["global"]["current"].items()}
     start = dict(stack)
     natal_yki = data["personal"]["natal_year_ki"] if data.get("personal") else None
-    now = datetime.fromisoformat(data["timestamp"])
-    ki_year, month_idx = ki_month_of(now.date())
-    first_change = data["global"]["change_instants"][level]
+    now_jd = dt_to_jd(datetime.fromisoformat(data["timestamp"]))
 
     def stack_after(i: int) -> dict:
-        """The global stack just after the i-th change of the tracked level (1-based): the tracked
-        level has descended i times and every parent reads what the calendar says at that instant."""
-        if level == "year":
-            return global_stack(ki_year + i)
-        if level == "month":
-            abs_month = ki_year * 12 + month_idx + i
-            return global_stack(abs_month // 12, abs_month)
-        if level == "day":
-            d = now.date() + timedelta(days=i)
-            y, m = ki_month_of(d)
-            return {**global_stack(y, y * 12 + m), "day": (start["day"] - i - 1) % 9 + 1}
-        at = first_change + timedelta(hours=2 * (i - 1))
-        y, m = ki_month_of(at.date())
-        days = (at.date() - now.date()).days
-        return {**global_stack(y, y * 12 + m), "day": (start["day"] - days - 1) % 9 + 1,
-                "hour": (start["hour"] - i - 1) % 9 + 1}
+        """The global stack just after the i-th change of the tracked level (1-based): the Sun at
+        the instant of that boundary, so every parent reads what it is there."""
+        return _solar_stack_after(now_jd, level, i)
 
     def label(st):
         r = resolve(st, lvl)
@@ -5495,11 +5442,11 @@ async def ki_change_hour(
     birth_date: str = None,
     include_gnostic: bool = False,
 ) -> str:
-    """Ki change at the HOUR level — fastest cycle (~2 hours per shift).
+    """Ki change at the HOUR level — fastest cycle (five arcminutes of the Sun, about two hours).
 
-    Shows current hour Ki, what it's becoming, when it changes,
+    Shows current hour Ki, what it's becoming, when the Sun reaches the next 5′ boundary,
     the changing lines, and hexagrams formed with the day level.
-    Hour = the ascendant's rhythm, Mercury's most rapid pulse.
+    Hour = one twelfth of a degree-day, Mercury's most rapid pulse.
 
     Args:
         birth_date: Birth date YYYY-MM-DD for personal Ki
@@ -5513,11 +5460,11 @@ async def ki_change_day(
     birth_date: str = None,
     include_gnostic: bool = False,
 ) -> str:
-    """Ki change at the DAY level — daily solar rhythm.
+    """Ki change at the DAY level — one degree of the Sun.
 
-    Shows current day Ki, what it's becoming at midnight,
-    the changing lines, and hexagrams formed with month and hour levels.
-    Day = the Sun's daily pulse through the -3 cascade from Lichun.
+    Shows current day Ki, what it's becoming when the Sun crosses the next whole degree
+    past Lichun (not at midnight), the changing lines, and hexagrams formed with month
+    and hour levels. Day = 1° of the Sun; 30 per month; every Lichun opens day 8.
 
     Args:
         birth_date: Birth date YYYY-MM-DD for personal Ki

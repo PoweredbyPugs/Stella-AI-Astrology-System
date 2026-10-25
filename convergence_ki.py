@@ -10,7 +10,8 @@ One relationship, three octaves.
 
 Convergence sockets (15° Aquarius, Gemini, Libra) are a subset of the 12 mid-sign gates
 — the air trine, where the 9-fold and 15-fold grids converge (LCM=120°). The Moon
-crosses these every ~9.09 days, giving the traditional day Ki rhythm.
+crosses these every ~9.09 days; that is an observation layer. The Ki numbers themselves
+come from the Sun alone (ki_solar): year 360°, month 30°, day 1°, hour 5′.
 
 Research: stella/research/convergence-sockets.md
 """
@@ -22,6 +23,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from ki_calendar import ki_month_of, ki_year_of, ki_year_span, lichun_jd as _lichun_jd
+from ki_solar import day_ki_at, degrees_past_lichun, ki_year_at, parse_target, solar_stack
 
 # ── Config ──
 EPHE_PATH = "/mnt/baratie/baratie/sweph-service/ephemeris"
@@ -263,8 +265,8 @@ def _find_jupiter_perihelion(near_year: float) -> float:
     return (lo + hi) / 2
 
 
-# Great year (synodic gate): arithmetic 12-year gates. Lichun 2022 opens gate 8 and the
-# great year descends 1 per gate. 12 mod 9 = 3 keeps every gate on an Earth year (2, 5, 8),
+# Great year (synodic gate): arithmetic 12-year gates. Lichun 2010 opens gate 2 and the
+# great year descends 1 per gate (2022 opens 1, 2034 opens 9). 12 mod 9 = 3 keeps every gate on an Earth year (2, 5, 8),
 # as 12 months keep every Lichun on an Earth month. 9 gates = 108 years.
 # Jupiter's ~11.86-year perihelion cycle lands near these gates but is not the clock.
 from ki_levels import (
@@ -283,7 +285,7 @@ def synodic_gate_start(ki_year: int) -> int:
 
 
 def synodic_ki_for_year(ki_year: int) -> int:
-    """Global great-year Ki for a Ki year: 2010-2021 = 9, 2022-2033 = 8, 2034-2045 = 7."""
+    """Global great-year Ki for a Ki year: 2010-2021 = 2, 2022-2033 = 1, 2034-2045 = 9."""
     return _global_great_year(ki_year)
 
 
@@ -291,9 +293,10 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
     """Calculate the Synodic Gate Ki — the 12-year great-year level.
 
     Pure arithmetic: 12 Ki years per gate, descending 9 → 1, gates on Lichun,
-    anchored at Lichun 2022 = gate 8. Jupiter's ~11.86-yr orbital cycle is the
-    natural period behind the count, not the anchor; perihelia are reported as
-    an informational layer only.
+    anchored at Lichun 2010 = gate 2 (ki_levels: the Lichun that opened the great age,
+    the Ki Age and the great year together). Jupiter's ~11.86-yr orbital cycle is the
+    natural period behind the count, not the anchor; perihelia are reported as an
+    informational layer only.
 
     12 years per synodic gate, 9 Ki count → remainder 3.
     At each synodic gate boundary, the year Ki is always Earth (2, 5, 8).
@@ -305,12 +308,7 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
         target_date: ISO date YYYY-MM-DD (default: today)
         birth_date: Birth date YYYY-MM-DD for personal synodic Ki
     """
-    if target_date:
-        td = datetime.fromisoformat(target_date)
-        if td.tzinfo is None:
-            td = td.replace(tzinfo=TZ)
-    else:
-        td = datetime.now(TZ)
+    td = parse_target(target_date)
 
     # Surrounding Jupiter perihelia — informational layer only, never the gate.
     current_year = td.year + td.month / 12
@@ -321,8 +319,8 @@ def get_synodic_gate(target_date: str = None, birth_date: str = None) -> dict:
 
     now_jd = _dt_to_jd(td)
 
-    # Synodic gate Ki: arithmetic 12-year gates (see synodic_ki_for_year).
-    td_ki_year = ki_year_of(td.date())
+    # Synodic gate Ki: arithmetic 12-year gates (see synodic_ki_for_year); the Ki year turns at the instant of Lichun.
+    td_ki_year = ki_year_at(now_jd)
     synodic_ki = synodic_ki_for_year(td_ki_year)
     gate_start_year = synodic_gate_start(td_ki_year)
     current_gate_lichun = _find_lichun(gate_start_year)
@@ -414,128 +412,34 @@ def _flying_star(natal_ki: int, global_ki: int) -> int:
 def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
                         lon: float = -81.3792,
                         birth_date: str = None) -> dict:
-    """Calculate full convergence Ki state for a given date and location.
+    """The full Ki stack at an instant, read from the Sun (ki_solar), with observational layers.
 
-    **EXPERIMENTAL ASTRONOMICAL MODEL** — This day Ki calculation uses Moon
-    socket crossings (every ~9 days) instead of the traditional daily cascade.
-    The convergence socket theory is a modern astronomical interpretation,
-    not classical 9 Star Ki practice.
+    Year, month, day and hour are the Sun's longitude past Lichun: 360°, 30°, 1° and 5′.
+    Every level opens on an Earth number and the count never resets. The great year, Ki Age
+    and great age come from ki_levels (Lichun 2010 opened 2 · 5 · 8 together).
 
-    For traditional personal daily Ki, use `get_daily_ki` instead.
-
-    Returns year, month, day, and hour Ki with astronomical positions,
-    socket crossings, gates, and timing. If birth_date is provided,
-    also returns personal Ki (year/day/hour offset by natal year Ki).
+    The Moon's gates and the ascendant are reported as observation layers; they are not
+    structural to the Ki numbers.
 
     Args:
-        target_date: ISO date string YYYY-MM-DD (default: today)
-        lat: Latitude for hour Ki / ascendant (default: Orlando)
-        lon: Longitude for hour Ki / ascendant (default: Orlando)
+        target_date: ISO datetime (naive = New York) or a bare date, read at local noon; default now
+        lat: Latitude for the ascendant observation layer (default: Orlando)
+        lon: Longitude for the ascendant observation layer (default: Orlando)
         birth_date: Birth date YYYY-MM-DD for personal Ki calculation
     """
-    if target_date:
-        td = datetime.fromisoformat(target_date)
-        if td.tzinfo is None:
-            td = td.replace(tzinfo=TZ)
-    else:
-        td = datetime.now(TZ)
-
+    td = parse_target(target_date)
     now_jd = _dt_to_jd(td)
 
-    # ── Year Ki ──
-    yki = _year_ki(td.year, td.month, td.day)
-    lichun_year, months_from_lichun = ki_month_of(td.date())
-
-    # ── Month Ki ──
-    # Sun position determines month
-    sun = swe.calc_ut(now_jd, swe.SUN)[0]
-    sun_lon = sun[0]
+    # ── Year, month, day, hour: the Sun past Lichun ──
+    solar = solar_stack(now_jd)
+    lichun_year = solar["ki_year"]
+    yki, mki, dki, hki = (solar["numbers"][k] for k in ("year", "month", "day", "hour"))
+    lichun_jd = _find_lichun(lichun_year)
+    sun_lon = solar["sun_longitude"]
     sun_sign = SIGN_NAMES[int(sun_lon / 30)]
     sun_deg = sun_lon % 30
-
-    # Month Ki: one continuous count, descending 1 per Ki month across every Lichun.
-    # 12 mod 9 = 3, so each Feb starts 3 lower than the last:
-    # year Ki 1/4/7 start month at 8; 9/6/3 start at 5; 8/5/2 start at 2.
-    month_starts = {1: 8, 4: 8, 7: 8, 3: 5, 6: 5, 9: 5, 2: 2, 5: 2, 8: 2}
-    month_start_ki = month_starts[yki]
-
-    # Which month are we in? months_from_lichun counts the Sun's 15°-of-sign crossings
-    # since Lichun, by local date (ki_calendar): 0 = Feb … 11 = Jan.
-    mki = (month_start_ki - months_from_lichun) % 9
-    if mki <= 0:
-        mki += 9
-
-    # ── Day Ki ──
-    # Day Ki uses the -3 cascade: day_start = month_start - 3 (mod 9).
-    # Counts down by 1 per solar day from Lichun.
-    # 365 mod 9 = 5 → all 9 starting values appear over 9 years.
-    # Month always starts Earth (8, 5, 2). Day start values over 9 years:
-    # 5, 9, 4, 8, 3, 7, 2, 6, 1 (for global years 1, 9, 8, 7, 6, 5, 4, 3, 2).
-    # Moon is NOT structural for day Ki — kept as parallel observation layer only.
-    lichun_jd = _find_lichun(lichun_year)
-
-    # Day start from -3 cascade: month_start - 3
-    day_starts = {1: 5, 9: 9, 8: 4, 7: 8, 6: 3, 5: 7, 4: 2, 3: 6, 2: 1}
-    day_start_ki = day_starts[yki]
-
-    # Count solar days since Lichun using calendar dates (not JD fractional math).
-    # Lichun day itself = offset 0 = day_start_ki, regardless of what time Lichun falls.
-    # JD subtraction gives wrong results when Lichun is mid-afternoon.
-    lichun_dt = _jd_to_dt(lichun_jd)
-    lichun_date = lichun_dt.date()
-    today_date = td.date()
-    days_since_lichun = (today_date - lichun_date).days
-
-    # Day Ki counts down by 1 per day
-    dki = (day_start_ki - (days_since_lichun % 9)) % 9
-    if dki <= 0:
-        dki += 9
-
-    # ── Hour Ki ──
-    # Hour Ki uses the -3 cascade: hour_start = day_ki - 3 (mod 9).
-    # 12 double-hours per day (Chinese shíchén), descending by 1 each.
-    # Rat hour (23:00-01:00) = hour 1, Ox (01-03) = 2, ... Pig (21-23) = 12.
-    # Hour shifts by 3 per day (12 mod 9 = 3).
-    # Hour always starts Earth at Lichun (2, 5, 8).
-    hour_start_ki = (dki - 3) % 9
-    if hour_start_ki <= 0:
-        hour_start_ki += 9
-
-    # Determine current double-hour (1-12, starting at 23:00)
-    local_hour = td.hour
-    if local_hour >= 23:
-        double_hour = 1
-    elif local_hour < 1:
-        double_hour = 1
-    else:
-        double_hour = (local_hour + 1) // 2 + 1
-
-    hki = (hour_start_ki - (double_hour - 1)) % 9
-    if hki <= 0:
-        hki += 9
-
-    DOUBLE_HOUR_NAMES = ['Rat','Ox','Tiger','Rabbit','Dragon','Snake',
-                         'Horse','Goat','Monkey','Rooster','Dog','Pig']
-    current_dh_name = DOUBLE_HOUR_NAMES[double_hour - 1]
-    # Double hour number (1-12) is the primary identifier; animal names kept as reference only
-
-    # ── Minute Ki ──
-    # 5th level: minute_start = hour_ki - 3 (mod 9).
-    # 9 segments per double-hour (~13.3 min each), descending by 1.
-    # 9/9 = remainder 0 → all 9 numbers appear once per double-hour.
-    minute_start_ki = (hki - 3) % 9
-    if minute_start_ki <= 0:
-        minute_start_ki += 9
-
-    # Which minute segment are we in? (1-9)
-    # Each double-hour = 120 minutes, each segment = 120/9 = 13.333 min
-    dh_start_hour = (23 + (double_hour - 1) * 2) % 24
-    minutes_into_dh = ((local_hour - dh_start_hour) % 24) * 60 + td.minute
-    minute_segment = min(int(minutes_into_dh / (120 / 9)) + 1, 9)
-
-    min_ki = (minute_start_ki - (minute_segment - 1)) % 9
-    if min_ki <= 0:
-        min_ki += 9
+    day_span = tuple(_jd_to_dt(j).strftime("%Y-%m-%d %I:%M %p") for j in solar["spans"]["day"])
+    hour_span = tuple(_jd_to_dt(j).strftime("%Y-%m-%d %I:%M %p") for j in solar["spans"]["hour"])
 
     # Also compute ascendant for observation (parallel layer, not structural)
     houses = swe.houses(now_jd, lat, lon, b'P')
@@ -560,10 +464,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
     # Lunar gate Ki: count down from the day Ki at the sidereal month start.
     # Use the solar day cascade to find what day Ki was at the S1 crossing.
-    days_to_s1 = int(sid_month_start_jd - lichun_jd)
-    sid_month_start_ki = (day_start_ki - (days_to_s1 % 9)) % 9
-    if sid_month_start_ki <= 0:
-        sid_month_start_ki += 9
+    sid_month_start_ki = day_ki_at(degrees_past_lichun(sid_month_start_jd))
 
     # The S1 crossing IS the first lunar gate (15° Aquarius is a mid-sign gate)
     # So lunar_gate_count includes the S1 itself as gate #1
@@ -592,10 +493,7 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
         long_leg = "S3→S1 (Libra→Aquarius)"
 
     # ── Synodic Ki (Great Year / Jupiter orbit) ──
-    synodic_data = get_synodic_gate(
-        target_date=td.strftime("%Y-%m-%d") if target_date else None,
-        birth_date=birth_date,
-    )
+    synodic_data = get_synodic_gate(target_date=td.isoformat(), birth_date=birth_date)
     synodic_ki = synodic_data.get("synodic_gate", {}).get("ki", None)
 
     # ── Build result ──
@@ -607,13 +505,13 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
         "synodic": {
             "ki": synodic_ki,
             "gate": synodic_data.get("current_gate", {}),
-            "anchor": "12 Ki years per great year, gates at Lichun on Earth years; Jupiter's ~11.86-yr cycle is the natural period, not the anchor.",
+            "anchor": "12 Ki years per great year, gates at Lichun; Lichun 2010 opened 2 with the Ki Age and great age. Jupiter's ~11.86-yr cycle is the natural period, not the anchor.",
         },
 
         "year": {
             "ki": yki,
             "period": " → ".join(d.strftime("%b %-d, %Y") for d in ki_year_span(lichun_year)),
-            "anchor": "Sun at Lichun (15° Aquarius). Apsidal precession (~8.85yr) drives socket asymmetry.",
+            "anchor": "Sun at Lichun (15° Aquarius): 360° of the Sun, 12 months of 30°.",
         },
 
         "month": {
@@ -643,19 +541,22 @@ def get_convergence_ki(target_date: str = None, lat: float = 28.5383,
 
         "day": {
             "ki": dki,
-            "day_start_ki": day_start_ki,
-            "days_since_lichun": days_since_lichun,
+            "degree_day": solar["degree_day"],
+            "degree_day_of_year": solar["degree_day_of_year"],
+            "opens": day_span[0],
+            "ends": day_span[1],
             "lichun": _jd_to_dt(lichun_jd).strftime("%Y-%m-%d %I:%M %p"),
-            "anchor": "Solar day cascade: day_start = month_start - 3. Counts down 1/day from Lichun. 365 mod 9 = 5 ensures full 9-year continuity.",
+            "anchor": "One degree of the Sun past Lichun: 30 per month, descending 1 each; every Lichun opens day 8.",
         },
 
         "hour": {
             "ki": hki,
-            "double_hour": double_hour,
-            "double_hour_name": current_dh_name,
-            "hour_start_ki": hour_start_ki,
+            "degree_hour": solar["degree_hour"],
+            "arcminute": solar["arcminute"],
+            "opens": hour_span[0],
+            "ends": hour_span[1],
             "ascendant": f"{asc_deg:.1f}° {asc_sign} (observation layer)",
-            "anchor": "Hour cascade: hour_start = day_ki - 3. 12 double-hours/day, descend 1 each. Shift 3/day.",
+            "anchor": "Five arcminutes of the Sun: 12 per degree-day, descending 1 each; opening = 3·day + 8, so day 8 opens hour 5.",
         },
 
 

@@ -51,7 +51,7 @@ The Ki timekeeping math was reworked. In plain terms:
   In every timing tool it now borrows the trigram of the nearest level above it that is
   not 5, and the output says what it borrowed and from where. The old 5 → ☷ Kun shortcut is gone.
 - **Two new levels above the great year.** A Ki Age is 12 great years (144 years) and a
-  great age is 9 Ki Ages (1,296 years). The daily stack is now seven levels deep.
+  great age is 12 Ki Ages (1,728 years). The daily stack is now seven levels deep.
 - **Personal and global never mix.** A personal 5 borrows up the personal chain only.
   Personal numbers rise by one where global numbers fall by one.
 - **Moving lines are computed, not looked up.** The lines that change between two figures
@@ -96,7 +96,7 @@ The full catalog with per-tool descriptions lives in [TOOLS.md](TOOLS.md).
 | **Dasha & Timing Stack** | 3 | 5-level Vimshottari dasha, live nakshatra transit, and `get_timing_stack` — dasha + ZR + nakshatra + Ki in one call with cross-system resonance detection |
 | **9 Star Ki & I Ching** | 6 | Natal Ki profile, cycles, narrative readings, hexagram casting (coins/yarrow), wisdom-text search |
 | **Octave** | 2 | `get_octave` and `get_octave_reading` — a life as nine-year octaves on the enneagram, every year and month an I Ching figure, read through the Gnostic Book of Changes |
-| **Convergence Ki** | 3 | Experimental astronomical Ki: great year → year → month → day → hour, built on 15° gates and the −3 cascade |
+| **Convergence Ki** | 3 | The Ki stack read from the Sun: great year → year → month → day → hour, where a day is 1° of the Sun and an hour 5′ |
 | **Ki Changes** | 7 | "Mercury's reading" — Ki transitions rendered as I Ching hexagrams with changing lines and Wu Xing phase analysis, at every level from the hour to the 12-year great year, with the Ki Age and great age above |
 | **Midpoints & Cosmobiology** | 4 | Ebertin 90° dial: natal midpoint pictures, COSI interpretations, midpoint transits, solar arc directions |
 | **Chart Reading** | 1 | `chart_reading` — the three-axis generator (see below) |
@@ -218,19 +218,28 @@ Four related systems, from traditional to experimental:
 
 ### The timekeeping stack
 
-Every level is twelve of the one below (the great age is nine Ki Ages), and every level
-counts down by one per period without ever resetting at a seam. Global anchors live in
-`ki_levels.py`:
+One hand on the clock: the Sun. Every level is how far it has moved past the Lichun gate
+(15° Aquarius). A year is 360°, a month 30°, a day 1° (a degree-day, about 24 hours, longer
+in summer), an hour 5′ (about two hours). Nothing turns at midnight. Twelve of anything is
+its parent and nine of anything is one cycle of its numbers; 12 mod 9 = 3 and 30 mod 9 = 3,
+so every level opens on an Earth number (2, 5, 8) and the running count is the lock. Global
+anchors live in `ki_levels.py` (years and above) and `ki_solar.py` (day and hour):
 
 | Level | Length | Global anchor |
 |---|---|---|
-| hour | 12 double-hours per day | from the day, −3 cascade |
-| day | one solar day | from the month, −3 cascade |
+| hour | 5′ of the Sun, 12 per day | opening = 3·day + 8 (day 8 opens hour 5) |
+| day | 1° of the Sun, 30 per month | every Lichun opens day 8 |
 | month | Sun at 15° of each sign | Feb 2026 = 8 |
 | year | Lichun to Lichun | 2026 = 1 |
-| great year | 12 years | Lichun 2022 opens 8 |
-| Ki Age | 144 years | Lichun 2022 opens 2 |
-| great age | 1,296 years | Lichun 2022 opens 5 |
+| great year | 12 years | Lichun 2010 opens 2 (2022 opens 1) |
+| Ki Age | 144 years | Lichun 2010 opens 5 |
+| great age | 1,728 years, 24° of precession | Lichun 2010 opens 8 |
+
+The great age is one fifteenth of the 25,920-year precession cycle. The vernal point reached
+24° past the Lahiri sidereal zero in 2010, and the gate is the Lichun before that crossing, so
+Lichun 2010 opened the great age, the Ki Age and the great year together: 8 · 5 · 2 · 8 · 2 ·
+8 · 5, each level three below the one above. A level is Earth at its own seam only when its
+parent turns too, which is why the 2022 great year is 1.
 
 Personal numbers at every level are the natal year read against the matching global
 level: `personal = ((natal − global + 4) mod 9) + 1`.
@@ -262,7 +271,7 @@ type builds a full midpoint-centered analysis. Details in
 
 ---
 
-## Knowledge Graph (38 texts, 10,741 nodes, 93,183 relationships)
+## Knowledge Graph (50+ texts, ~13,000 searchable chunks)
 
 Built by `build_graph.py` and the `graph/` ingestion scripts into Neo4j
 (`docker compose up -d` starts a local instance). Sources span five layers:
@@ -317,7 +326,8 @@ stella/
 ├── ephemeris.py            # pyswisseph: returns, progressions, elections, eclipses…
 ├── ki.py / ki_reading.py   # 9 Star Ki calculation + the three-number readings
 ├── ki_calendar.py          # When Ki years and months open (Sun at 15° of each sign)
-├── ki_levels.py            # Lo Shu arithmetic for every level, Ki Age and great age anchors
+├── ki_levels.py            # Lo Shu arithmetic for the levels counted in Ki years; great year, Ki Age and great age anchors
+├── ki_solar.py             # The stack read from the Sun: degree-days, degree-hours, boundaries, next changes
 ├── hub_inheritance.py      # The 5 rule: trigram resolution, hexagram lines, moving lines
 ├── ki_changes.py           # Ki transitions as hexagrams ("Mercury's reading")
 ├── octave.py / octave_math.py  # Nine-year octaves on the enneagram, Gnostic readings

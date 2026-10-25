@@ -89,8 +89,8 @@ Based on the -3 cascade and 365-day continuity breakthrough (March 6, 2026). Res
 
 | # | Tool | Description |
 |---|------|-------------|
-| 35 | `get_convergence_ki_now` | Full 5-level Ki state with personal transformation. Great year (synodic), Year, Month, Day, Hour. Location-aware. Carries a `build` block (git sha, load time). |
-| 36 | `get_synodic_gate_now` | The 12-year great-year gate: arithmetic from Lichun 2022 = 8, gates always on Earth years |
+| 35 | `get_convergence_ki_now` | The full Ki stack at an instant, read from the Sun: great year (synodic), year, month, day (1° of the Sun), hour (5′), with the Moon and ascendant as observation layers. Takes an ISO datetime; a bare date is read at noon. Carries a `build` block (git sha, load time). |
+| 36 | `get_synodic_gate_now` | The 12-year great-year gate: arithmetic from Lichun 2010 = 2 (2022 = 1), gates on Lichun, always on Earth years |
 | 37 | `get_natal_gates` | Map a chart's planets to their permanent 15° gates and San Cai triads |
 
 ## Ki Changes — Mercury's Reading *(NEW 2026-03-27)*
@@ -119,24 +119,25 @@ Mercury reads the delta, not the state. These tools show what's transitioning at
 
 **Modules:** `ki_changes.py`, `hub_inheritance.py`, `ki_levels.py`
 
-### Ki — Key Architecture (Definitive, March 6 2026)
+### Ki — Key Architecture (Definitive, October 25 2026)
 
-**7 levels, -3 cascade:**
+**7 levels, one hand (the Sun past Lichun at 15° Aquarius):**
 ```
-Great age   — 9 Ki Ages = 1,296 years, Lichun 2022 opens 5
-Ki Age      — 12 great years = 144 years, Lichun 2022 opens 2
-Great year  — 12 Ki years, Lichun 2022 opens 8, gates always on Earth years; 9 gates = 108 years
-Year Ki     — Sun completes orbit, ticks at Lichun (15° Aquarius), ~365 days
-Month Ki    — Sun crosses 15° of each sign, ~30 days
-Day Ki      — Solar day, descends 1/day from Lichun, 365 mod 9 = 5 → full continuity
-Hour Ki     — Chinese double-hour (shíchén), 12/day, descends 1 each, shifts 3/day
+Great age   — 12 Ki Ages = 1,728 years = 24° of precession (25,920 / 15); Lichun 2010 opens 8
+Ki Age      — 12 great years = 144 years; Lichun 2010 opens 5
+Great year  — 12 Ki years; Lichun 2010 opens 2, 2022 opens 1, 2034 opens 9; gates on Lichun
+Year Ki     — 360° of the Sun, Lichun to Lichun; 2026 = 1
+Month Ki    — 30° of the Sun (15° of each sign); Feb 2026 = 8
+Day Ki      — 1° of the Sun (a degree-day, 23.5–25.2 h); 30 per month; every Lichun opens 8
+Hour Ki     — 5′ of the Sun (a degree-hour, ~2 h); 12 per day; opening = 3·day + 8
 ```
 
-**-3 cascade rule:** Each level starts at parent minus 3:
-- Year 1 → Month 8 → Day 5 → Hour 2
-- Month always starts Earth (8, 5, 2) at Lichun
-- Hour always starts Earth (2, 5, 8) at Lichun
-- 365 mod 9 = 5 ensures all 9 starting values over 9 years
+**The lock is the count:** twelve of anything is its parent, nine of anything is one cycle
+of its numbers. 12 mod 9 = 3 and 30 mod 9 = 3, so every level opens on an Earth number
+(2, 5, 8) and the running count lands on exactly that number at the seam. Nothing resets,
+nothing turns at midnight or on the clock. At Lichun 2010 every level turned together and the
+stack read 8 · 5 · 2 · 8 · 2 · 8 · 5. A level is Earth at its own seam only when its parent
+turns too. Module: `ki_solar.py`.
 
 **Moon is NOT structural for Ki.** Moon's 12-gate/convergence socket rhythm is real but kept as a parallel observation layer. Ki is purely solar + terrestrial.
 
@@ -144,7 +145,7 @@ Hour Ki     — Chinese double-hour (shíchén), 12/day, descends 1 each, shifts
 
 **Month gate crossings:** Sun at 15° of each sign (Chinese solar terms / 节气). NOT Gregorian months.
 
-- **Module:** `convergence_ki.py`
+- **Module:** `ki_solar.py` (the numbers), `convergence_ki.py` (the full payload with observation layers)
 - **Synodic module:** `convergence_ki.py` → `get_synodic_gate()`
 
 ## Midpoints & Cosmobiology

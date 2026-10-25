@@ -1,5 +1,27 @@
 # Stella Changelog
 
+## 2026.10.25 — The stack reads the Sun: degree-days, degree-hours, precession-anchored great age
+
+### `ki_solar.py` (new)
+- Day and hour are no longer clock units. A day is one degree of the Sun past Lichun (30 per month, 23.5–25.2 hours long), an hour is five arcminutes (12 per day). Every level is now twelve (or thirty) of the one above with remainder 3, so every level opens on an Earth number and the running count is the lock. Nothing turns at midnight.
+- Anchors: every Lichun opens day 8 (month 2 opened day 8; 360 ≡ 0), and the hour opening is `3·day + 8` so day 8 opens hour 5. Continuity forces the slope; the constant is doctrine.
+- `solar_stack(jd)` gives all seven numbers, where the Sun is, and when the current degree-day and degree-hour began and end; `next_change_jd` and `stack_after` give the exact instants of coming changes at any level.
+
+### Anchors above the year (`ki_levels.py`)
+- A great age is 12 Ki Ages, 1,728 years, one fifteenth of the 25,920-year precession cycle, i.e. 24° of the vernal point against the stars. Nine Ki Ages were one cycle of the numbers, not the parent period.
+- The seam is astronomical: the vernal point reached 24° past the Lahiri sidereal zero (285 CE) in 2010, and the gate is the Lichun before the crossing, as a great year's gate is the Lichun before Jupiter's perihelion. Lichun 2010 opened great age 8, Ki Age 5 and great year 2 together (year 8 there): the full staircase 8 · 5 · 2 · 8 · 2 · 8 · 5.
+- Consequence: the great year that opened at Lichun 2022 is 1, not 8 (2034 opens 9). The old 2022 anchors had assumed all three seams coincided there.
+
+### Fixed
+- `get_daily_ki`, `ki_change_hour` and the other change tools never received the time of day: the cascade was built at midnight and the change tools truncated the timestamp to a date, so the hour Ki was always the day's first block. All tools now take an ISO datetime; a bare date is read at local noon.
+- `convergence_ki` used a literal "day − 3" for the hour opening, which matched the table only when the day Ki was 5, and used Chinese zodiac double-hours starting at 23:00. Both removed.
+- `get_synodic_gate` read the Ki year by calendar date; it now turns at the instant of Lichun like everything else.
+- `get_ki_change_schedule` stepped hours by a fixed two clock hours and days by calendar date; it now steps to the Sun's next boundary.
+
+### Tests
+- `tests/test_ki_solar.py` (new): the Lichun 2010 staircase, Lichun 2022, today's reading, twelve hours descending by one through a degree-day, midnight not a boundary, the day count flowing through a month seam and through Lichun, next-change instants, the great-year numbers after the 2010 seam.
+- Fixture tests updated to the new anchors; boundary-day rows now carry explicit times because the stack turns at the instant. The octave app's `lib/ki/kimonths.ts` still carries the old great-year anchor and will disagree with Stella on great years until it is updated.
+
 ## 2026.10.21 — WebSocket bridge for Obsidian
 
 ### `stella_ws.py` (new)

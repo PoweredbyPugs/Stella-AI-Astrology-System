@@ -15,7 +15,9 @@ month from year, year from great year, great year from Ki Age, Ki Age from great
 age). Every figure is formed from the full stack through hub_inheritance, personal
 figures from the personal stack only, and moving lines are always the line-by-line
 difference of two figures. The stack carries the Ki Age (144 years) and great age
-(1,296 years) above the great year ("synodic" in this module's output).
+(1,728 years) above the great year ("synodic" in this module's output). Day and hour
+are degrees and arcminutes of the Sun (ki_solar), so their changes fall where the Sun
+crosses the next boundary, not at midnight or on the clock.
 """
 
 from datetime import datetime, timedelta, timezone
@@ -84,8 +86,9 @@ def _turns_before(parent_when, child_when) -> bool:
 
 def next_stack(stack_now: dict, level: str, change_times: dict) -> dict:
     """The global stack just after ``level`` changes: that level descends by one, and so does every
-    parent whose own next change is at or before that instant (the day turning at midnight before
-    the 01:00 hour, the month and year turning together at Lichun, a gate on that Lichun).
+    parent whose own next change is at or before that instant (the day turning at the degree
+    boundary that closes its twelfth hour, the month and year turning together at Lichun, a gate
+    on that Lichun).
     ``change_times`` is keyed by output level names and holds comparable instants."""
     lvl = hub_level(level)
     out = dict(stack_now)
@@ -199,30 +202,21 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
     provided. Returns {"error": ...} if a stack cannot be resolved.
 
     Args:
-        target_date: ISO date YYYY-MM-DD (default: now)
+        target_date: ISO datetime, or a bare date read at local noon (default: now)
         birth_date: Birth date YYYY-MM-DD for personal Ki overlay
     """
     from convergence_ki import (
         get_convergence_ki, _find_lichun, _dt_to_jd, _jd_to_dt,
         synodic_gate_start, SYNODIC_GATE_YEARS,
     )
-    import swisseph as swe
+    from ki_solar import next_change_jd, parse_target, solar_stack
 
-    if target_date:
-        td = datetime.fromisoformat(target_date)
-        if td.tzinfo is None:
-            td = td.replace(tzinfo=TZ)
-    else:
-        td = datetime.now(TZ)
+    td = parse_target(target_date)
+    now_jd = _dt_to_jd(td)
 
-    # Get current full Ki state
-    ki_data = get_convergence_ki(
-        target_date=td.strftime("%Y-%m-%d"),
-        birth_date=birth_date,
-    )
-
-    from ki_calendar import ki_year_of
-    lichun_year = ki_year_of(td.date())
+    # Get current full Ki state at this instant (the hour follows the Sun, not the clock)
+    ki_data = get_convergence_ki(target_date=td.isoformat(), birth_date=birth_date)
+    lichun_year = solar_stack(now_jd)["ki_year"]
 
     stack_now = {
         "great_age": global_great_age(lichun_year),
@@ -234,48 +228,10 @@ def get_ki_changes(target_date: str = None, birth_date: str = None) -> dict:
         "hour": ki_data["hour"]["ki"],
     }
 
-    # ── When each level changes next ──
-
-    # Hour: changes every 2 hours (double-hour boundary)
-    local_hour = td.hour
-    if local_hour >= 23:
-        double_hour = 1
-    elif local_hour < 1:
-        double_hour = 1
-    else:
-        double_hour = (local_hour + 1) // 2 + 1
-
-    dh_starts = [23, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19, 21]
-    if double_hour < 12:
-        next_dh_hour = dh_starts[double_hour]
-        next_hour_dt = td.replace(hour=next_dh_hour, minute=0, second=0, microsecond=0)
-        if next_dh_hour <= td.hour:
-            next_hour_dt += timedelta(days=1)
-    else:
-        next_hour_dt = td.replace(hour=23, minute=0, second=0, microsecond=0)
-        if td.hour >= 23:
-            next_hour_dt += timedelta(days=1)
-
-    # Day: changes at midnight (solar day boundary)
-    next_day_dt = (td + timedelta(days=1)).replace(hour=0, minute=0, second=0, microsecond=0)
-
-    # Month: changes when Sun crosses next 30° boundary from Lichun
-    now_jd = _dt_to_jd(td)
-    sun_lon = swe.calc_ut(now_jd, swe.SUN)[0][0]
-    deg_from_lichun = (sun_lon - 315) % 360
-    current_month_seg = int(deg_from_lichun / 30)
-    next_month_deg = (315 + (current_month_seg + 1) * 30) % 360
-    days_to_next = ((next_month_deg - sun_lon) % 360) / 1.0
-    approx_jd = now_jd + days_to_next
-    for _ in range(20):
-        s = swe.calc_ut(approx_jd, swe.SUN)[0][0]
-        diff = (next_month_deg - s) % 360
-        if diff > 180:
-            diff -= 360
-        if abs(diff) < 0.001:
-            break
-        approx_jd += diff / 1.0
-    next_month_dt = _jd_to_dt(approx_jd)
+    # ── When each level changes next: the Sun reaching the next 5′, 1°, 30° boundary ──
+    next_hour_dt = _jd_to_dt(next_change_jd(now_jd, "hour"))
+    next_day_dt = _jd_to_dt(next_change_jd(now_jd, "day"))
+    next_month_dt = _jd_to_dt(next_change_jd(now_jd, "month"))
 
     # Year: changes at the next Lichun. Gates above it open at a Lichun too.
     next_year_dt = _jd_to_dt(_find_lichun(lichun_year + 1))

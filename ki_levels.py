@@ -1,35 +1,38 @@
-"""ki_levels — Lo Shu arithmetic for every level of the Ki timekeeping stack.
+"""ki_levels — Lo Shu arithmetic for the levels of the Ki stack counted in Ki years.
 
 Every level is a count descending 1 per period, never resetting at a seam. Each
-level is twelve of the one below (month → year → great year → Ki Age), and the
-great age is nine Ki Ages. 12 mod 9 = 3, so at every seam the child reads an
-Earth number (2, 5, 8).
+level is twelve of the one below (year → great year → Ki Age → great age). 12 mod 9 = 3,
+so at every seam the child reads an Earth number (2, 5, 8). Nine of anything is one
+cycle of its numbers; twelve of anything is its parent.
 
 Anchors (global chain):
   year        2026 = 1                      (classical)
   month       Feb 2026 = 8                  (continuous count; years 1·4·7 open on 8, 9·6·3 on 5, 8·5·2 on 2)
-  great year  Lichun 2022 opens 8           (12 years; the year there is 5, the month 2)
-  Ki Age      Lichun 2022 opens 2           (144 years)
-  great age   Lichun 2022 opens 5           (1,296 years)
+  great year  Lichun 2010 opens 2           (12 years; gates on the Lichun before Jupiter's perihelion)
+  Ki Age      Lichun 2010 opens 5           (144 years)
+  great age   Lichun 2010 opens 8           (1,728 years = 12 Ki Ages = 24° of precession, 25,920 / 15)
 
-Read upward at Lichun 2022 the stack is 5 · 2 · 8 · 5 · 2: each level the next Earth
-number in the cycle 2 → 5 → 8 → 2. That is the whole justification for the Ki Age
-and great age anchors; no doctrinal date is known. The arithmetic alone would also
-allow a Ki Age opening in 1914 (next 2058) or 1950 (next 2094). Change the two
-constants if a fact turns up.
+The great age is anchored by precession: the vernal point reached 24° past the Lahiri
+sidereal zero (285 CE) in 2010, and the gate is the Lichun before that crossing, as a
+great year's gate is the Lichun before perihelion. Lichun 2010 therefore opened the great
+age, the Ki Age and the great year together and the stack read 8 · 5 · 2 · 8 (year 8) —
+each level three below the one above. The 2022 great year is 1: a level is Earth at its
+seam only when its parent turns too.
+
+Day and hour are not counted in Ki years; they live in ki_solar (degrees of the Sun).
 
 Personal numbers at every level: personal(natal, global) = ki(natal - global + 5).
 """
 
 from typing import Optional
 
-GREAT_YEAR_ANCHOR_YEAR = 2022
-GREAT_YEAR_ANCHOR_KI = 8
-KI_AGE_ANCHOR_YEAR = 2022
-KI_AGE_ANCHOR_KI = 2
-GREAT_AGE_ANCHOR_YEAR = 2022
-GREAT_AGE_ANCHOR_KI = 5
-PERIOD_YEARS = {"great_age": 1296, "ki_age": 144, "great_year": 12, "year": 1}
+GREAT_YEAR_ANCHOR_YEAR = 2010
+GREAT_YEAR_ANCHOR_KI = 2
+KI_AGE_ANCHOR_YEAR = 2010
+KI_AGE_ANCHOR_KI = 5
+GREAT_AGE_ANCHOR_YEAR = 2010
+GREAT_AGE_ANCHOR_KI = 8
+PERIOD_YEARS = {"great_age": 1728, "ki_age": 144, "great_year": 12, "year": 1}
 
 _ANCHORS = {
     "great_year": (GREAT_YEAR_ANCHOR_YEAR, GREAT_YEAR_ANCHOR_KI),
@@ -71,17 +74,17 @@ def _global_level(ki_year: int, level: str) -> int:
 
 
 def global_great_year(ki_year: int) -> int:
-    """Global great year: 2022–2033 = 8, 2034–2045 = 7."""
+    """Global great year: 2010–2021 = 2, 2022–2033 = 1, 2034–2045 = 9."""
     return _global_level(ki_year, "great_year")
 
 
 def global_ki_age(ki_year: int) -> int:
-    """Global Ki Age: 2022–2165 = 2, 2166–2309 = 1."""
+    """Global Ki Age: 2010–2153 = 5, 2154–2297 = 4."""
     return _global_level(ki_year, "ki_age")
 
 
 def global_great_age(ki_year: int) -> int:
-    """Global great age: 2022–3317 = 5."""
+    """Global great age: 2010–3737 = 8."""
     return _global_level(ki_year, "great_age")
 
 

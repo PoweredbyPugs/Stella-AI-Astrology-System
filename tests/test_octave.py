@@ -14,9 +14,9 @@ import octave  # noqa: E402
 def test_report():
     r = octave.octave_report("1986-05-01", target_date="2026-10-16")
     assert r["natal"]["triple"] == "5 · 9 · 1"
-    assert (r["today"]["kiMonth"], r["today"]["personal"], r["today"]["greatYear"]) == ("Oct 2026", "9.1", 2)
-    assert r["octave"]["greatYear"] == "great year 1 → 2 in 2022"
-    assert [p["movingLines"] for p in r["echoPairs"]] == [[6], [2, 6], [4, 5]]
+    assert (r["today"]["kiMonth"], r["today"]["personal"], r["today"]["greatYear"]) == ("Oct 2026", "9.1", 9)
+    assert r["octave"]["greatYear"] == "great year 8 → 9 in 2022"
+    assert [p["movingLines"] for p in r["echoPairs"]] == [[6], [1, 6], [5, 6]]
     assert sum("months" in y for y in r["years"]) == 1
 
 

@@ -12,8 +12,10 @@ Internal working notes. Not features, not promises; things to revisit.
   already disagrees across lattices: 11° Taurus sits in the 0° Taurus gate of the 24-gate lattice
   (2 · 5 · 8) but in the Ki month that opened at 15° Aries (natal month 9). Parked 2026-10-20;
   not worth the effort until a reading needs it.
-- **Ki Age and great age anchors** (Lichun 2022 opens Ki Age 2, great age 5) follow the pattern
-  that set the great year, not a sourced date. Constants in `ki_levels.py`; the two other lattices
-  the arithmetic allows are noted there. Revisit if a text turns up.
+- **Ki Age and great age anchors** (Lichun 2010 opens great age 8, Ki Age 5, great year 2; set
+  2026-10-25). The great age is anchored by precession: 24° of the vernal point past the Lahiri
+  zero, gate at the Lichun before the crossing. The one remaining choice is the sidereal zero:
+  Krishnamurti gives the same 2010 gate, Fagan-Bradley 1938, Raman 2106. Constants in
+  `ki_levels.py`. The octave app's `lib/ki/kimonths.ts` still has the old 2022 = 8 great year.
 - **What a 5 in the first position of a natal triple means** (e.g. 5.9.1): a knowledge-graph
   question, not decided in code.

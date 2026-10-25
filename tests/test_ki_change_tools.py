@@ -20,7 +20,7 @@ def _pin(monkeypatch, day: str):
 
 
 def test_single_level_prints_inherited_tag(monkeypatch):
-    _pin(monkeypatch, "2026-10-22")
+    _pin(monkeypatch, "2026-10-23")   # personal day 5 under personal month 1
     out = asyncio.run(stella_server.ki_change_day(birth_date=BIRTH))
     assert "Hexagram 29" in out or "Hex 29" in out
     assert "inherited from month" in out
@@ -38,7 +38,7 @@ def test_schedule_steps_parents_as_they_turn(monkeypatch):
     _pin(monkeypatch, "2026-10-20")
     out = asyncio.run(stella_server.get_ki_change_schedule(level="year", count=15))
     row14 = [l for l in out.split("\n") if l.strip().startswith("14.")][0]
-    assert "Ki 5 ☱ Dui (inherits great_year)" in row14, row14   # 2040: year 5 under great year 7
+    assert "Ki 5 ☲ Li (inherits great_year)" in row14, row14   # 2040: year 5 under great year 9
     out = asyncio.run(stella_server.get_ki_change_schedule(level="month", count=9))
     feb = [l for l in out.split("\n") if "Ki 5" in l and "→ Ki 5" in l][0]
     assert "Ki 5 ☲ Li (inherits year)" in feb, feb              # Feb 2027: month 5 under year 9

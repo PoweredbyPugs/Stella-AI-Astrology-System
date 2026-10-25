@@ -298,108 +298,39 @@ def format_ki_report(ki_data: Dict) -> str:
     return "\n".join(lines)
 
 
-# Quick test
-def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None, 
+def calculate_daily_ki(birth_date: date, target_date=None,
                       lat: float = 28.5383, lon: float = -81.3792) -> Dict:
-    """
-    Calculate traditional daily Ki cascade: year, month, day, hour Ki with personal offsets.
-    
-    This implements the traditional -3 descending pattern used in 9 Star Ki:
-    - Year Ki: ((2027 - year) % 9) or 9, adjusted for Lichun (Sun at 315°)
-    - Month Ki: first_sub(year_ki) start, counts down by Sun's 30° segments from 315°
-    - Day Ki: day_starts_by_year lookup table, counts days since Lichun, descends by 1 per day
-    - Hour Ki: first_sub(day_ki) start, counts down by 2-hour blocks
-    
-    Personal Ki at each level uses Flying Star: flying_star(natal_year_ki, global_ki)
-    
+    """The seven-level Ki cascade, global and personal, read from the Sun (see ki_solar).
+
+    A day is one degree of the Sun past Lichun, a month is thirty of them, an hour is five
+    arcminutes. Every level opens on an Earth number and the count never resets.
+
     Args:
-        birth_date: Date of birth for natal year Ki calculation
-        target_date: Target date for Ki calculation (default: today)
-        lat: Latitude for precise Lichun timing (default: Orlando)
-        lon: Longitude for precise Lichun timing (default: Orlando)
-        
+        birth_date: Date of birth for the natal year Ki
+        target_date: an aware datetime, or a date (read at local noon); None = now
+        lat, lon: accepted for compatibility; the solar stack does not depend on location
+
     Returns:
-        Dict with global and personal Ki at all 4 levels (year, month, day, hour)
+        Dict with global and personal Ki at all seven levels, where the Sun is, and when the
+        current degree-day and degree-hour began and end.
     """
-    import swisseph as swe
-    import zoneinfo
-    from datetime import timedelta
-    
-    # Set ephemeris path
-    swe.set_ephe_path('/mnt/baratie/baratie/sweph-service/ephemeris')
-    
-    if target_date is None:
-        target_date = date.today()
-    
-    # Convert to datetime for calculations
-    target_dt = datetime.combine(target_date, datetime.min.time())
-    target_dt = target_dt.replace(tzinfo=zoneinfo.ZoneInfo("America/New_York"))
-    
-    # First month of the year: continuous count, 12 mod 9 = 3.
-    # Year 1/4/7 -> 8, 9/6/3 -> 5, 8/5/2 -> 2.
-    def first_sub(parent):
-        return [None, 8, 2, 5, 8, 2, 5, 8, 2, 5][parent]
-    
-    # Ki year and month from the shared calendar: the local date of each
-    # 15° crossing opens the period (ki_calendar).
-    ki_year, month_idx = ki_month_of(target_date)
-    lichun_jd = _lichun_jd(ki_year)
-    
-    # Global year Ki: ((2027 - year) % 9) or 9
-    year_ki = ((2027 - ki_year) % 9) or 9
-    
-    # Month Ki: -3 cascade from year Ki
-    month_start = first_sub(year_ki)
-    month_ki = ((month_start - month_idx - 1) % 9) + 1
-    
-    # Day Ki: 365 solar days from Lichun with local midnight boundaries
-    local_tz = zoneinfo.ZoneInfo("America/New_York")
-    day_starts_by_year = {1: 5, 9: 9, 8: 4, 7: 8, 6: 3, 5: 7, 4: 2, 3: 6, 2: 1}
-    day_start_ki = day_starts_by_year.get(year_ki, 5)
-    
-    # Convert Lichun and target to local time
-    lichun_dt = datetime.utcfromtimestamp((lichun_jd - 2440587.5) * 86400).replace(tzinfo=zoneinfo.ZoneInfo("UTC"))
-    lichun_local = lichun_dt.astimezone(local_tz)
-    target_local = target_dt.astimezone(local_tz)
-    
-    days_since_lichun = (target_local.date() - lichun_local.date()).days
-    day_ki = ((day_start_ki - days_since_lichun - 1) % 9) + 1
-    
-    # Hour Ki: 12 double-hours per day, -3 cascade from day
-    local_hour = target_local.hour + target_local.minute / 60.0
-    dh_idx = int(local_hour / 2)  # which 2-hour block (0-11)
-    hour_start = first_sub(day_ki)
-    hour_ki = ((hour_start - dh_idx - 1) % 9) + 1
-    
-    # Calculate natal year Ki
-    natal_year_ki = calculate_ki_year(birth_date.year, birth_date.month, birth_date.day)
-    
-    # Personal Ki using Flying Star method at each level
-    def flying_star(natal_ki, global_ki):
-        shift = -NUM_TO_IDX[global_ki]
-        new_idx = (NUM_TO_IDX[natal_ki] + shift) % 9
-        return FLYING_SEQUENCE[new_idx]
-    
-    personal_year_ki = flying_star(natal_year_ki, year_ki)
-    personal_month_ki = flying_star(natal_year_ki, month_ki)
-    personal_day_ki = flying_star(natal_year_ki, day_ki)
-    personal_hour_ki = flying_star(natal_year_ki, hour_ki)
-    
-    # Upper levels (great year, Ki Age, great age) from the Ki year; personal by the same formula.
-    from ki_levels import global_great_age, global_great_year, global_ki_age, personal as _personal
+    from datetime import time
+    from ki_solar import TZ, dt_to_jd, jd_to_dt, solar_stack
+    from ki_levels import personal as _personal
     from hub_inheritance import resolve as _resolve
 
-    upper_global = {
-        "great_age": global_great_age(ki_year),
-        "ki_age": global_ki_age(ki_year),
-        "great_year": global_great_year(ki_year),
-    }
-    upper_personal = {k: _personal(natal_year_ki, v) for k, v in upper_global.items()}
+    if target_date is None:
+        target_dt = datetime.now(TZ)
+    elif isinstance(target_date, datetime):
+        target_dt = target_date if target_date.tzinfo else target_date.replace(tzinfo=TZ)
+    else:
+        target_dt = datetime.combine(target_date, time(12)).replace(tzinfo=TZ)
 
-    global_stack = {**upper_global, "year": year_ki, "month": month_ki, "day": day_ki, "hour": hour_ki}
-    personal_stack = {**upper_personal, "year": personal_year_ki, "month": personal_month_ki,
-                      "day": personal_day_ki, "hour": personal_hour_ki}
+    s = solar_stack(dt_to_jd(target_dt))
+    natal_year_ki = calculate_ki_year(birth_date.year, birth_date.month, birth_date.day)
     order = ["great_age", "ki_age", "great_year", "year", "month", "day", "hour"]
+    global_stack = {lvl: s["numbers"][lvl] for lvl in order}
+    personal_stack = {lvl: _personal(natal_year_ki, g) for lvl, g in global_stack.items()}
 
     def levels(stack):
         out = {}
@@ -413,23 +344,29 @@ def calculate_daily_ki(birth_date: date, target_date: Optional[date] = None,
             out[lvl] = {"ki": stack[lvl], "info": KI_TRIGRAMS[stack[lvl]], "hub": hub}
         return out
 
-    # Build result structure
-    result = {
-        "target_date": target_date.isoformat(),
+    fmt = lambda jd: jd_to_dt(jd).strftime("%Y-%m-%d %H:%M")
+    return {
+        "target_date": target_dt.date().isoformat(),
+        "target_time": target_dt.isoformat(timespec="minutes"),
         "birth_date": birth_date.isoformat(),
         "natal_year_ki": natal_year_ki,
-        "lichun_date": lichun_local.date().isoformat(),
-        "days_since_lichun": days_since_lichun,
-        "local_time": target_local.strftime("%H:%M"),
+        "lichun_date": jd_to_dt(s["spans"]["year"][0]).date().isoformat(),
+        "days_since_lichun": s["degree_day_of_year"] - 1,
+        "sun_longitude": round(s["sun_longitude"], 3),
+        "degrees_past_lichun": round(s["degrees_past_lichun"], 3),
+        "degree_day": s["degree_day"],
+        "degree_hour": s["degree_hour"],
+        "arcminute": s["arcminute"],
+        "day_span": [fmt(j) for j in s["spans"]["day"]],
+        "hour_span": [fmt(j) for j in s["spans"]["hour"]],
+        "local_time": target_dt.strftime("%H:%M"),
         "global": levels(global_stack),
         "personal": levels(personal_stack),
         "sequences": {
             "global": ".".join(str(global_stack[l]) for l in order),
             "personal": ".".join(str(personal_stack[l]) for l in order),
-        }
+        },
     }
-
-    return result
 
 
 if __name__ == "__main__":

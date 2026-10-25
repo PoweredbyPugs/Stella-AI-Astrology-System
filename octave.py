@@ -30,15 +30,20 @@ the Work of individuation.
 ## The clock
 - Ki years run Lichun to Lichun (Sun at 15° Aquarius, about Feb 3-5). Ki months begin when the Sun
   crosses 15° of each sign, around the 4th to 8th of the month.
-- Every level counts down by one, continuously, and never resets at a seam: great year, year, month.
-  12 mod 9 = 3, so every Lichun opens on an Earth month (2, 5 or 8), and every great-year gate opens
-  on an Earth year. Continuity is the test of any calculation: if a count jumps at a seam, it is wrong.
+- Every level counts down by one, continuously, and never resets at a seam: great age, Ki Age, great
+  year, year, month, day, hour. Twelve of anything is its parent and nine of anything is one cycle of
+  its numbers; 12 mod 9 = 3, so every Lichun opens on an Earth month (2, 5 or 8), and every great-year
+  gate opens on an Earth year. Continuity is the test of any calculation: if a count jumps at a seam,
+  it is wrong. Below the month, a day is one degree of the Sun past Lichun and an hour five arcminutes.
 - Global year: 2026 = 1, descending one per year. The global Feb month for years 1·4·7 is 8, 9·6·3 is
   5, 8·5·2 is 2.
-- Great year: 12-year gates, 8 from Lichun 2022 to Lichun 2034, then 7, descending one per gate. Nine
-  gates = 108 years.
-- Ki Age: 12 great years = 144 years, 2 from Lichun 2022; great age: 9 Ki Ages = 1,296 years, 5 from
-  Lichun 2022. Each descends one per period. Read upward at Lichun 2022 the stack is 5 · 2 · 8 · 5 · 2.
+- Great year: 12-year gates, 2 from Lichun 2010, 1 from Lichun 2022 to Lichun 2034, then 9, descending
+  one per gate. Nine gates = 108 years.
+- Ki Age: 12 great years = 144 years, 5 from Lichun 2010; great age: 12 Ki Ages = 1,728 years (24° of
+  precession, one fifteenth of the 25,920-year cycle), 8 from Lichun 2010, the gate before the vernal
+  point passed 24° beyond the Lahiri sidereal zero. Each descends one per period. At Lichun 2010 every
+  level turned together and the stack read 8 · 5 · 2 · 8 · 2 · 8 · 5. A level is Earth at its own seam
+  only when its parent turns too, which is why the 2022 great year is 1.
 - Personal Ki: the natal year number read against any global number, personal = ((n - g + 4) mod 9) + 1.
   The same at every level. Personal months rise by one each month.
 - Natal triple: natal year . natal month . the personal month at birth (e.g. 5.9.1).

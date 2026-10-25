@@ -274,6 +274,14 @@ Built by `build_graph.py` and the `graph/` ingestion scripts into Neo4j
   777 (plus `data/777-correspondences.json`, fully structured), Cosmos & Psyche
 - **Divinatory** — Gnostic Book of Changes, Waite's Pictorial Key, Tao Te Ching
 
+`knowledge_search` is hybrid: a local embedding model (Ollama,
+`qwen3-embedding:4b`) finds passages by meaning, Lucene full-text finds exact
+names, and the two rankings are fused. If Ollama is down it falls back to
+full-text alone. Chunks are rebuilt and re-embedded with
+`python -m graph.rebuild_knowledge` (backup, cleanup, reingest, resplit, tag,
+frontmatter, embed, index, stats); `graph/textprep.py` holds the EPUB/PDF
+extraction and chunking.
+
 Query it with `knowledge_search` / `interpret_placement`, or traverse it
 structurally with the 14 `graph_*` tools (depositor chains, receptions, rulership
 webs, synastry, raw Cypher). Neo4j is optional — Stella runs without it, minus the
@@ -349,7 +357,8 @@ Docs: [SETUP.md](SETUP.md) · [TOOLS.md](TOOLS.md) ·
 | `NEO4J_URI` | No | `bolt://localhost:7687` | Knowledge graph (optional) |
 | `NEO4J_USER` | No | `neo4j` | Neo4j auth |
 | `NEO4J_PASS` | No | `[REDACTED]` | Neo4j auth |
-| `OPENAI_API_KEY` | No | — | Only for graph-ingestion embeddings |
+| `STELLA_EMBED_URL` | No | `http://127.0.0.1:11434` | Ollama endpoint for knowledge-search embeddings |
+| `STELLA_EMBED_MODEL` | No | `qwen3-embedding:4b` | Must match the model the graph was embedded with |
 | `STELLA_WS_TOKEN` | For `stella_ws.py` | — | Shared secret in the Bulbasaur URL (`openssl rand -hex 24`) |
 | `STELLA_WS_PORT` | No | `8812` | WebSocket bridge port, loopback; `tailscale serve` fronts it |
 

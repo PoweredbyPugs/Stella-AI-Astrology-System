@@ -32,3 +32,6 @@ CONSTELLATION-AGENT.md
 
 # Local worktrees
 .worktrees/
+
+# Knowledge-graph backups written by graph/rebuild_knowledge.py
+backups/

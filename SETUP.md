@@ -100,6 +100,24 @@ docker compose up -d                # Start Neo4j
 ./.venv/bin/python build_graph.py   # Build the structural graph
 ```
 
+### 7b. Semantic knowledge search (optional, recommended)
+
+`knowledge_search` embeds each query with a local Ollama model. Without it,
+search still works on keywords alone.
+
+```bash
+brew install ollama && brew services start ollama
+ollama pull qwen3-embedding:4b
+```
+
+To re-embed the graph (for example after adding books or switching models):
+
+```bash
+./.venv/bin/python -m graph.rebuild_knowledge backup
+./.venv/bin/python -m graph.rebuild_knowledge embed   # --url http://host:11434 to use a GPU box
+./.venv/bin/python -m graph.rebuild_knowledge index
+```
+
 ### 8. Optional legacy Chroma knowledge import
 
 Only if you specifically want the old Chroma-based interpretation import:

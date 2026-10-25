@@ -1354,127 +1354,17 @@ def _knowledge_query_neo4j(
     author: Optional[str] = None,
     top: int = 5,
 ) -> list[dict]:
-    """Internal: query Interpretation nodes from Neo4j using structural edges and filters."""
-    # Build dynamic Cypher with optional MATCH clauses and WHERE filters
-    match_clauses = ["MATCH (i:Interpretation)"]
-    where_clauses = []
-    params: dict = {"limit": top}
+    """Internal: hybrid (full-text + vector) search over Interpretation nodes.
 
-    # Structural edge filters
-    if planet and sign:
-        # Full-text search scoped to planet+sign via DESCRIBES edges
-        # Build a full-text query that requires both terms
-        ft_query = f"{planet.capitalize()} AND {sign.capitalize()}"
-        try:
-            results = neo4j_query("""
-                CALL db.index.fulltext.queryNodes('interpretation_text', $ft_query) YIELD node AS i, score
-                MATCH (i)-[:DESCRIBES]->(p:Planet)
-                MATCH (i)-[:DESCRIBES]->(s:Sign)
-                WHERE toLower(p.id) = $planet AND toLower(s.id) = $sign
-                OPTIONAL MATCH (i)-[:AUTHORED_BY]->(auth:Author)
-                OPTIONAL MATCH (i)-[:IN_LAYER]->(ly:Layer)
-                RETURN i.text AS text, auth.name AS author, i.source_title AS title,
-                       i.trust_tier AS tier, ly.id AS layer, i.tradition AS tradition,
-                       i.tags AS tags, score
-                ORDER BY score DESC
-                LIMIT $limit
-            """, ft_query=ft_query, planet=planet.lower(), sign=sign.lower(), limit=top)
-            if results:
-                return results
-        except Exception:
-            pass
-        # Fallback: DESCRIBES edges + text contains
-        match_clauses.append("MATCH (i)-[:DESCRIBES]->(p:Planet)")
-        match_clauses.append("MATCH (i)-[:DESCRIBES]->(s:Sign)")
-        where_clauses.append("toLower(p.id) = $planet AND toLower(s.id) = $sign")
-        where_clauses.append("toLower(i.text) CONTAINS $sign")
-        params["planet"] = planet.lower()
-        params["sign"] = sign.lower()
-    elif planet:
-        match_clauses.append("MATCH (i)-[:DESCRIBES]->(p:Planet)")
-        where_clauses.append("toLower(p.id) = $planet")
-        params["planet"] = planet.lower()
-    elif sign:
-        match_clauses.append("MATCH (i)-[:DESCRIBES]->(s:Sign)")
-        where_clauses.append("toLower(s.id) = $sign")
-        params["sign"] = sign.lower()
-
-    if house:
-        match_clauses.append("MATCH (i)-[:INTERPRETS_HOUSE]->(h:House)")
-        where_clauses.append("h.number = $house")
-        params["house"] = int(house) if isinstance(house, str) and house.isdigit() else house
-
-    if aspect:
-        where_clauses.append("i.tags CONTAINS $aspect")
-        params["aspect"] = aspect.lower()
-
-    if layer:
-        match_clauses.append("MATCH (i)-[:IN_LAYER]->(l:Layer)")
-        where_clauses.append("l.id = $layer")
-        params["layer"] = layer.lower()
-
-    if trust_tier is not None:
-        where_clauses.append("i.trust_tier = $trust_tier")
-        params["trust_tier"] = trust_tier
-
-    if tradition:
-        where_clauses.append("i.tradition = $tradition")
-        params["tradition"] = tradition.lower()
-
-    if author:
-        match_clauses.append("MATCH (i)-[:AUTHORED_BY]->(a:Author)")
-        where_clauses.append("toLower(a.name) CONTAINS $author")
-        params["author"] = author.lower()
-
-    if technique:
-        where_clauses.append("i.tags CONTAINS $technique")
-        params["technique"] = technique.lower().replace("_", " ")
-
-    # Free-text search via full-text index or CONTAINS fallback
-    if query and not (planet or sign or house or aspect):
-        # Try full-text index first; fall back to CONTAINS
-        try:
-            ft_cypher = "CALL db.index.fulltext.queryNodes('interpretation_text', $query) YIELD node, score "
-            ft_cypher += " ".join(match_clauses[1:]).replace("(i)", "(node)").replace("i.", "node.").replace("(i)-", "(node)-") if len(match_clauses) > 1 else ""
-            # Simpler approach: use full-text as primary filter
-            ft_match = ["CALL db.index.fulltext.queryNodes('interpretation_text', $query) YIELD node AS i, score"]
-            ft_match.extend(match_clauses[1:])
-            ft_where = " AND ".join(where_clauses) if where_clauses else ""
-            ft_query = " ".join(ft_match)
-            if ft_where:
-                ft_query += f" WHERE {ft_where}"
-            ft_query += """
-                OPTIONAL MATCH (i)-[:AUTHORED_BY]->(auth:Author)
-                OPTIONAL MATCH (i)-[:IN_LAYER]->(ly:Layer)
-                RETURN i.text AS text, auth.name AS author, i.source_title AS title,
-                       i.trust_tier AS tier, ly.id AS layer, i.tradition AS tradition,
-                       i.tags AS tags, score
-                ORDER BY score DESC
-                LIMIT $limit
-            """
-            params["query"] = query
-            results = neo4j_query(ft_query, **params)
-            if results:
-                return results
-        except Exception:
-            pass
-        # CONTAINS fallback
-        where_clauses.append("toLower(i.text) CONTAINS $query_lower")
-        params["query_lower"] = query.lower()
-
-    cypher = " ".join(match_clauses)
-    if where_clauses:
-        cypher += " WHERE " + " AND ".join(where_clauses)
-    cypher += """
-        OPTIONAL MATCH (i)-[:AUTHORED_BY]->(auth:Author)
-        OPTIONAL MATCH (i)-[:IN_LAYER]->(ly:Layer)
-        RETURN i.text AS text, auth.name AS author, i.source_title AS title,
-               i.trust_tier AS tier, ly.id AS layer, i.tradition AS tradition,
-               i.tags AS tags
-        ORDER BY i.trust_tier ASC
-        LIMIT $limit
+    Structural filters narrow both retrievers; see graph/hybrid_search.py.
     """
-    return neo4j_query(cypher, **params)
+    from graph.hybrid_search import search as hybrid_search
+
+    return hybrid_search(
+        neo4j_query, query or "", top=top, layer=layer, trust_tier=trust_tier,
+        planet=planet, sign=sign, house=house, aspect=aspect, technique=technique,
+        tradition=tradition, author=author,
+    )
 
 
 @mcp.tool()
@@ -1491,10 +1381,13 @@ def knowledge_search(
     author: Optional[str] = None,
     top: int = 5,
 ) -> str:
-    """Search the astrology knowledge graph (Neo4j) with structural and text matching.
+    """Search the astrology knowledge graph (Neo4j) by meaning and by keyword.
 
-    Queries 8,900+ Interpretation nodes from 36 curated texts linked via
-    INTERPRETS_PLACEMENT, INTERPRETS_HOUSE, INTERPRETS_ASPECT edges.
+    Hybrid retrieval over ~13,000 Interpretation chunks from 50+ texts: a local
+    embedding model (Ollama, qwen3-embedding) finds passages by meaning, Lucene
+    full-text finds exact names and terms, and the two rankings are fused.
+    Filters narrow both through DESCRIBES / IN_LAYER / AUTHORED_BY edges.
+    Copyright pages, tables of contents and indexes are excluded.
 
     Filters:
     - layer: technical | psychological | archetypal | philosophical | reference
@@ -1517,7 +1410,7 @@ def knowledge_search(
     if not results:
         return "No results found."
 
-    output_parts = [f'Results for: "{query}" (Neo4j knowledge graph)\n']
+    output_parts = [f'Results for: "{query}" (Neo4j knowledge graph, hybrid search)\n']
 
     for i, r in enumerate(results):
         tier = r.get("tier", 4)
@@ -1525,6 +1418,10 @@ def knowledge_search(
         lyr = (r.get("layer") or "?").upper()
 
         header = f"[{i+1}] [{lyr}] [{tier_label}] — {r.get('author', '?')}: {r.get('title', '?')}"
+        if r.get("section"):
+            header += f" › {r['section']}"
+        if r.get("match"):
+            header += f"  ({r['match']})"
 
         tags = r.get("tags") or ""
         text = r.get("text", "")
@@ -1573,6 +1470,10 @@ def knowledge_search_json(
             "trust_tier": r.get("tier"),
             "tradition": r.get("tradition"),
             "tags": tags,
+            "section": r.get("section"),
+            "chunk_id": r.get("chunk_id"),
+            "match": r.get("match"),
+            "score": r.get("score"),
         })
 
     return json.dumps(output, indent=2)
@@ -1632,8 +1533,8 @@ def interpret_placement(
 ) -> str:
     """Get a multi-layered interpretation for a specific astrological placement.
 
-    Uses Neo4j structural edges (INTERPRETS_PLACEMENT, INTERPRETS_HOUSE,
-    INTERPRETS_ASPECT) to find relevant interpretations across all layers.
+    Filters chunks by DESCRIBES edges to the planet, sign, house and aspect, then
+    ranks them with hybrid (meaning + keyword) search, once per layer.
 
     Args:
         planet: The planet (sun, moon, mercury, venus, mars, jupiter, saturn, uranus, neptune, pluto)

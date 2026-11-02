@@ -188,3 +188,70 @@ def next_change_jd(jd: float, level: str, n: int = 1) -> float:
 def stack_after(jd: float, level: str, n: int = 1) -> dict:
     """The global numbers just after the n-th next change of ``level``."""
     return solar_stack(next_change_jd(jd, level, n) + 1 / 86400)["numbers"]
+
+
+# ── Periods (one continuous index per level) ──
+#
+# Every level is one integer count: year = the Ki year; month = Y·12 + m; day = Y·360 + degree;
+# hour = Y·4320 + twelfth; great year / Ki Age / great age = gates since their 2010 anchor.
+# These are the periods the Octave Calendar's clock draws: nine of them, from a 1, are an octave.
+
+PER_YEAR = {"month": 12, "day": 360, "hour": HOURS_PER_DAY * 360}
+GATE_LEVELS = ("great_age", "ki_age", "great_year")
+_SWE_SAFE_YEARS = (-2900, 2900)   # outside this, no ephemeris instant; the Ki year still stands
+
+
+def period_index(jd: float, level: str) -> int:
+    """The continuous index of the period containing ``jd`` at ``level``."""
+    Y = ki_year_at(jd)
+    if level == "year":
+        return Y
+    if level in GATE_LEVELS:
+        return (Y - gate_start(2010, level)) // PERIOD_YEARS[level]
+    deg = degrees_past_lichun(jd)
+    return Y * PER_YEAR[level] + min(int(deg * PER_YEAR[level] / 360), PER_YEAR[level] - 1)
+
+
+def period_start_ki_year(level: str, idx: int) -> int:
+    """The Ki year a period opens in (its Lichun, for the year and above)."""
+    if level == "year":
+        return idx
+    if level in GATE_LEVELS:
+        return gate_start(2010, level) + idx * PERIOD_YEARS[level]
+    return idx // PER_YEAR[level]
+
+
+def period_start_jd(level: str, idx: int) -> Optional[float]:
+    """The instant a period opens, or None when its Lichun is outside the ephemeris."""
+    Y = period_start_ki_year(level, idx)
+    if not (_SWE_SAFE_YEARS[0] <= Y <= _SWE_SAFE_YEARS[1]):
+        return None
+    if level == "year" or level in GATE_LEVELS:
+        return lichun_jd(Y)
+    k = idx - Y * PER_YEAR[level]
+    return boundary_jd(Y, k * 360 / PER_YEAR[level])
+
+
+def period_stack(level: str, idx: int) -> dict:
+    """The global numbers in force through a period, from the top of the stack down to ``level``.
+    Month, day and hour are read at mid-period, where every container is settled; the year and
+    above are read from the Ki year that opens the period."""
+    from ki_levels import global_stack
+    keep = LEVELS[: LEVELS.index(level) + 1]
+    if level == "year" or level in GATE_LEVELS:
+        st = global_stack(period_start_ki_year(level, idx))
+    else:
+        start, end = period_start_jd(level, idx), period_start_jd(level, idx + 1)
+        st = solar_stack((start + end) / 2)["numbers"]
+    return {k: st[k] for k in keep}
+
+
+def octave_start_index(level: str, idx: int, natal: Optional[int] = None) -> int:
+    """The index that opens the octave containing ``idx``: the nearest period at or before it whose
+    number is 1 (personal when ``natal`` is given, else global)."""
+    from ki_levels import personal
+    for off in range(9):
+        g = period_stack(level, idx - off)[level]
+        if (personal(natal, g) if natal else g) == 1:
+            return idx - off
+    return idx

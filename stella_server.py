@@ -5316,6 +5316,86 @@ async def get_ki_change_schedule(
     return "\n".join(lines)
 
 
+@mcp.tool()
+async def get_ki_periods(
+    birth_date: Optional[str] = None,
+    level: str = "day",
+    target_date: Optional[str] = None,
+) -> str:
+    """Dated Ki periods as JSON, for calendars: an octave at one level, or the present at all seven.
+
+    level = hour | day | month | year | great_year | ki_age | great_age: the nine periods of the
+    octave containing target_date at that level, each with its exact start and end (the Sun's
+    crossing, Swiss Ephemeris), its global and personal number, and the stack above it. The octave
+    opens on the nearest 1 at or before the target: personal with birth_date, else global.
+
+    level = all: the period holding target_date at every level, with start, end and the fraction
+    elapsed (convergence bars).
+
+    Args:
+        birth_date: Birth date YYYY-MM-DD for personal numbers (optional)
+        level: one of the seven levels, or "all"
+        target_date: ISO datetime (New York if no zone), or a bare date read at local noon; default now
+
+    Returns:
+        JSON. Times are ISO 8601 with offset, America/New_York; null where a period opens outside
+        the ephemeris (great age and Ki Age far from now), with start_ki_year always given.
+    """
+    from datetime import date as date_type
+    from ki import calculate_ki_year
+    from ki_calendar import lichun_jd
+    from ki_levels import PERIOD_YEARS, personal
+    from ki_solar import (
+        LEVELS, dt_to_jd, ki_year_at, jd_to_dt, octave_start_index, parse_target, period_index,
+        period_stack, period_start_jd, period_start_ki_year,
+    )
+
+    if level != "all" and level not in LEVELS:
+        return json.dumps({"error": f"unknown level {level!r}; use one of {', '.join(LEVELS)} or all"})
+    natal = None
+    if birth_date:
+        bd = date_type.fromisoformat(birth_date)
+        natal = calculate_ki_year(bd.year, bd.month, bd.day)
+    target = parse_target(target_date)
+    jd = dt_to_jd(target)
+    iso = lambda j: jd_to_dt(j).isoformat() if j is not None else None
+
+    def period(lvl, idx):
+        start, end = period_start_jd(lvl, idx), period_start_jd(lvl, idx + 1)
+        g = period_stack(lvl, idx)
+        p = {k: personal(natal, v) for k, v in g.items()} if natal else None
+        out = {
+            "index": idx,
+            "start": iso(start),
+            "end": iso(end),
+            "start_ki_year": period_start_ki_year(lvl, idx),
+            "global": g[lvl],
+            "personal": p[lvl] if p else None,
+            "global_stack": g,
+            "personal_stack": p,
+            "contains_target": start is not None and end is not None and start <= jd < end,
+        }
+        if out["contains_target"]:
+            out["elapsed"] = round((jd - start) / (end - start), 6)
+        elif lvl in PERIOD_YEARS and start is not None and start <= jd and end is None:
+            # A gate whose closing Lichun is past the ephemeris: count elapsed in Ki years.
+            years = PERIOD_YEARS[lvl]
+            y_now = ki_year_at(jd)
+            frac = (jd - lichun_jd(y_now)) / (lichun_jd(y_now + 1) - lichun_jd(y_now))
+            out["contains_target"] = True
+            out["elapsed"] = round((y_now - out["start_ki_year"] + frac) / years, 6)
+        return out
+
+    head = {"target": target.isoformat(timespec="seconds"), "birth_date": birth_date, "natal_year_ki": natal}
+    if level == "all":
+        return json.dumps({**head, "levels": {lvl: period(lvl, period_index(jd, lvl)) for lvl in LEVELS}})
+
+    idx = period_index(jd, level)
+    s0 = octave_start_index(level, idx, natal)
+    return json.dumps({**head, "level": level, "octave_start_index": s0,
+                       "periods": [period(level, s0 + i) for i in range(9)]})
+
+
 # ── Individual Ki change tools (one per level) ──
 
 _KI_PAIR_MAP = {

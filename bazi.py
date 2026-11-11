@@ -10,7 +10,10 @@ Month stems by the Five Tigers rule (五虎遁), hour stems by the Five Rats rul
 Only the solar-term boundaries are shared with the Ki calendar. Nothing else is.
 """
 
-from datetime import date, datetime, time, timezone
+from dataclasses import dataclass, field
+from datetime import date, datetime, time, timedelta, timezone
+from typing import Optional
+from zoneinfo import ZoneInfo
 
 import swisseph as swe
 
@@ -91,19 +94,22 @@ def hour_index(day_idx: int, hour_branch: int) -> int:
     return sexagenary_index((rat_stem + hour_branch) % 10, hour_branch)
 
 
-def pillars_from_civil(local: datetime, day_boundary: str = "23:00") -> dict:
+def pillars_from_civil(local: datetime, day_boundary: str = "23:00",
+                       instant: Optional[datetime] = None) -> dict:
     """Four pillars for a tz-aware local datetime read as clock time.
 
     ``day_boundary`` "23:00": the day pillar changes at the start of the Zi hour.
     "midnight": the day pillar keeps the civil date until 00:00, and the 23:00–00:00 hour
     stem is derived from the next day's stem (早子/晚子 convention).
+    ``instant``: the true instant for the year and month pillars when ``local`` is an
+    apparent-solar-time reading rather than the clock (default: ``local`` itself).
     """
     if day_boundary not in DAY_BOUNDARIES:
         raise ValueError(f"day_boundary must be one of {DAY_BOUNDARIES}, not {day_boundary!r}")
     if local.tzinfo is None:
         raise ValueError("local datetime must be timezone-aware")
 
-    jd = _jd_ut(local)
+    jd = _jd_ut(instant or local)
     y_idx = year_index(jd)
     m_idx = month_index(jd, y_idx)
 
@@ -121,4 +127,113 @@ def pillars_from_civil(local: datetime, day_boundary: str = "23:00") -> dict:
         "month": sexagenary(m_idx),
         "day": sexagenary(d_idx),
         "hour": sexagenary(h_idx),
+    }
+
+
+# ── Birth data ──────────────────────────────────────────────────────────────
+
+GENDERS = {"m": "male", "male": "male", "man": "male", "男": "male",
+           "f": "female", "female": "female", "woman": "female", "女": "female"}
+
+
+def normalise_gender(value) -> Optional[str]:
+    if value is None:
+        return None
+    return GENDERS.get(str(value).strip().lower())
+
+
+@dataclass
+class BirthData:
+    local: datetime                 # tz-aware clock time of birth
+    lat: Optional[float]
+    lon: Optional[float]
+    tz: Optional[str]               # IANA zone name, or None when the chart carried none
+    gender: Optional[str]           # "male" / "female" / None
+    source: str
+    notes: list = field(default_factory=list)
+
+
+def _jd_to_utc(jd: float) -> datetime:
+    y, m, d, h = swe.revjul(jd)
+    return datetime(y, m, d, tzinfo=timezone.utc) + timedelta(seconds=round(h * 3600))
+
+
+def birth_from_chart(chart: dict, gender: Optional[str] = None) -> BirthData:
+    """Birth data from either stored-chart shape (Helios ``birthInfo`` or legacy ``birthData``)."""
+    name = chart.get("name", "chart")
+    notes = []
+    if "birthInfo" in chart:
+        info = chart["birthInfo"]
+        naive = datetime.strptime(info["dateTime"], "%B %d, %Y %I:%M:%S %p")
+        coords = info.get("coordinates") or {}
+        lat, lon = coords.get("latitude"), coords.get("longitude")
+        tz = info.get("timezone")
+        jd = info.get("julianDay")
+    elif "birthData" in chart:
+        info = chart["birthData"]
+        naive = datetime.fromisoformat(f"{info['date']}T{info['time']}")
+        loc = info.get("location") or {}
+        lat, lon = loc.get("latitude"), loc.get("longitude")
+        tz = info.get("timezone")
+        jd = float(info["julianDay"]) if info.get("julianDay") else None
+    else:
+        raise ValueError(f"Chart '{name}' has no birthInfo or birthData")
+
+    if tz:
+        local = naive.replace(tzinfo=ZoneInfo(tz))
+    elif jd:
+        offset = naive - _jd_to_utc(float(jd)).replace(tzinfo=None)
+        offset = timedelta(minutes=round(offset.total_seconds() / 60))
+        local = naive.replace(tzinfo=timezone(offset))
+        notes.append(f"chart has no time zone; birth time read with the chart's own UT offset ({offset})")
+    else:
+        local = naive.replace(tzinfo=timezone.utc)
+        notes.append("chart has no time zone or Julian Day; birth time read as UT")
+
+    g = normalise_gender(gender) if gender is not None else normalise_gender(chart.get("gender"))
+    return BirthData(local, lat, lon, tz, g, name, notes)
+
+
+# ── True solar time ─────────────────────────────────────────────────────────
+
+def apparent_solar_time(local: datetime, lon: float) -> tuple:
+    """Apparent (true) solar time for a tz-aware clock reading at longitude ``lon``.
+
+    Standard time (DST removed) + 4 min per degree east of the zone's standard meridian
+    + the equation of time. Returns (apparent datetime, parts dict).
+    """
+    off = local.utcoffset() or timedelta()
+    dst = local.dst() or timedelta()
+    std = off - dst
+    std_hours = std.total_seconds() / 3600
+    longitude_minutes = 4 * (lon - 15 * std_hours)
+    equation_minutes = swe.time_equ(_jd_ut(local)) * 1440
+    standard = local - dst
+    apparent = standard + timedelta(minutes=longitude_minutes + equation_minutes)
+    return apparent, {
+        "standard_offset_hours": std_hours,
+        "dst_minutes": dst.total_seconds() / 60,
+        "longitude_minutes": round(longitude_minutes, 2),
+        "equation_minutes": round(equation_minutes, 2),
+    }
+
+
+def natal_pillars(birth: BirthData, true_solar_time: bool = True, day_boundary: str = "23:00") -> dict:
+    warnings = list(birth.notes)
+    solar = None
+    if true_solar_time and birth.lon is None:
+        warnings.insert(0, "no coordinates: hour and day pillars computed on clock time, not true solar time")
+        true_solar_time = False
+    if true_solar_time:
+        reading, solar = apparent_solar_time(birth.local, birth.lon)
+    else:
+        reading = birth.local
+    pillars = pillars_from_civil(reading, day_boundary, instant=birth.local)
+    return {
+        "pillars": pillars,
+        "instant_used": reading.isoformat(),
+        "clock_time": birth.local.isoformat(),
+        "solar": solar,
+        "warnings": warnings,
+        "settings": {"true_solar_time": true_solar_time, "day_boundary": day_boundary},
     }

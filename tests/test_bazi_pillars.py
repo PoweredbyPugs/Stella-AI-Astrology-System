@@ -102,3 +102,56 @@ def test_early_zi_after_midnight_is_same_day_under_both_rules():
 def test_unknown_day_boundary_rejected():
     with pytest.raises(ValueError):
         pillars_from_civil(datetime(1986, 5, 1, 12, 0, tzinfo=NY), day_boundary="noon")
+
+
+# ── Task 2: true solar time, birth data, chart loading ──────────────────────
+
+import json  # noqa: E402
+
+from bazi import BirthData, apparent_solar_time, birth_from_chart, natal_pillars  # noqa: E402
+
+
+def test_apparent_solar_time_betsy():
+    # EST, lon -77.0269 → -8.1 min; EoT 1978-11-20 ≈ +14.3 min; result ≈ 22:37
+    t, parts = apparent_solar_time(datetime(1978, 11, 20, 22, 31, tzinfo=NY), -77.0269)
+    assert abs(parts["longitude_minutes"] - (-8.1)) < 0.2
+    assert 13.5 < parts["equation_minutes"] < 15.0
+    assert t.hour == 22 and 36 <= t.minute <= 38
+
+
+def test_dst_uses_standard_meridian():
+    # Chris 14:35 EDT: standard offset -5 → meridian -75°, not -60°
+    _, parts = apparent_solar_time(datetime(1986, 5, 1, 14, 35, tzinfo=NY), -81.3792)
+    assert parts["standard_offset_hours"] == -5
+    assert abs(parts["longitude_minutes"] - (-25.5)) < 0.2
+
+
+def test_solar_time_crosses_day_boundary():
+    # 1986-11-20 22:50 EST at lon -70.0: +20 min longitude, EoT ≈ +14 → ~23:24 apparent
+    b = BirthData(datetime(1986, 11, 20, 22, 50, tzinfo=NY), 42.0, -70.0, "America/New_York", "male", "test")
+    solar = natal_pillars(b)
+    clock = natal_pillars(b, true_solar_time=False)
+    assert solar["pillars"]["day"]["cn"] != clock["pillars"]["day"]["cn"]
+    assert solar["settings"]["true_solar_time"] is True and not solar["warnings"]
+
+
+def test_birth_from_chart_two_shapes():
+    betsy = birth_from_chart(json.load(open("charts/betsy.json")))
+    assert betsy.gender == "female" and betsy.lon == -77.0269 and betsy.local.hour == 22
+    assert betsy.local.minute == 31 and betsy.tz == "America/New_York"
+    chris = birth_from_chart(json.load(open("charts/chris.json")))
+    assert chris.gender == "male" and chris.local.minute == 35 and chris.tz == "America/New_York"
+    assert chris.lat == 28.5383
+
+
+def test_birth_from_chart_gender_override_and_absence():
+    kate = birth_from_chart(json.load(open("charts/kate.json")))
+    assert kate.gender is None
+    assert birth_from_chart(json.load(open("charts/kate.json")), gender="F").gender == "female"
+
+
+def test_no_coordinates_warns_and_uses_clock_time():
+    b = BirthData(datetime(1995, 8, 25, 21, 3, tzinfo=NY), None, None, "America/New_York", None, "test")
+    r = natal_pillars(b)
+    assert r["warnings"] and "clock time" in r["warnings"][0]
+    assert r["pillars"]["day"]["cn"] == pillars_from_civil(b.local)["day"]["cn"]

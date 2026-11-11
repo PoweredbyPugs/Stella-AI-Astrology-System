@@ -123,3 +123,31 @@ def test_climate():
     c = analyze(BETSY)["climate"]
     assert c["season"] == "winter" and c["temperature"] == "cold"
     assert "fire" in c["tempering"]
+
+
+# ── Review fixes: 格局 must follow 祿 / 刃 / 庫 rules; 從格 flag must not fire on a 比肩 stem ──
+
+def test_structure_jianlu_only_when_month_is_the_lu_branch():
+    # 甲 in 亥 with 甲 revealed: 甲's 祿 is 寅, so no 建祿; 比劫 skipped → primary 壬 unrevealed → 偏印格
+    s = analyze(pillars((0, 0), (1, 11), (0, 2), (0, 0)))["structure"]
+    assert s["name"] == "偏印格" and s["qi_used"] == "壬" and s["revealed"] is False
+    assert analyze(pillars((2, 2), (9, 5), (4, 6), (8, 0)))["structure"]["name"] == "建祿格"   # 戊 in 巳 (戊祿在巳)
+
+
+def test_structure_yuere_and_yuejie():
+    assert analyze(pillars((2, 2), (0, 6), (4, 6), (8, 0)))["structure"]["name"] == "月刃格"   # 戊 in 午 (yang 刃)
+    assert analyze(pillars((2, 2), (4, 2), (1, 3), (2, 0)))["structure"]["name"] == "月劫格"   # 乙 in 寅 (yin: 月劫)
+
+
+def test_structure_storage_month_uses_zaqi():
+    # 戊 in 辰 (戊 乙 癸) with 乙 revealed in the year stem → 雜氣正官格
+    s = analyze(pillars((1, 3), (4, 4), (4, 6), (8, 0)))["structure"]
+    assert s["name"] == "雜氣正官格" and s["qi_used"] == "乙" and s["revealed"] is True
+    # 戊 in 辰 with nothing revealed → middle qi 乙, unrevealed
+    s = analyze(pillars((2, 2), (4, 4), (4, 6), (2, 4)))["structure"]
+    assert s["name"] == "雜氣正官格" and s["revealed"] is False
+
+
+def test_follow_structure_not_flagged_when_a_friend_stem_exists():
+    a = analyze(pillars((0, 10), (6, 6), (0, 6), (5, 5)))   # 甲戌 庚午 甲午 己巳: year stem 甲 is a 比肩
+    assert a["structure"]["special_candidates"] == []

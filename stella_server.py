@@ -4733,7 +4733,10 @@ async def _bazi_birth(name, birth_datetime, lat, lon, timezone, gender):
             return None, f"Chart '{name}' not found in Stella storage or on Helios."
         if "name" not in chart:
             chart["name"] = name
-        return birth_from_chart(chart, gender), None
+        try:
+            return birth_from_chart(chart, gender, timezone=timezone, lat=lat, lon=lon), None
+        except (ValueError, KeyError) as e:
+            return None, f"Chart '{name}' could not be read as birth data: {e}"
     if not birth_datetime:
         return None, "Give a stored chart name or birth_datetime (ISO local time), with lat, lon, timezone and gender."
     tz = ZoneInfo(timezone or "America/New_York")
@@ -4795,8 +4798,8 @@ async def get_bazi(
     Args:
         name: a stored chart (charts/, then Helios). Or give the birth directly:
         birth_datetime: ISO local birth time, e.g. 1978-11-20T22:31
-        lat, lon: birth place (needed for true solar time)
-        timezone: IANA zone of the birth clock, e.g. America/New_York
+        lat, lon: birth place (needed for true solar time); with a chart name they override it
+        timezone: IANA zone of the birth clock, e.g. America/New_York; with a chart name it overrides it
         gender: male or female (overrides the chart; needed for luck pillars)
         true_solar_time: default True; False reads the clock as is
         day_boundary: "23:00" (default) or "midnight"
@@ -4874,7 +4877,7 @@ async def get_bazi_time_pillars(
         target: ISO datetime (naive → the chart's zone, else `timezone`, else New York);
             a bare date is read at noon; default now
         name: a stored chart to read the pillars against (optional)
-        timezone: zone for a naive target when no chart is given
+        timezone: zone for a naive target when no chart is given; with a chart, overrides its birth zone
         gender: override for the chart's gender (luck pillar direction)
         day_boundary: "23:00" (default) or "midnight"
         format: "markdown" (default) or "json"
@@ -4884,7 +4887,7 @@ async def get_bazi_time_pillars(
     from bazi_render import render_time, stem_str
     birth = None
     if name:
-        birth, err = await _bazi_birth(name, None, None, None, None, gender)
+        birth, err = await _bazi_birth(name, None, None, None, timezone, gender)
         if err:
             return err
     tz = birth.local.tzinfo if birth else ZoneInfo(timezone or "America/New_York")
@@ -4892,12 +4895,15 @@ async def get_bazi_time_pillars(
         at = _bazi_parse_target(target, tz)
         if birth:
             natal = natal_pillars(birth, True, day_boundary)
+            luck, omitted = None, None
             try:
                 luck = luck_pillars(birth, natal, at=at)
             except ValueError:
-                luck = None
+                omitted = ('no gender in the chart or arguments; pass gender="male" or "female" '
+                           'to get the luck pillar (direction depends on it)')
             t = time_against_natal(at, natal, luck, day_boundary)
-            result = {**t, "natal_name": birth.source, "day_master": stem_str(natal["pillars"]["day"]["stem"])}
+            result = {**t, "natal_name": birth.source, "day_master": stem_str(natal["pillars"]["day"]["stem"]),
+                      "luck_omitted": omitted}
         else:
             result = {"at": at.isoformat(), "pillars": time_pillars(at, day_boundary), "interactions": []}
     except ValueError as e:

@@ -79,3 +79,11 @@ def test_time_against_natal_reports_ten_gods_and_interactions():
     assert any(i["type"] == "self_punishment" and {m[0] for m in i["members"]} == {"year", "year_now"}
                for i in t["interactions"])
     assert all(any(m[0].endswith("_now") or m[0] == "luck" for m in i["members"]) for i in t["interactions"])
+
+
+def test_time_against_natal_excludes_transit_only_pairs():
+    natal = natal_pillars(BETSY)
+    t = time_against_natal(datetime(2026, 11, 11, 12, 0, tzinfo=NY), natal, None)
+    natal_keys = {"year", "month", "day", "hour", "luck"}
+    assert t["interactions"]
+    assert all(any(m[0] in natal_keys for m in i["members"]) for i in t["interactions"])

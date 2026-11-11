@@ -57,11 +57,13 @@ controls it.
 stem; weak when out of season without both a root and support; otherwise middling. The
 method is printed with every verdict.
 
-**Structure (格局), Ziping Zhenquan:** when the month branch's primary qi is 比肩 the structure
-is 建祿格, when 劫財 it is 月刃格. Otherwise the primary qi if revealed in the year, month or
-hour stem; else a revealed middle qi; else a revealed residual qi; else the primary qi
-unrevealed. Special structures (從格, 專旺) are listed as candidates when their precondition
-holds, never asserted.
+**Structure (格局), Ziping Zhenquan:** 建祿格 when the month branch is the Day Master's 祿
+branch; 月刃格 when it is a yang stem's 刃 branch; 月劫格 when a yin stem's month primary qi is
+劫財. Otherwise the structure is taken from the month branch's hidden stems that are not 比肩
+or 劫財: the first of them revealed in the year, month or hour stem (primary, then middle, then
+residual), else the primary unrevealed. In the storage months 辰戌丑未 the result is a 雜氣
+structure (e.g. 雜氣正官格). Special structures (從格, 專旺) are listed as candidates when their
+precondition holds, never asserted.
 
 **Nayin (納音):** the standard thirty names from 海中金 (甲子乙丑) to 大海水 (壬戌癸亥).
 
@@ -92,7 +94,8 @@ Pillars run through the sexagenary sequence from the natal month pillar, ten yea
 
 ## Reference charts (tests pin these)
 
-From buyiju.com on 2026-11-11, clock time, no solar correction:
+Two independent calculators were used on 2026-11-11. buyiju.com (clock time, no solar
+correction) and china95.net (which offers 真太阳时). Both agree with Stella on every chart below.
 
 | Chart | Birth | Pillars | Stem Ten Gods | Primary-qi Ten Gods |
 |---|---|---|---|---|
@@ -100,7 +103,21 @@ From buyiju.com on 2026-11-11, clock time, no solar correction:
 | Chris | 1986-05-01 14:35 New York | 丙寅 壬辰 乙巳 癸未 | 傷官 正印 日主 偏印 | 劫財 正財 傷官 偏財 |
 | y2k | 2000-01-01 00:30 Shanghai | 己卯 丙子 戊午 壬子 | 劫財 偏印 日主 偏財 | 正官 正財 正印 正財 |
 
+| Sydney | 1990-01-15 10:00 Australia/Sydney | 己巳 丁丑 庚辰 辛巳 | | |
+| 1960 | 1960-08-08 03:00 Shanghai | 庚子 甲申 戊辰 甲寅 | 食神 七殺 日主 七殺 | 正財 食神 比肩 七殺 |
+
+china95 also confirms the direction of true solar time: 2000-06-01 09:05 Beijing time at 105°E is
+the 巳 hour on the clock and the 辰 hour (庚辰) in apparent time. Its luck-pillar start ages (2 for
+the y2k chart, 10 for the 1960 chart, in nominal years) match Stella's day counts. It shows 立夏
+2000 at 13:19 Beijing where the Swiss Ephemeris gives 12:50 (Sun at exactly 45°); Stella uses the
+ephemeris instant, so near a jie the two can differ by that half hour.
+
 Published anchors: 1900-01-01 甲戌 day; Mao Zedong 1893-12-26 辰時 癸巳 甲子 丁酉 甲辰.
+
+Caveat: buyiju.com is a calendar-date tool. Asked for 2024-02-04 at 15:00 and 17:00 Beijing
+time, one hour either side of Lichun (16:27), it returned 癸卯 丙寅 for both, an old year stem
+with the new year's month stem. Stella changes both pillars at the instant (癸卯 乙丑 before,
+甲辰 丙寅 after), so that site cannot validate boundary behaviour.
 
 ## Sources
 

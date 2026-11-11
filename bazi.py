@@ -12,6 +12,7 @@ Only the solar-term boundaries are shared with the Ki calendar. Nothing else is.
 
 from dataclasses import dataclass, field
 from datetime import date, datetime, time, timedelta, timezone
+from datetime import timezone as timezone_cls
 from typing import Optional
 from zoneinfo import ZoneInfo
 
@@ -158,40 +159,87 @@ def _jd_to_utc(jd: float) -> datetime:
     return datetime(y, m, d, tzinfo=timezone.utc) + timedelta(seconds=round(h * 3600))
 
 
-def birth_from_chart(chart: dict, gender: Optional[str] = None) -> BirthData:
-    """Birth data from either stored-chart shape (Helios ``birthInfo`` or legacy ``birthData``)."""
+def _hms_to_hours(text: str) -> float:
+    h, m, sec = (float(x) for x in text.split(":"))
+    return h + m / 60 + sec / 3600
+
+
+def longitude_from_sidereal(greenwich: str, local: str) -> float:
+    """Longitude in degrees from a chart's Greenwich and local sidereal times (hh:mm:ss)."""
+    diff = _hms_to_hours(local) - _hms_to_hours(greenwich)
+    if diff > 12:
+        diff -= 24
+    if diff < -12:
+        diff += 24
+    return round(diff * 15, 4)
+
+
+def birth_from_chart(chart: dict, gender: Optional[str] = None, timezone: Optional[str] = None,
+                     lat: Optional[float] = None, lon: Optional[float] = None) -> BirthData:
+    """Birth data from either stored-chart shape (Helios ``birthInfo`` or legacy ``birthData``).
+
+    ``timezone``, ``lat`` and ``lon`` override what the chart carries. A chart with no zone has
+    its longitude recovered from its sidereal times and its zone inferred from that longitude
+    (standard offset, no daylight saving), with a note saying so.
+    """
     name = chart.get("name", "chart")
     notes = []
     if "birthInfo" in chart:
         info = chart["birthInfo"]
         naive = datetime.strptime(info["dateTime"], "%B %d, %Y %I:%M:%S %p")
         coords = info.get("coordinates") or {}
-        lat, lon = coords.get("latitude"), coords.get("longitude")
+        lat = lat if lat is not None else coords.get("latitude")
+        lon = lon if lon is not None else coords.get("longitude")
         tz = info.get("timezone")
         jd = info.get("julianDay")
     elif "birthData" in chart:
         info = chart["birthData"]
         naive = datetime.fromisoformat(f"{info['date']}T{info['time']}")
         loc = info.get("location") or {}
-        lat, lon = loc.get("latitude"), loc.get("longitude")
+        lat = lat if lat is not None else loc.get("latitude")
+        lon = lon if lon is not None else loc.get("longitude")
         tz = info.get("timezone")
         jd = float(info["julianDay"]) if info.get("julianDay") else None
     else:
         raise ValueError(f"Chart '{name}' has no birthInfo or birthData")
 
+    if lon is None and chart.get("birthInfo", {}).get("siderealTime") and chart["birthInfo"].get("localSiderealTime") \
+            and (chart["birthInfo"].get("coordinates") or {}).get("longitude") is None:
+        lon = longitude_from_sidereal(chart["birthInfo"]["siderealTime"], chart["birthInfo"]["localSiderealTime"])
+        notes.append(f"chart has no coordinates; longitude {lon} recovered from its sidereal times")
+
+    if timezone:
+        tz = timezone
     if tz:
         local = naive.replace(tzinfo=ZoneInfo(tz))
+    elif lon is not None:
+        hours = round(lon / 15)
+        local = naive.replace(tzinfo=timezone_cls(timedelta(hours=hours)))
+        notes.append(f"chart has no time zone; zone inferred from longitude as UTC{hours:+d} (standard time, "
+                     "daylight saving unknown); pass timezone= to fix it")
     elif jd:
         offset = naive - _jd_to_utc(float(jd)).replace(tzinfo=None)
         offset = timedelta(minutes=round(offset.total_seconds() / 60))
-        local = naive.replace(tzinfo=timezone(offset))
+        local = naive.replace(tzinfo=timezone_cls(offset))
         notes.append(f"chart has no time zone; birth time read with the chart's own UT offset ({offset})")
     else:
-        local = naive.replace(tzinfo=timezone.utc)
+        local = naive.replace(tzinfo=timezone_cls.utc)
         notes.append("chart has no time zone or Julian Day; birth time read as UT")
 
     g = normalise_gender(gender) if gender is not None else normalise_gender(chart.get("gender"))
     return BirthData(local, lat, lon, tz, g, name, notes)
+
+
+def apply_lmt_fallback(birth: BirthData) -> BirthData:
+    """Before a zone's recorded history, zoneinfo gives its reference city's LMT. Rebuild the
+    offset from the birth longitude and say so."""
+    if birth.local.tzname() == "LMT" and birth.lon is not None:
+        minutes = round(birth.lon * 4)
+        local = birth.local.replace(tzinfo=timezone_cls(timedelta(minutes=minutes)))
+        notes = birth.notes + [f"birth predates the zone's recorded history; read as local mean time of "
+                               f"longitude {birth.lon} (UTC{minutes // 60:+03d}:{abs(minutes) % 60:02d})"]
+        return BirthData(local, birth.lat, birth.lon, birth.tz, birth.gender, birth.source, notes)
+    return birth
 
 
 # ── True solar time ─────────────────────────────────────────────────────────
@@ -219,6 +267,7 @@ def apparent_solar_time(local: datetime, lon: float) -> tuple:
 
 
 def natal_pillars(birth: BirthData, true_solar_time: bool = True, day_boundary: str = "23:00") -> dict:
+    birth = apply_lmt_fallback(birth)
     warnings = list(birth.notes)
     solar = None
     if true_solar_time and birth.lon is None:
@@ -324,31 +373,42 @@ def analyze(pillars: dict) -> dict:
     }
 
     # Structure (格局), Ziping Zhenquan rules.
+    from bazi_tables import LUSHEN, YANGREN
     month_hidden = HIDDEN_STEMS[month_branch]
     other_stems = {pillars[k]["stem"]["index"] for k in ("year", "month", "hour")}
+    storage = month_branch in (1, 4, 7, 10)
     primary_god = ten_god(dm, month_hidden[0])
-    if primary_god in ("比肩", "劫財"):
-        # 建祿 / 月刃: the month branch itself is the structure, whatever is revealed.
-        chosen, revealed = month_hidden[0], month_hidden[0] in other_stems
+    prefix = ""
+    if month_branch == LUSHEN[dm]:
+        chosen, revealed, name = month_hidden[0], month_hidden[0] in other_stems, "建祿格"
+    elif STEMS[dm]["polarity"] == "yang" and YANGREN.get(dm) == month_branch:
+        chosen, revealed, name = month_hidden[0], month_hidden[0] in other_stems, "月刃格"
+    elif primary_god == "劫財" and not storage:
+        chosen, revealed, name = month_hidden[0], month_hidden[0] in other_stems, "月劫格"
     else:
-        chosen, revealed = month_hidden[0], False
-        for cand in month_hidden:
+        candidates = [c for c in month_hidden if ten_god(dm, c) not in ("比肩", "劫財")]
+        chosen, revealed = candidates[0], False
+        for cand in candidates:
             if cand in other_stems:
                 chosen, revealed = cand, True
                 break
+        prefix = "雜氣" if storage else ""
+        name = f"{prefix}{ten_god(dm, chosen)}格"
     god = ten_god(dm, chosen)
-    name = {"比肩": "建祿格", "劫財": "月刃格"}.get(god, f"{god}格")
     special = []
-    all_eight = [pillars[k]["stem"]["index"] for k in PILLAR_ORDER] + [s["index"] for k in PILLAR_ORDER for s in hidden[k]]
-    if not any(element_relation(dm_el, STEMS[i]["element"]) in (0, 4) for i in all_eight if i != dm):
+    positions = [pillars[k]["stem"]["index"] for k in PILLAR_ORDER] + [s["index"] for k in PILLAR_ORDER for s in hidden[k]]
+    others = positions[:2] + positions[3:]           # every character except the Day Master's own slot
+    if not any(element_relation(dm_el, STEMS[i]["element"]) in (0, 4) for i in others):
         special.append("從格 (follow structure) candidate: no same-element or resource character anywhere")
-    same_or_resource = sum(1 for i in all_eight if element_relation(dm_el, STEMS[i]["element"]) in (0, 4))
-    if same_or_resource >= len(all_eight) - 1:
+    same_or_resource = sum(1 for i in others if element_relation(dm_el, STEMS[i]["element"]) in (0, 4))
+    if same_or_resource >= len(others) - 1:
         special.append("專旺/從強 (dominant structure) candidate: nearly every character supports the Day Master")
     structure = {
         "name": name, "qi_used": STEMS[chosen]["cn"], "ten_god": god, "revealed": revealed,
-        "basis": "Ziping Zhenquan: the month branch's primary qi if revealed in a stem, else a revealed "
-                 "middle qi, else a revealed residual qi, else the primary qi unrevealed; 比肩 → 建祿格, 劫財 → 月刃格",
+        "basis": "Ziping Zhenquan: 建祿格 when the month is the Day Master's 祿 branch, 月刃格 when it is a yang "
+                 "stem's 刃 branch, 月劫格 when a yin stem's month primary qi is 劫財; otherwise the first of the "
+                 "month branch's non-比劫 hidden stems revealed in a stem (primary, then middle, then residual), "
+                 "else the primary unrevealed; in the storage months 辰戌丑未 the result is a 雜氣 structure",
         "special_candidates": special,
     }
 
@@ -596,5 +656,7 @@ def time_against_natal(at: datetime, natal: dict, luck: Optional[dict] = None,
         combined["luck"] = current_luck
     combined.update({f"{k}_now": now[k] for k in PILLAR_ORDER})
     transit_keys = {"luck", *(f"{k}_now" for k in PILLAR_ORDER)}
-    inter = [i for i in interactions(combined) if any(m[0] in transit_keys for m in i["members"])]
+    natal_side = set(PILLAR_ORDER) | {"luck"}
+    inter = [i for i in interactions(combined)
+             if any(m[0] in transit_keys for m in i["members"]) and any(m[0] in natal_side for m in i["members"])]
     return {"at": at.isoformat(), "pillars": now, "ten_gods": gods, "luck": current_luck, "interactions": inter}

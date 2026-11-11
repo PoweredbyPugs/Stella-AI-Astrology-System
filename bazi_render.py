@@ -65,7 +65,7 @@ def render_natal(result: dict) -> str:
     lines.append("| Ten God | " + " | ".join(god_str(a["ten_gods_stems"][k]) for k in PILLAR_ORDER) + " |")
     lines.append("| Branch | " + " | ".join(branch_str(p[k]["branch"]) for k in PILLAR_ORDER) + " |")
     lines.append("| Hidden stems 藏干 | " + " | ".join(" ".join(s["cn"] for s in a["hidden"][k]) for k in PILLAR_ORDER) + " |")
-    lines.append("| Hidden Ten Gods | " + " | ".join(" ".join(a["ten_gods_hidden"][k]) for k in PILLAR_ORDER) + " |")
+    lines.append("| Hidden Ten Gods | " + " | ".join("; ".join(god_str(g) for g in a["ten_gods_hidden"][k]) for k in PILLAR_ORDER) + " |")
     lines.append("| Nayin 納音 | " + " | ".join(f"{p[k]['nayin']} ({p[k]['nayin_element']})" for k in PILLAR_ORDER) + " |")
     lines.append("| Life stage 十二長生 | " + " | ".join(a["life_stages"][k] for k in PILLAR_ORDER) + " |")
     lines.append("| Void 空亡 | " + " | ".join("✓" if k in a["void"]["pillars"] else "" for k in PILLAR_ORDER) + " |")
@@ -161,6 +161,8 @@ def render_time(result: dict) -> str:
         if result.get("luck"):
             l = result["luck"]
             lines.append(f"Current luck pillar: **{l['cn']} {l['pinyin']}** ({god_str(l['ten_god_stem'])}).")
+        elif result.get("luck_omitted"):
+            lines.append(f"**Luck pillars omitted:** {result['luck_omitted']}")
         lines.append("")
         lines.append("## Interactions with the natal chart" + (" and luck pillar" if result.get("luck") else ""))
         lines.extend(_interaction_line(i) for i in result["interactions"]) if result["interactions"] else lines.append("- none")

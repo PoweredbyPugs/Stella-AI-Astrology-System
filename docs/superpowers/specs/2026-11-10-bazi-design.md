@@ -40,11 +40,14 @@ pyswisseph and `ki_calendar.py`) and arithmetic. No Helios call, no new dependen
      (得令, the Day Master's **element** in the month by the five seasonal states 旺相休囚死,
      not the twelve-stage table), rooting (得地, roots in the branches), support (得勢,
      same-element and resource stems). The verdict names the method so the LLM can disagree.
-   - Chart structure (格局) by the Ziping Zhenquan rules, labelled as such: the month
-     branch's primary qi if revealed in a stem; otherwise a revealed middle qi (中氣) before a
-     revealed residual qi (餘氣); otherwise the primary qi unrevealed. When the chosen qi is
-     比肩 or 劫財 the structure is 建祿格 or 月刃格 (陽刃格) respectively. Special structures
-     (從格 and friends) are flagged as possibilities, never asserted.
+   - Chart structure (格局) by the Ziping Zhenquan rules, labelled as such: 建祿格 when the
+     month branch is the Day Master's 祿 branch, 月刃格 when it is a yang stem's 刃 branch, 月劫格
+     when a yin stem's month primary qi is 劫財; otherwise the first non-比劫 hidden stem of the
+     month branch revealed in a stem (primary, then middle 中氣, then residual 餘氣), else the
+     primary unrevealed; a 雜氣 structure in the storage months 辰戌丑未. (Corrected after review
+     on 2026-11-11: the first wording named 建祿/月刃 from the chosen qi, which mislabelled every
+     earth Day Master in a storage month.) Special structures (從格 and friends) are flagged as
+     possibilities, never asserted.
    - Season of birth and climate: the month's season, whether the chart runs hot, cold, dry
      or damp, and which elements would temper it. This is the raw material for seasonal
      adjustment (調候); the full 120-entry Qiongtong Baojian table is a non-goal for v1.

@@ -155,3 +155,62 @@ def test_no_coordinates_warns_and_uses_clock_time():
     r = natal_pillars(b)
     assert r["warnings"] and "clock time" in r["warnings"][0]
     assert r["pillars"]["day"]["cn"] == pillars_from_civil(b.local)["day"]["cn"]
+
+
+# ── Review fixes: LMT fallback, charts without a zone, overrides ────────────
+
+from bazi import longitude_from_sidereal  # noqa: E402
+
+
+def test_lmt_fallback_rebuilds_offset_from_longitude():
+    # Buffalo 1850: zoneinfo gives New York LMT (-4:56); the birth place's LMT at lon -78.75 is -5:15
+    b = BirthData(datetime(1850, 6, 1, 12, 0, tzinfo=NY), 42.9, -78.75, "America/New_York", "male", "test")
+    r = natal_pillars(b)
+    assert any("local mean time" in w for w in r["warnings"])
+    assert r["clock_time"].endswith("-05:15")
+
+
+def test_longitude_from_sidereal_times():
+    assert abs(longitude_from_sidereal("07:30:08", "02:22:02") - (-77.0269)) < 0.01   # Betsy
+
+
+def test_chart_without_zone_recovers_longitude_and_infers_zone():
+    k = birth_from_chart(json.load(open("charts/kelsea.json")))
+    assert abs(k.lon - (-122.25)) < 0.1 and k.tz is None
+    assert k.local.utcoffset().total_seconds() == -8 * 3600         # zone inferred from longitude
+    assert any("inferred" in n for n in k.notes)
+
+
+def test_chart_overrides_for_zone_and_place():
+    k = birth_from_chart(json.load(open("charts/kelsea.json")), timezone="America/Los_Angeles", lat=37.8, lon=-122.4)
+    assert k.tz == "America/Los_Angeles" and k.lon == -122.4 and k.local.utcoffset().total_seconds() == -7 * 3600
+    assert not any("inferred" in n for n in k.notes)
+
+
+# ── More reference charts (buyiju.com, 2026-11-11, clock time) ───────────────
+
+def test_sydney_southern_hemisphere_clock_pillars():
+    p = pillars_from_civil(datetime(1990, 1, 15, 10, 0, tzinfo=ZoneInfo("Australia/Sydney")))
+    assert cns(p) == ["己巳", "丁丑", "庚辰", "辛巳"]
+
+
+def test_1960_clock_pillars():
+    p = pillars_from_civil(datetime(1960, 8, 8, 3, 0, tzinfo=SH))
+    assert cns(p) == ["庚子", "甲申", "戊辰", "甲寅"]
+
+
+# ── Second source: china95.net (2026-11-11) ──────────────────────────────────
+
+def test_china95_true_solar_time_moves_hour():
+    # 2000-06-01 09:05 Beijing time at 105°E: china95 gives the 巳 hour on clock time and the 辰 hour with 真太阳时
+    b = BirthData(datetime(2000, 6, 1, 9, 5, tzinfo=SH), 30.0, 105.0, "Asia/Shanghai", "male", "test")
+    assert natal_pillars(b, true_solar_time=False)["pillars"]["hour"]["cn"] == "辛巳"
+    assert natal_pillars(b)["pillars"]["hour"]["cn"] == "庚辰"
+    assert cns(natal_pillars(b)["pillars"])[:3] == ["庚辰", "辛巳", "庚寅"]
+
+
+def test_lixia_2000_instant_from_ephemeris():
+    # Swiss Ephemeris: 立夏 2000 (Sun at 45°) is 2000-05-05 12:50 Beijing. china95 shows 13:19, its own approximation.
+    from ki_calendar import boundaries_jd, jd_to_local
+    lixia = jd_to_local(boundaries_jd(2000)[3]).astimezone(SH)
+    assert lixia.strftime("%Y-%m-%d %H:%M") == "2000-05-05 12:50"

@@ -49,9 +49,16 @@ def test_get_bazi_gender_override_restores_luck():
 
 
 def test_get_bazi_no_coordinates_warns_first():
-    out = run(stella_server.get_bazi(name="kelsea"))
+    out = run(stella_server.get_bazi(birth_datetime="1995-08-25T21:03", timezone="America/New_York", gender="female"))
     first = out.strip().splitlines()[0].lower()
     assert first.startswith("> warning") and "clock time" in first
+
+
+def test_get_bazi_chart_without_zone_warns_first():
+    out = run(stella_server.get_bazi(name="kelsea"))
+    first = out.strip().splitlines()[0].lower()
+    assert first.startswith("> warning") and "sidereal" in first
+    assert "inferred from longitude" in out
 
 
 def test_get_bazi_clock_time_option():
@@ -79,3 +86,20 @@ def test_time_pillars_tool_against_natal():
     assert "丙午" in out and "比肩" in out and "自刑" in out
     d = json.loads(run(stella_server.get_bazi_time_pillars(target="2026-11-11T12:00", name="betsy", format="json")))
     assert d["pillars"]["day"]["cn"] == "己丑" and d["luck"]["cn"]
+
+
+def test_time_pillars_tool_states_luck_omission():
+    out = run(stella_server.get_bazi_time_pillars(target="2026-11-11T12:00", name="kate"))
+    assert "luck pillars omitted" in out.lower() and "gender" in out.lower()
+
+
+def test_hidden_ten_gods_carry_pinyin_and_english():
+    out = run(stella_server.get_bazi(name="betsy"))
+    row = next(l for l in out.splitlines() if l.startswith("| Hidden Ten Gods"))
+    assert "qi sha" in row and "Seven Killings" in row
+
+
+def test_get_bazi_accepts_place_and_zone_overrides_with_a_chart():
+    out = run(stella_server.get_bazi(name="kelsea", timezone="America/Los_Angeles", lat=37.8, lon=-122.4))
+    assert "inferred" not in out.lower() and "no coordinates" not in out.lower()
+    assert "America/Los_Angeles" in out

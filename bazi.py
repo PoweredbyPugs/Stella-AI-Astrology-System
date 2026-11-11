@@ -406,12 +406,14 @@ def _entry(kind, cn, members, pillars, **extra):
 
 
 def interactions(pillars: dict) -> list:
+    """Every named interaction among the pillars given (any keys; natal keys plus transit keys work)."""
     out = []
-    stems = {k: pillars[k]["stem"]["index"] for k in PILLAR_ORDER}
-    branches = {k: pillars[k]["branch"]["index"] for k in PILLAR_ORDER}
+    keys = list(pillars)
+    stems = {k: pillars[k]["stem"]["index"] for k in keys}
+    branches = {k: pillars[k]["branch"]["index"] for k in keys}
     season = SEASON_OF_BRANCH[branches["month"]]
 
-    for a, b in combinations(PILLAR_ORDER, 2):
+    for a, b in combinations(keys, 2):
         pair = frozenset((stems[a], stems[b]))
         if pair in STEM_COMBOS:
             el = STEM_COMBOS[pair]
@@ -419,7 +421,7 @@ def interactions(pillars: dict) -> list:
 
     # Triples first so a full trine or directional is not also reported as its halves.
     trine_members = set()
-    for a, b, c in combinations(PILLAR_ORDER, 3):
+    for a, b, c in combinations(keys, 3):
         trio = {branches[a], branches[b], branches[c]}
         for key, el in TRINES.items():
             if trio == set(key):
@@ -432,7 +434,7 @@ def interactions(pillars: dict) -> list:
             if trio == set(key):
                 out.append(_entry("punishment", "三刑", (a, b, c), pillars, note=note))
 
-    for a, b in combinations(PILLAR_ORDER, 2):
+    for a, b in combinations(keys, 2):
         x, y = branches[a], branches[b]
         pair = frozenset((x, y))
         if pair in SIX_COMBOS:
@@ -494,3 +496,105 @@ def stars(pillars: dict) -> dict:
         scan("孤辰", (gu,), cast)
         scan("寡宿", (gua,), cast)
     return {"hits": hits, "footnotes": list(dict.fromkeys(footnotes))}
+
+
+# ── Luck pillars (大運) and time pillars ────────────────────────────────────
+
+def luck_direction(gender: str, year_polarity: str) -> str:
+    return "forward" if (gender == "male") == (year_polarity == "yang") else "backward"
+
+
+def _jie_instants(jd: float) -> list:
+    """All jie instants (UT JD) in the BaZi year around ``jd`` and its neighbours, sorted."""
+    y = bazi_year_at(jd)
+    out = []
+    for yy in (y - 1, y, y + 1):
+        out.extend(boundaries_jd(yy)[:12])
+    return sorted(set(out))
+
+
+def _add_months(d: date, months: int) -> date:
+    m = d.month - 1 + months
+    y = d.year + m // 12
+    m = m % 12 + 1
+    from calendar import monthrange
+    return date(y, m, min(d.day, monthrange(y, m)[1]))
+
+
+def luck_pillars(birth: BirthData, natal: dict, count: int = 10, at: Optional[datetime] = None) -> dict:
+    """Ten-year luck pillars from the natal month pillar, forward or backward by gender and year polarity.
+
+    Start age: days from birth to the next (forward) or previous (backward) jie, at three days per
+    year, one day per four months, one double-hour per ten days. ``natal`` is the ``natal_pillars``
+    result so the same solar-time reading is used.
+    """
+    if birth.gender not in ("male", "female"):
+        raise ValueError("gender required for luck pillars (male or female)")
+    pillars = natal["pillars"]
+    direction = luck_direction(birth.gender, pillars["year"]["stem"]["polarity"])
+    birth_jd = _jd_ut(birth.local)
+    jies = _jie_instants(birth_jd)
+    if direction == "forward":
+        target = next(j for j in jies if j > birth_jd)
+        days = target - birth_jd
+    else:
+        target = next(j for j in reversed(jies) if j <= birth_jd)
+        days = birth_jd - target
+    years = int(days // 3)
+    rem_days = days - 3 * years
+    months = int(rem_days * 4)
+    rem_frac = rem_days * 4 - months            # fraction of a 4-month block → days
+    extra_days = int(round(rem_frac * 30))
+    start_age = {"years": years, "months": months, "days": extra_days, "days_to_jie": round(days, 2)}
+
+    birth_date = birth.local.date()
+    start = _add_months(birth_date, years * 12 + months)
+    start = date.fromordinal(start.toordinal() + extra_days)
+
+    step = 1 if direction == "forward" else -1
+    dm = pillars["day"]["stem"]["index"]
+    out = []
+    for n in range(1, count + 1):
+        sx = sexagenary(pillars["month"]["index"] + step * n)
+        p_start = _add_months(start, 120 * (n - 1))
+        p_end = _add_months(start, 120 * n)
+        entry = {
+            **sx,
+            "index_in_sequence": n,
+            "start_date": p_start.isoformat(),
+            "end_date": p_end.isoformat(),
+            "age_from": years + 10 * (n - 1),
+            "ten_god_stem": ten_god(dm, sx["stem"]["index"]),
+            "ten_god_branch": ten_god(dm, HIDDEN_STEMS[sx["branch"]["index"]][0]),
+            "life_stage": life_stage(dm, sx["branch"]["index"]),
+        }
+        entry["interactions_with_natal"] = [i for i in interactions({**pillars, "luck": sx})
+                                            if any(m[0] == "luck" for m in i["members"])]
+        out.append(entry)
+
+    now = (at or datetime.now(tz=birth.local.tzinfo)).date()
+    current = next((p for p in out if p["start_date"] <= now.isoformat() < p["end_date"]), None)
+    return {"direction": direction, "start_age": start_age, "start_date": start.isoformat(),
+            "pillars": out, "current": current, "as_of": now.isoformat()}
+
+
+def time_pillars(at: datetime, day_boundary: str = "23:00") -> dict:
+    return pillars_from_civil(at, day_boundary)
+
+
+def time_against_natal(at: datetime, natal: dict, luck: Optional[dict] = None,
+                       day_boundary: str = "23:00") -> dict:
+    pillars = natal["pillars"]
+    dm = pillars["day"]["stem"]["index"]
+    now = time_pillars(at, day_boundary)
+    gods = {k: {"stem": ten_god(dm, now[k]["stem"]["index"]),
+                "branch": ten_god(dm, HIDDEN_STEMS[now[k]["branch"]["index"]][0]),
+                "life_stage": life_stage(dm, now[k]["branch"]["index"])} for k in PILLAR_ORDER}
+    current_luck = (luck or {}).get("current")
+    combined = {**pillars}
+    if current_luck:
+        combined["luck"] = current_luck
+    combined.update({f"{k}_now": now[k] for k in PILLAR_ORDER})
+    transit_keys = {"luck", *(f"{k}_now" for k in PILLAR_ORDER)}
+    inter = [i for i in interactions(combined) if any(m[0] in transit_keys for m in i["members"])]
+    return {"at": at.isoformat(), "pillars": now, "ten_gods": gods, "luck": current_luck, "interactions": inter}

@@ -63,3 +63,46 @@ _NAYIN_PAIRS = [
 ]
 NAYIN = [name for name, _ in _NAYIN_PAIRS for _ in (0, 1)]
 NAYIN_ELEMENT = [el for _, el in _NAYIN_PAIRS for _ in (0, 1)]
+
+# ── Ten Gods (十神) ─────────────────────────────────────────────────────────
+# Keyed by relation to the Day Master, then by same/different polarity.
+TEN_GODS = {
+    "比肩": {"pinyin": "bi jian", "en": "Friend"},
+    "劫財": {"pinyin": "jie cai", "en": "Rob Wealth"},
+    "食神": {"pinyin": "shi shen", "en": "Eating God"},
+    "傷官": {"pinyin": "shang guan", "en": "Hurting Officer"},
+    "偏財": {"pinyin": "pian cai", "en": "Indirect Wealth"},
+    "正財": {"pinyin": "zheng cai", "en": "Direct Wealth"},
+    "七殺": {"pinyin": "qi sha", "en": "Seven Killings"},
+    "正官": {"pinyin": "zheng guan", "en": "Direct Officer"},
+    "偏印": {"pinyin": "pian yin", "en": "Indirect Resource"},
+    "正印": {"pinyin": "zheng yin", "en": "Direct Resource"},
+}
+# relation: 0 same, 1 Day Master produces, 2 Day Master controls, 3 controls Day Master, 4 produces Day Master
+TEN_GOD_BY_RELATION = {
+    (0, True): "比肩", (0, False): "劫財",
+    (1, True): "食神", (1, False): "傷官",
+    (2, True): "偏財", (2, False): "正財",
+    (3, True): "七殺", (3, False): "正官",
+    (4, True): "偏印", (4, False): "正印",
+}
+
+# ── Twelve life stages (十二長生) ───────────────────────────────────────────
+LIFE_STAGES = ["長生", "沐浴", "冠帶", "臨官", "帝旺", "衰", "病", "死", "墓", "絕", "胎", "養"]
+# Branch of 長生 for each stem. Yang stems count forward, yin stems backward (陰逆).
+LIFE_STAGE_START = {0: 11, 1: 6, 2: 2, 3: 9, 4: 2, 5: 9, 6: 5, 7: 0, 8: 8, 9: 3}
+
+# ── Seasonal states (旺相休囚死) ────────────────────────────────────────────
+# Season element by month branch; an element is 旺 in its own season, 相 when the season
+# produces it, 休 when it produces the season, 囚 when it controls the season, 死 when the
+# season controls it. Earth months (辰戌丑未) belong to earth.
+SEASON_OF_BRANCH = {2: "wood", 3: "wood", 5: "fire", 6: "fire", 8: "metal", 9: "metal",
+                    11: "water", 0: "water", 1: "earth", 4: "earth", 7: "earth", 10: "earth"}
+SEASON_NAME_OF_BRANCH = {2: "spring", 3: "spring", 4: "spring", 5: "summer", 6: "summer", 7: "summer",
+                         8: "autumn", 9: "autumn", 10: "autumn", 11: "winter", 0: "winter", 1: "winter"}
+SEASON_STATES = ["旺", "相", "死", "囚", "休"]   # indexed by element_relation(season, element)
+
+# ── Void (空亡) by decade of the day pillar ─────────────────────────────────
+def void_branches(sexagenary_index: int) -> list:
+    d = sexagenary_index // 10
+    return [(10 - 2 * d) % 12, (11 - 2 * d) % 12]

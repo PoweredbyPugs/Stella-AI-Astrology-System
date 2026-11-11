@@ -237,3 +237,154 @@ def natal_pillars(birth: BirthData, true_solar_time: bool = True, day_boundary: 
         "warnings": warnings,
         "settings": {"true_solar_time": true_solar_time, "day_boundary": day_boundary},
     }
+
+
+# ── Analysis ────────────────────────────────────────────────────────────────
+
+from bazi_tables import (ELEMENTS, HIDDEN_STEMS, LIFE_STAGE_START, LIFE_STAGES,  # noqa: E402
+                         SEASON_NAME_OF_BRANCH, SEASON_OF_BRANCH, SEASON_STATES,
+                         TEN_GOD_BY_RELATION, TEN_GODS, void_branches)
+
+PILLAR_ORDER = ("year", "month", "day", "hour")
+
+
+def element_relation(a: str, b: str) -> int:
+    """0 same, 1 a produces b, 2 a controls b, 3 b controls a, 4 b produces a."""
+    i, j = ELEMENTS.index(a), ELEMENTS.index(b)
+    return (j - i) % 5 if (j - i) % 5 in (0, 1, 2) else (3 if (j - i) % 5 == 3 else 4)
+
+
+def ten_god(day_stem: int, other: int) -> str:
+    dm, o = STEMS[day_stem], STEMS[other]
+    rel = element_relation(dm["element"], o["element"])
+    return TEN_GOD_BY_RELATION[(rel, dm["polarity"] == o["polarity"])]
+
+
+def ten_god_detail(name: str) -> dict:
+    return {"cn": name, **TEN_GODS[name]}
+
+
+def life_stage(stem: int, branch: int) -> str:
+    start = LIFE_STAGE_START[stem]
+    step = (branch - start) % 12 if STEMS[stem]["polarity"] == "yang" else (start - branch) % 12
+    return LIFE_STAGES[step]
+
+
+def season_state(element: str, month_branch: int) -> str:
+    return SEASON_STATES[element_relation(SEASON_OF_BRANCH[month_branch], element)]
+
+
+def _stem_dict(i: int) -> dict:
+    return {"index": i, **STEMS[i]}
+
+
+def analyze(pillars: dict) -> dict:
+    dm = pillars["day"]["stem"]["index"]
+    dm_el = STEMS[dm]["element"]
+    hidden = {k: [_stem_dict(i) for i in HIDDEN_STEMS[pillars[k]["branch"]["index"]]] for k in PILLAR_ORDER}
+
+    tg_stems = {k: ("日主" if k == "day" else ten_god(dm, pillars[k]["stem"]["index"])) for k in PILLAR_ORDER}
+    tg_detail = {k: ({"cn": "日主", "pinyin": "ri zhu", "en": "Day Master"} if k == "day" else ten_god_detail(tg_stems[k]))
+                 for k in PILLAR_ORDER}
+    tg_hidden = {k: [ten_god(dm, s["index"]) for s in hidden[k]] for k in PILLAR_ORDER}
+
+    tally_visible = {e: 0 for e in ELEMENTS}
+    for k in PILLAR_ORDER:
+        tally_visible[pillars[k]["stem"]["element"]] += 1
+        tally_visible[pillars[k]["branch"]["element"]] += 1
+    tally_all = {e: 0 for e in ELEMENTS}
+    for k in PILLAR_ORDER:
+        tally_all[pillars[k]["stem"]["element"]] += 1
+        for s in hidden[k]:
+            tally_all[s["element"]] += 1
+
+    stages = {k: life_stage(dm, pillars[k]["branch"]["index"]) for k in PILLAR_ORDER}
+
+    voids = void_branches(pillars["day"]["index"])
+    void = {"branches": [{"index": b, **BRANCHES[b]} for b in voids],
+            "pillars": [k for k in PILLAR_ORDER if k != "day" and pillars[k]["branch"]["index"] in voids]}
+
+    # Strength: season command, roots, support.
+    month_branch = pillars["month"]["branch"]["index"]
+    state = season_state(dm_el, month_branch)
+    rooted = any(s["element"] == dm_el for k in PILLAR_ORDER for s in hidden[k])
+    support = sum(1 for k in ("year", "month", "hour")
+                  if element_relation(dm_el, pillars[k]["stem"]["element"]) in (0, 4))
+    if state in ("旺", "相") and (rooted or support):
+        verdict = "strong"
+    elif state in ("休", "囚", "死") and not (rooted and support):
+        verdict = "weak"
+    else:
+        verdict = "middling"
+    strength = {
+        "season_state": state, "rooted": rooted, "support": support, "verdict": verdict,
+        "method": "season (旺相休囚死 of the Day Master's element in the month) + roots in any branch "
+                  "+ same-element or resource stems; strong = in season with a root or support, "
+                  "weak = out of season without both",
+    }
+
+    # Structure (格局), Ziping Zhenquan rules.
+    month_hidden = HIDDEN_STEMS[month_branch]
+    other_stems = {pillars[k]["stem"]["index"] for k in ("year", "month", "hour")}
+    primary_god = ten_god(dm, month_hidden[0])
+    if primary_god in ("比肩", "劫財"):
+        # 建祿 / 月刃: the month branch itself is the structure, whatever is revealed.
+        chosen, revealed = month_hidden[0], month_hidden[0] in other_stems
+    else:
+        chosen, revealed = month_hidden[0], False
+        for cand in month_hidden:
+            if cand in other_stems:
+                chosen, revealed = cand, True
+                break
+    god = ten_god(dm, chosen)
+    name = {"比肩": "建祿格", "劫財": "月刃格"}.get(god, f"{god}格")
+    special = []
+    all_eight = [pillars[k]["stem"]["index"] for k in PILLAR_ORDER] + [s["index"] for k in PILLAR_ORDER for s in hidden[k]]
+    if not any(element_relation(dm_el, STEMS[i]["element"]) in (0, 4) for i in all_eight if i != dm):
+        special.append("從格 (follow structure) candidate: no same-element or resource character anywhere")
+    same_or_resource = sum(1 for i in all_eight if element_relation(dm_el, STEMS[i]["element"]) in (0, 4))
+    if same_or_resource >= len(all_eight) - 1:
+        special.append("專旺/從強 (dominant structure) candidate: nearly every character supports the Day Master")
+    structure = {
+        "name": name, "qi_used": STEMS[chosen]["cn"], "ten_god": god, "revealed": revealed,
+        "basis": "Ziping Zhenquan: the month branch's primary qi if revealed in a stem, else a revealed "
+                 "middle qi, else a revealed residual qi, else the primary qi unrevealed; 比肩 → 建祿格, 劫財 → 月刃格",
+        "special_candidates": special,
+    }
+
+    # Climate.
+    season = SEASON_NAME_OF_BRANCH[month_branch]
+    fire, water = tally_all["fire"], tally_all["water"]
+    if season == "winter" or (season != "summer" and water >= fire + 2):
+        temperature = "cold"
+    elif season == "summer" or fire >= water + 2:
+        temperature = "hot"
+    else:
+        temperature = "temperate"
+    moisture = "damp" if water >= 3 else ("dry" if water == 0 else "balanced")
+    tempering = []
+    if temperature == "cold":
+        tempering.append("fire")
+    if temperature == "hot":
+        tempering.append("water")
+    if moisture == "damp":
+        tempering.append("earth")
+    if moisture == "dry":
+        tempering.append("water")
+    climate = {"season": season, "temperature": temperature, "moisture": moisture,
+               "tempering": sorted(set(tempering), key=ELEMENTS.index)}
+
+    return {
+        "day_master": _stem_dict(dm),
+        "hidden": hidden,
+        "ten_gods_stems": tg_stems,
+        "ten_gods_detail": tg_detail,
+        "ten_gods_hidden": tg_hidden,
+        "tally_visible": tally_visible,
+        "tally_all": tally_all,
+        "life_stages": stages,
+        "void": void,
+        "strength": strength,
+        "structure": structure,
+        "climate": climate,
+    }

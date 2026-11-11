@@ -106,3 +106,38 @@ SEASON_STATES = ["旺", "相", "死", "囚", "休"]   # indexed by element_relat
 def void_branches(sexagenary_index: int) -> list:
     d = sexagenary_index // 10
     return [(10 - 2 * d) % 12, (11 - 2 * d) % 12]
+
+# ── Interactions ────────────────────────────────────────────────────────────
+# Stem combinations (天干五合) and the element they transform into.
+STEM_COMBOS = {frozenset((0, 5)): "earth", frozenset((1, 6)): "metal", frozenset((2, 7)): "water",
+               frozenset((3, 8)): "wood", frozenset((4, 9)): "fire"}
+# Branch six combinations (六合).
+SIX_COMBOS = {frozenset((0, 1)): "earth", frozenset((2, 11)): "wood", frozenset((3, 10)): "fire",
+              frozenset((4, 9)): "metal", frozenset((5, 8)): "water", frozenset((6, 7)): "earth"}
+# Three combinations (三合): (start, peak, grave) → element. A half trine is any pair that includes the peak.
+TRINES = {(8, 0, 4): "water", (11, 3, 7): "wood", (2, 6, 10): "fire", (5, 9, 1): "metal"}
+# Directional combinations (三會).
+DIRECTIONAL = {(2, 3, 4): "wood", (5, 6, 7): "fire", (8, 9, 10): "metal", (11, 0, 1): "water"}
+CLASHES = [(0, 6), (1, 7), (2, 8), (3, 9), (4, 10), (5, 11)]
+HARMS = [(0, 7), (1, 6), (2, 5), (3, 4), (8, 11), (9, 10)]
+DESTRUCTIONS = [(0, 9), (1, 4), (2, 11), (3, 6), (5, 8), (7, 10)]
+# Punishments (刑): the two triads (any pair within one counts), the 子卯 pair, and the four self-punishments.
+PUNISHMENT_TRIADS = [((2, 5, 8), "無恩之刑 ungrateful"), ((1, 10, 7), "恃勢之刑 bullying")]
+PUNISHMENT_PAIR = ((0, 3), "無禮之刑 rude")
+SELF_PUNISHMENT = (4, 6, 9, 11)
+
+# ── Symbolic stars (神煞), the core set ─────────────────────────────────────
+# Stem-cast stars: stem index → branches.
+TIANYI = {0: (1, 7), 1: (0, 8), 2: (11, 9), 3: (11, 9), 4: (1, 7),       # 天乙貴人, 淵海子平 / 三命通會
+          5: (0, 8), 6: (1, 7), 7: (6, 2), 8: (5, 3), 9: (5, 3)}
+TIANYI_VARIANT_NOTE = ("天乙貴人 for 庚 follows 淵海子平 / 三命通會 (丑未); the 協紀辨方書 table gives 寅午 instead.")
+WENCHANG = {0: 5, 1: 6, 2: 8, 3: 9, 4: 8, 5: 9, 6: 11, 7: 0, 8: 2, 9: 3}  # 文昌
+LUSHEN = {0: 2, 1: 3, 2: 5, 3: 6, 4: 5, 5: 6, 6: 8, 7: 9, 8: 11, 9: 0}    # 祿神
+YANGREN = {0: 3, 2: 6, 4: 6, 6: 9, 8: 0}                                   # 羊刃, yang stems only
+# Branch-cast stars: by the trine group the casting branch belongs to.
+TAOHUA = {(8, 0, 4): 9, (11, 3, 7): 0, (2, 6, 10): 3, (5, 9, 1): 6}       # 桃花
+YIMA = {(8, 0, 4): 2, (11, 3, 7): 5, (2, 6, 10): 8, (5, 9, 1): 11}        # 驛馬
+# 孤辰 / 寡宿 by the directional group of the casting branch: (孤辰, 寡宿).
+GUCHEN_GUASU = {(11, 0, 1): (2, 10), (2, 3, 4): (5, 1), (5, 6, 7): (8, 4), (8, 9, 10): (11, 7)}
+STAR_EN = {"天乙貴人": "Nobleman", "文昌": "Academic Star", "祿神": "Prosperity", "羊刃": "Goat Blade",
+           "桃花": "Peach Blossom", "驛馬": "Travelling Horse", "孤辰": "Solitary", "寡宿": "Widow"}

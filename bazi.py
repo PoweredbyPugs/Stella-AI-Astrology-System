@@ -388,3 +388,109 @@ def analyze(pillars: dict) -> dict:
         "structure": structure,
         "climate": climate,
     }
+
+
+# ── Interactions and stars ──────────────────────────────────────────────────
+
+from itertools import combinations  # noqa: E402
+
+from bazi_tables import (CLASHES, DESTRUCTIONS, DIRECTIONAL, GUCHEN_GUASU, HARMS, LUSHEN,  # noqa: E402
+                         PUNISHMENT_PAIR, PUNISHMENT_TRIADS, SELF_PUNISHMENT, SIX_COMBOS, STAR_EN,
+                         STEM_COMBOS, TAOHUA, TIANYI, TIANYI_VARIANT_NOTE, TRINES, WENCHANG,
+                         YANGREN, YIMA)
+
+
+def _entry(kind, cn, members, pillars, **extra):
+    return {"type": kind, "cn": cn, "members": [(k, pillars[k]["branch"]["cn"] if kind != "stem_combination"
+                                                 else pillars[k]["stem"]["cn"]) for k in members], **extra}
+
+
+def interactions(pillars: dict) -> list:
+    out = []
+    stems = {k: pillars[k]["stem"]["index"] for k in PILLAR_ORDER}
+    branches = {k: pillars[k]["branch"]["index"] for k in PILLAR_ORDER}
+    season = SEASON_OF_BRANCH[branches["month"]]
+
+    for a, b in combinations(PILLAR_ORDER, 2):
+        pair = frozenset((stems[a], stems[b]))
+        if pair in STEM_COMBOS:
+            el = STEM_COMBOS[pair]
+            out.append(_entry("stem_combination", "天干五合", (a, b), pillars, element=el, transforms=el == season))
+
+    # Triples first so a full trine or directional is not also reported as its halves.
+    trine_members = set()
+    for a, b, c in combinations(PILLAR_ORDER, 3):
+        trio = {branches[a], branches[b], branches[c]}
+        for key, el in TRINES.items():
+            if trio == set(key):
+                out.append(_entry("trine", "三合", (a, b, c), pillars, element=el))
+                trine_members.update({frozenset((a, b)), frozenset((b, c)), frozenset((a, c))})
+        for key, el in DIRECTIONAL.items():
+            if trio == set(key):
+                out.append(_entry("directional", "三會", (a, b, c), pillars, element=el))
+        for key, note in PUNISHMENT_TRIADS:
+            if trio == set(key):
+                out.append(_entry("punishment", "三刑", (a, b, c), pillars, note=note))
+
+    for a, b in combinations(PILLAR_ORDER, 2):
+        x, y = branches[a], branches[b]
+        pair = frozenset((x, y))
+        if pair in SIX_COMBOS:
+            out.append(_entry("six_combination", "六合", (a, b), pillars, element=SIX_COMBOS[pair]))
+        if frozenset((a, b)) not in trine_members and x != y:
+            for key, el in TRINES.items():
+                if pair <= set(key) and key[1] in pair:
+                    out.append(_entry("half_trine", "半合", (a, b), pillars, element=el))
+        if tuple(sorted(pair)) in [tuple(sorted(p)) for p in CLASHES]:
+            out.append(_entry("clash", "六沖", (a, b), pillars))
+        if tuple(sorted(pair)) in [tuple(sorted(p)) for p in HARMS]:
+            out.append(_entry("harm", "六害", (a, b), pillars))
+        if tuple(sorted(pair)) in [tuple(sorted(p)) for p in DESTRUCTIONS]:
+            out.append(_entry("destruction", "六破", (a, b), pillars))
+        if x == y and x in SELF_PUNISHMENT:
+            out.append(_entry("self_punishment", "自刑", (a, b), pillars))
+        elif x != y:
+            for key, note in PUNISHMENT_TRIADS:
+                if pair <= set(key):
+                    out.append(_entry("punishment", "刑", (a, b), pillars, note=note))
+            if pair == frozenset(PUNISHMENT_PAIR[0]):
+                out.append(_entry("punishment", "刑", (a, b), pillars, note=PUNISHMENT_PAIR[1]))
+    return out
+
+
+def _group(table: dict, branch: int):
+    return next(v for k, v in table.items() if branch in k)
+
+
+def stars(pillars: dict) -> dict:
+    hits, footnotes = [], []
+    stems = {k: pillars[k]["stem"]["index"] for k in PILLAR_ORDER}
+    branches = {k: pillars[k]["branch"]["index"] for k in PILLAR_ORDER}
+
+    def hit(star, found_in, cast_from):
+        hits.append({"star_cn": star, "star_en": STAR_EN[star], "found_in": found_in, "cast_from": cast_from,
+                     "branch": pillars[found_in]["branch"]["cn"]})
+
+    def scan(star, targets, cast_from, skip_self=True):
+        for k in PILLAR_ORDER:
+            if skip_self and k == cast_from and star in ("桃花", "驛馬", "孤辰", "寡宿"):
+                continue
+            if branches[k] in targets:
+                hit(star, k, cast_from)
+
+    for cast in ("day", "year"):
+        scan("天乙貴人", TIANYI[stems[cast]], cast)
+        if stems[cast] == 6:
+            footnotes.append(TIANYI_VARIANT_NOTE)
+    scan("文昌", (WENCHANG[stems["day"]],), "day")
+    scan("祿神", (LUSHEN[stems["day"]],), "day")
+    if stems["day"] in YANGREN:
+        scan("羊刃", (YANGREN[stems["day"]],), "day")
+    for cast in ("year", "day"):
+        b = branches[cast]
+        scan("桃花", (_group(TAOHUA, b),), cast)
+        scan("驛馬", (_group(YIMA, b),), cast)
+        gu, gua = _group(GUCHEN_GUASU, b)
+        scan("孤辰", (gu,), cast)
+        scan("寡宿", (gua,), cast)
+    return {"hits": hits, "footnotes": list(dict.fromkeys(footnotes))}

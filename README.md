@@ -41,7 +41,7 @@ It is the reasoning layer of a three-part system:
   degrades gracefully without it.
 - **pyswisseph** — local ephemeris math for everything that doesn't need Helios:
   returns, progressions, eclipses, elections, VOC moons, ingresses, planetary hours,
-  and the entire Ki stack.
+  the entire Ki stack, and BaZi.
 
 ## What's New (2026.10.25)
 
@@ -103,6 +103,7 @@ The full catalog with per-tool descriptions lives in [TOOLS.md](TOOLS.md).
 | **9 Star Ki & I Ching** | 6 | Natal Ki profile, cycles, narrative readings, hexagram casting (coins/yarrow), wisdom-text search |
 | **Octave** | 2 | `get_octave` and `get_octave_reading` — a life as nine-year octaves on the enneagram, every year and month an I Ching figure, read through the Gnostic Book of Changes |
 | **Convergence Ki** | 3 | The Ki stack read from the Sun: great year → year → month → day → hour, where a day is 1° of the Sun and an hour 5′ |
+| **BaZi** | 3 | Traditional Zi Ping Four Pillars: natal chart with the full reading data, luck pillars, time pillars against a chart — true solar time and the 23:00 day boundary as stated defaults, computed on Stella ([docs/BAZI_REFERENCE.md](docs/BAZI_REFERENCE.md)) |
 | **Ki Changes** | 7 | "Mercury's reading" — Ki transitions rendered as I Ching hexagrams with changing lines and Wu Xing phase analysis, at every level from the hour to the 12-year great year, with the Ki Age and great age above |
 | **Midpoints & Cosmobiology** | 4 | Ebertin 90° dial: natal midpoint pictures, COSI interpretations, midpoint transits, solar arc directions |
 | **Chart Reading** | 1 | `chart_reading` — the three-axis generator (see below) |

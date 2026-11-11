@@ -1,6 +1,6 @@
-# Stella MCP Server — 89 Tools
+# Stella MCP Server — 92 Tools
 
-*Last updated: Mar 27, 2026*
+*Last updated: Nov 11, 2026*
 
 ## Helios Bridge (current sky data)
 
@@ -147,6 +147,16 @@ turns too. Module: `ki_solar.py`.
 
 - **Module:** `ki_solar.py` (the numbers), `convergence_ki.py` (the full payload with observation layers)
 - **Synodic module:** `convergence_ki.py` → `get_synodic_gate()`
+
+## BaZi — Four Pillars of Destiny *(NEW 2026-11-11)*
+
+Traditional Zi Ping, computed on Stella (`bazi.py`). Conventions and tables: `docs/BAZI_REFERENCE.md`. Defaults: true solar time on, day boundary 23:00; both are parameters.
+
+| # | Tool | Description |
+|---|------|-------------|
+| 90 | `get_bazi` | Natal four pillars with hidden stems, Ten Gods, Nayin, life stages, void, Day Master strength (season/roots/support), structure (格局), element tallies and climate, interactions, core symbolic stars, and the ten luck pillars. Stored chart or raw birth data; `format="json"` for data. |
+| 91 | `get_bazi_luck_pillars` | The 大運: direction, start age (days to the jie at 3 days per year), each ten-year pillar with Ten Gods and natal interactions, and the current one. |
+| 92 | `get_bazi_time_pillars` | Year/month/day/hour pillars at any instant; with a chart, their Ten Gods against the Day Master and every interaction with the natal pillars and the current luck pillar. |
 
 ## Midpoints & Cosmobiology
 

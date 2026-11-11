@@ -1,5 +1,18 @@
 # Stella Changelog
 
+## 2026.11.11 — BaZi: traditional Four Pillars on Stella
+
+### `bazi.py`, `bazi_tables.py`, `bazi_render.py` (new)
+- Zi Ping Four Pillars computed locally: year at the exact Lichun, months at the twelve jie (shared with the Ki calendar, and that is all that is shared), day by sexagenary count, hour by double-hour. Five Tigers and Five Rats rules for the month and hour stems.
+- True solar time by default: the birth clock is corrected for longitude and the equation of time before the day boundary and hour are read, as Chinese calculators do. Day boundary 23:00 by default, midnight (early/late Zi) as the alternative. Both are parameters and both are printed with every result.
+- Reading data in traditional vocabulary: hidden stems, Ten Gods for every visible and hidden stem, Nayin, twelve life stages (classical yin-backward table), void, Day Master strength as season + roots + support with the method printed, structure by Ziping Zhenquan with special structures flagged as candidates, element tallies and climate, every combination/clash/harm/punishment/destruction located by pillar, and a core set of symbolic stars that name the pillar they were cast from.
+- Luck pillars with exact start age (days to the jie at three days per year) and direction by gender and year polarity; time pillars at any instant read against a natal chart and its current luck pillar.
+- Both stored-chart shapes load; a chart without gender omits the luck pillars and says why; a chart without coordinates falls back to clock time with a warning on the first line.
+- Validated against buyiju.com for three charts (pillars, Ten God rows, Nayin) and against published day anchors (1900-01-01 甲戌, 2000-01-01 戊午, Mao Zedong's chart). Tests: `tests/test_bazi_*.py`.
+
+### Tools
+- `get_bazi`, `get_bazi_luck_pillars`, `get_bazi_time_pillars` (92 tools). Reference: `docs/BAZI_REFERENCE.md`.
+
 ## 2026.10.25 — The stack reads the Sun: degree-days, degree-hours, precession-anchored great age
 
 ### `ki_solar.py` (new)

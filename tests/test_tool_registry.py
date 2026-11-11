@@ -14,7 +14,7 @@ def test_graph_stats_is_the_graph_module_tool():
     import stella_server
     tools = {t.name: t for t in asyncio.run(stella_server.mcp.list_tools())}
     assert tools["graph_stats"].description.startswith("Return current knowledge graph statistics")
-    assert len(tools) == 88
+    assert len(tools) == 92
 
 
 def test_no_tool_registers_twice():

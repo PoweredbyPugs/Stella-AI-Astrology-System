@@ -4699,6 +4699,218 @@ if NEO4J_AVAILABLE:
 
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# SECTION: BAZI — Four Pillars of Destiny (traditional Zi Ping)
+# Computed locally (bazi.py); Helios is touched only to fetch a chart Stella has not stored.
+# Doctrine and tables: docs/BAZI_REFERENCE.md
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+_BAZI_DOCTRINE = """
+    Traditional Zi Ping (子平) Four Pillars. Year turns at the exact Lichun, months at the
+    twelve jie (Sun at 15° of each sign), the day pillar is the sexagenary count, the hour the
+    twelve double-hours. Defaults: true_solar_time=True (the birth clock is corrected for the
+    place's longitude and the equation of time BEFORE the day boundary and hour are read, as
+    Chinese calculators do) and day_boundary="23:00" (the day pillar changes at the start of
+    the Zi hour; "midnight" keeps the civil date and derives the 23:00–00:00 hour stem from
+    the next day). Structure follows Ziping Zhenquan; strength reports season, roots and
+    support separately; symbolic stars name the pillar they were cast from. The tools compute;
+    the reader interprets. Nothing here is shared with the Ki stack except the solar-term
+    instants.
+"""
+
+
+async def _bazi_birth(name, birth_datetime, lat, lon, timezone, gender):
+    """BirthData from a stored chart (local, then Helios) or from raw birth data."""
+    from zoneinfo import ZoneInfo
+    from bazi import BirthData, birth_from_chart, normalise_gender
+    if name:
+        chart = _load_local_chart(name)
+        if not chart:
+            try:
+                chart = await call_sweph(f"/chart/{name}")
+            except Exception:
+                chart = None
+        if not chart or not isinstance(chart, dict) or chart.get("error"):
+            return None, f"Chart '{name}' not found in Stella storage or on Helios."
+        if "name" not in chart:
+            chart["name"] = name
+        return birth_from_chart(chart, gender), None
+    if not birth_datetime:
+        return None, "Give a stored chart name or birth_datetime (ISO local time), with lat, lon, timezone and gender."
+    tz = ZoneInfo(timezone or "America/New_York")
+    local = datetime.fromisoformat(birth_datetime).replace(tzinfo=tz)
+    notes = [] if timezone else ["no timezone given; birth time read as America/New_York"]
+    return BirthData(local, lat, lon, timezone or "America/New_York", normalise_gender(gender), "birth data", notes), None
+
+
+def _bazi_full(birth, true_solar_time, day_boundary, at=None, count=10):
+    from bazi import analyze, interactions, luck_pillars, natal_pillars, stars
+    natal = natal_pillars(birth, true_solar_time, day_boundary)
+    pillars = natal["pillars"]
+    result = {
+        **natal,
+        "birth": {"source": birth.source, "local": birth.local.isoformat(), "tz": birth.tz,
+                  "lat": birth.lat, "lon": birth.lon, "gender": birth.gender},
+        "analysis": analyze(pillars),
+        "interactions": interactions(pillars),
+        "stars": stars(pillars),
+        "luck": None,
+    }
+    try:
+        result["luck"] = luck_pillars(birth, natal, count=count, at=at)
+    except ValueError:
+        result["luck_omitted"] = ('no gender in the chart or arguments; pass gender="male" or "female" '
+                                  'to get the luck pillars (direction depends on it)')
+    return result
+
+
+def _bazi_parse_target(target, tz):
+    """ISO datetime (naive → tz), a bare date at local noon, or now."""
+    if not target:
+        return datetime.now(tz=tz)
+    dt = datetime.fromisoformat(target)
+    if len(target) == 10:
+        dt = dt.replace(hour=12)
+    return dt if dt.tzinfo else dt.replace(tzinfo=tz)
+
+
+@mcp.tool()
+async def get_bazi(
+    name: Optional[str] = None,
+    birth_datetime: Optional[str] = None,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    timezone: Optional[str] = None,
+    gender: Optional[str] = None,
+    true_solar_time: bool = True,
+    day_boundary: str = "23:00",
+    format: str = "markdown",
+) -> str:
+    """The BaZi (八字, Four Pillars) natal chart with the full traditional reading data.
+
+    Four pillars with hidden stems, Ten Gods, Nayin, life stages and void; Day Master
+    strength (season, roots, support, verdict); structure (格局, Ziping Zhenquan); five-element
+    tallies and climate; stem and branch interactions (combinations, clashes, harms,
+    punishments, destructions); the core symbolic stars; and the ten luck pillars (大運).
+    """ + _BAZI_DOCTRINE + """
+    Args:
+        name: a stored chart (charts/, then Helios). Or give the birth directly:
+        birth_datetime: ISO local birth time, e.g. 1978-11-20T22:31
+        lat, lon: birth place (needed for true solar time)
+        timezone: IANA zone of the birth clock, e.g. America/New_York
+        gender: male or female (overrides the chart; needed for luck pillars)
+        true_solar_time: default True; False reads the clock as is
+        day_boundary: "23:00" (default) or "midnight"
+        format: "markdown" (default) or "json"
+    """
+    from bazi_render import render_natal
+    birth, err = await _bazi_birth(name, birth_datetime, lat, lon, timezone, gender)
+    if err:
+        return err
+    try:
+        result = _bazi_full(birth, true_solar_time, day_boundary)
+    except ValueError as e:
+        return f"Error: {e}"
+    if format == "json":
+        return json.dumps(result, indent=2, ensure_ascii=False, default=str)
+    return render_natal(result)
+
+
+@mcp.tool()
+async def get_bazi_luck_pillars(
+    name: Optional[str] = None,
+    birth_datetime: Optional[str] = None,
+    lat: Optional[float] = None,
+    lon: Optional[float] = None,
+    timezone: Optional[str] = None,
+    gender: Optional[str] = None,
+    count: int = 10,
+    target: Optional[str] = None,
+    true_solar_time: bool = True,
+    day_boundary: str = "23:00",
+    format: str = "markdown",
+) -> str:
+    """The luck pillars (大運) of a BaZi chart: direction, start age, each ten-year pillar with
+    its Ten Gods, life stage and interactions with the natal pillars, and which one is current.
+
+    Start age counts the days from birth to the next jie (forward: yang-year males and
+    yin-year females) or the previous jie (backward), at three days per year.
+    """ + _BAZI_DOCTRINE + """
+    Args:
+        name / birth_datetime, lat, lon, timezone, gender: as in get_bazi
+        count: how many pillars (default 10)
+        target: ISO datetime for "current" (default now)
+        format: "markdown" (default) or "json"
+    """
+    from bazi_render import render_luck
+    birth, err = await _bazi_birth(name, birth_datetime, lat, lon, timezone, gender)
+    if err:
+        return err
+    try:
+        at = _bazi_parse_target(target, birth.local.tzinfo)
+        result = _bazi_full(birth, true_solar_time, day_boundary, at=at, count=count)
+    except ValueError as e:
+        return f"Error: {e}"
+    if not result["luck"]:
+        return f"Luck pillars omitted: {result['luck_omitted']}"
+    if format == "json":
+        return json.dumps(result["luck"], indent=2, ensure_ascii=False, default=str)
+    return "\n".join(render_luck(result))
+
+
+@mcp.tool()
+async def get_bazi_time_pillars(
+    target: Optional[str] = None,
+    name: Optional[str] = None,
+    timezone: Optional[str] = None,
+    gender: Optional[str] = None,
+    day_boundary: str = "23:00",
+    format: str = "markdown",
+) -> str:
+    """The year, month, day and hour pillars at an instant (流年 / 流月 / 流日 / 流時), and, with
+    a stored chart, their Ten Gods against that Day Master, the current luck pillar, and every
+    interaction the time pillars make with the natal pillars and the luck pillar.
+    """ + _BAZI_DOCTRINE + """
+    Args:
+        target: ISO datetime (naive → the chart's zone, else `timezone`, else New York);
+            a bare date is read at noon; default now
+        name: a stored chart to read the pillars against (optional)
+        timezone: zone for a naive target when no chart is given
+        gender: override for the chart's gender (luck pillar direction)
+        day_boundary: "23:00" (default) or "midnight"
+        format: "markdown" (default) or "json"
+    """
+    from zoneinfo import ZoneInfo
+    from bazi import HIDDEN_STEMS, STEMS, luck_pillars, natal_pillars, time_against_natal, time_pillars
+    from bazi_render import render_time, stem_str
+    birth = None
+    if name:
+        birth, err = await _bazi_birth(name, None, None, None, None, gender)
+        if err:
+            return err
+    tz = birth.local.tzinfo if birth else ZoneInfo(timezone or "America/New_York")
+    try:
+        at = _bazi_parse_target(target, tz)
+        if birth:
+            natal = natal_pillars(birth, True, day_boundary)
+            try:
+                luck = luck_pillars(birth, natal, at=at)
+            except ValueError:
+                luck = None
+            t = time_against_natal(at, natal, luck, day_boundary)
+            result = {**t, "natal_name": birth.source, "day_master": stem_str(natal["pillars"]["day"]["stem"])}
+        else:
+            result = {"at": at.isoformat(), "pillars": time_pillars(at, day_boundary), "interactions": []}
+    except ValueError as e:
+        return f"Error: {e}"
+    result["settings"] = {"day_boundary": day_boundary}
+    result["hidden"] = {k: [STEMS[i]["cn"] for i in HIDDEN_STEMS[result["pillars"][k]["branch"]["index"]]]
+                        for k in ("year", "month", "day", "hour")}
+    if format == "json":
+        return json.dumps(result, indent=2, ensure_ascii=False, default=str)
+    return render_time(result)
+
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 # SECTION: AUTOPOIETIC CHART TOOLS
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

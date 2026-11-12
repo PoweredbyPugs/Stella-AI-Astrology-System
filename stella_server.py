@@ -823,15 +823,16 @@ async def get_synodic_gate_now(
     target_date: Optional[str] = None,
     birth_date: Optional[str] = None,
 ) -> str:
-    """Get the Synodic Gate Ki — the 12-year great-year gate (5th level of Ki stack).
+    """Get the Synodic Gate Ki — the great-year gate (12-year level of the Ki stack).
 
-    Pure arithmetic: 12 Ki years per gate, descending 9 → 1, gates on Lichun,
-    anchored at Lichun 2022 = gate 8. Jupiter's ~11.86-yr cycle is the natural
-    period behind the count, not the anchor; perihelia are informational only.
+    The great year is the 12-year gate level, counted in Ki years (Lichun to
+    Lichun). Gates descend 9 → 1. The anchors are ki_levels':
+    Lichun 2010 opened gate 2, Lichun 2022 opened gate 1, and Lichun 2034
+    opens gate 9. Jupiter's ~11.86-year cycle is the natural period behind
+    the count, not the anchor; perihelia are informational only.
 
-    12 years per gate, 9 Ki count, remainder 3.
-    At each gate boundary, year Ki is always Earth (2, 5, 8).
-    9 synodic gates = 108 years (a sacred number: 12 × 9).
+    9 gates = 108 years (a sacred number: 12 × 9).
+    The year Ki at a gate boundary is always Earth (2, 5, 8).
 
     Full stack: Synodic.Year.Month.Day.Hour
 

@@ -85,3 +85,12 @@ def test_write_octave_forecast_without_keys_says_so(monkeypatch):
 def test_explain_tool_passes_through_404(monkeypatch):
     d = _no_key_call(monkeypatch, stella_server.explain_octave_statement)
     assert d["ok"] is False and "system" not in d
+
+
+def test_synodic_gate_matches_the_live_stack():
+    d = json.loads(run(stella_server.get_synodic_gate_now(target_date="2026-11-11")))
+    assert d["synodic_gate"]["ki"] == 1
+    assert str(d["gate_boundary"]["lichun_date"]).startswith("2022")
+    assert d["next_gate"]["ki"] == 9
+    doc = stella_server.get_synodic_gate_now.__doc__
+    assert "gate 8" not in doc and "2010" in doc and "2022" in doc

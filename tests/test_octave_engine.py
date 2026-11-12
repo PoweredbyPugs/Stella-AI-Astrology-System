@@ -113,3 +113,9 @@ def test_palace_month_global_8_and_center_five():
     assert all(c["n"] == E.ki(c["home"] + 3) for c in pal["cells"])
     assert E.palace(1, None)["own"] is None
     c = E.palace(5, None); assert c["five_yellow"] == 5 and c["broken"] is None
+
+
+def test_shi_past_the_ephemeris_keeps_the_next_number():
+    p = E.period_at("great_age", AT, 5)
+    s = E.shi(p)
+    assert s["to"] == 3 and s["fig"] is None and s["lines"] == [] and s["start"] == p.end and s["end"] is None

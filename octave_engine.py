@@ -253,7 +253,11 @@ def ji_lines(p: Period, natal_month: int) -> list[int]:
 
 def shi(p: Period) -> dict:
     """The next period at the same level: its number, figure, the lines that move into it, and its bounds."""
-    nxt = period(p.level, p.idx + 1, p.natal)
+    try:
+        nxt = period(p.level, p.idx + 1, p.natal)
+    except ValueError:               # the next period opens past the ephemeris: its number still follows
+        to = ki(p.number + 1) if p.natal else ki(p.number - 1)
+        return {"to": to, "fig": None, "lines": [], "start": p.end, "end": None}
     both = p.fig is not None and nxt.fig is not None
     return {"to": nxt.number, "fig": nxt.fig, "lines": moving(p.fig.lines, nxt.fig.lines) if both else [],
             "start": nxt.start, "end": nxt.end}

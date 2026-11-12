@@ -1,0 +1,1937 @@
+{
+ "BRIEF": {
+  "1": {
+   "name": "Potential",
+   "fn": "Supply. An internal supply. It completes into the River at 4.",
+   "img": "Hidden power, the unknown and unmanifested. Potential in the electrical sense too: voltage held, nothing yet flowing. The High Priestess is the water itself, the scroll half hidden, the law under the surface.",
+   "shadow": "Timid Boy (the fear state; over-engineering is what he does with it, building the apparatus so he never has to step) ↔ Blue Belt (rash: has been under before and come up with something, and mistakes that for knowing the depths; earned the right to be confident, not the right to be sure). Balanced: Courage, facing fear with preparation. The axis reads timid, blue belt, courage.",
+   "q": "What's under the surface?",
+   "practice": "Deep meditation is warranted on water days. The fork at the water is mystery or fear, and that fork is healthy, not shadow.",
+   "tarot": "The Fool, stepping off into the Priestess's water.",
+   "rejected": "Names: the well, then the depths. Over-Engineer and Unmoored, kept as the mechanisms under the two figures. Drowner, Plunger, Deep End, Compulsive. For the Balanced: Black Belt, Diver, Initiate, Swimmer, Apprentice, Precocious Child, Hero. For the name: Wuji, Pleroma, Tehom, Source, Abyss, Seed, Reservoir, among others.",
+   "status": "settled",
+   "since": "22–23 Oct; renamed 28 Oct",
+   "family": "1·4·7 receptive",
+   "fam": "middle son · north · deep winter",
+   "chat": "Octave Method: 7-1-4 · this chat, 27 Oct"
+  },
+  "2": {
+   "name": "Field",
+   "fn": "Cultivate.",
+   "img": "The field is the capacity to receive, not the crop. Three open lines, nothing concealed. It says yes to everything.",
+   "shadow": "Smotherer (Jung's devouring mother: over-cultivation, can't stop tending, digs the seed up) ↔ Stagnation (the abandoning mother: she has left the field to rot; Erikson's stagnation, whose two failures, overextension and rejectivity, are this axis). Balanced: Generative, which is wu wei. The Empress at her best does nothing and everything grows; only the Balanced field produces.",
+   "q": "What is being received?",
+   "practice": "Say yes. Don't dig the seed up to check on it; the work is being done underneath. 2 is germinating, not eroding: live the 2 day with the end in mind. Haner: Germination, the year of planting seeds; keywords Stagnation, Preparation, Listening, Friendship.",
+   "tarot": "The Empress, the generative mother. The Gnostic 2 is The Magnetic, The Bearer: the mare bears its load, and the editor quotes Case on Daleth, the Empress's own letter.",
+   "rejected": "Hoarfrost (replaced 28 Oct: the field is not frozen, it is left to rot). Calm (the abandoning mother looks calm from outside). Hoarder, Spendthrift, Scorched, Ghost, Deserter, Locust, Blight, Fallow, Warden. For the Balanced: Bearing, Patience, Devotion, Presence, Trust, Ripening.",
+   "status": "settled",
+   "since": "22–23 Oct",
+   "family": "2·5·8 substrate",
+   "fam": "mother · southwest · late summer, fertile or scorched ground",
+   "chat": "Shadow side of two and eight · this chat, 28 Oct"
+  },
+  "3": {
+   "name": "Power",
+   "fn": "The first of the three forces. One third in, from outside; it happens to you. A given loan of energy, not income, spent on one job: reach the light. Strong force in a weak body; fast, vulnerable, forward.",
+   "img": "51 Shock. Force from the outside in. Thunder cracking the surface.",
+   "shadow": "Manic Wildfire (thunder on the untended field: Stagnation at 2 leaves dry material, and the energy is spent overcorrecting for the neglect; it takes everything at once and topples) ↔ Argos (Greek argós, \"without work\": the charge that never fires; meets the mentor and goes home; the shock comes anyway, harder; Odysseus's dog on the dung heap, the hundred-eyed watcher). Balanced: Composure. Shadows at the triangle are conditions, not figures. The passive of 2 becoming the active of 3 may be a rule: the Triforce flips polarity.",
+   "q": "What arrived?",
+   "practice": "Spend exactly enough to break the surface. Adjust tempo, keep the goal, double-check premises. The source of this strike is the previous octave's 9.",
+   "tarot": "The Ace of Wands: the hand from the cloud holding a sprouting wand, the loan handed in from outside, the leaves already falling as it is spent. And the Emperor: Aries, the first fire of spring, power as authority. The Knight of Wands is the Wildfire, not the point.",
+   "rejected": "Thunder as the headline (28 Oct). Shock as the headline. Convert, Bunker, Flash Flood, Early Bloom, Bolting, Mayfly, Heir, Golden Boy. For tarot: the Tower, Judgement, Wheel of Fortune.",
+   "status": "settled",
+   "since": "30 Oct",
+   "family": "3·6·9 expansive",
+   "fam": "eldest son · east · spring, the cotyledon bursting through soil",
+   "chat": "Reflecting on the system's past days"
+  },
+  "4": {
+   "name": "River",
+   "fn": "Supply and cultivate running together: the River. On the hexad it traces to 2; the Delta is downstream on the path of time, not on the hexad.",
+   "img": "Rooted wood, flexible above because the roots are deep and fed by water. Healthy four is rooted.",
+   "shadow": "Paralyzer (stands in the doorway doubting; no root to stand on) ↔ Drifter (goes wherever the wind already blows; motion without a choice). Maturation: Timid Boy → Paralyzer, Blue Belt → Drifter (his confidence was never a real choice, so by 4 it is momentum, and momentum is the wind). Boy forms at 1, man forms at 4, the same line as 5 → 7.",
+   "q": "Which way?",
+   "practice": "The Magician is the four day reading the one day's note. The piece of scroll is on the table; point it one way.",
+   "tarot": "The Magician choosing the wand: the Fool numbered, the same substance in its next state.",
+   "rejected": null,
+   "status": "settled",
+   "since": "22–23 Oct",
+   "family": "1·4·7 receptive",
+   "fam": "eldest daughter · southeast · branching, connecting",
+   "chat": "Octave Method: 7-1-4"
+  },
+  "5": {
+   "name": "Delta",
+   "fn": "No fixed function. A point of karma: the place where time loops from a larger cycle down into a smaller one. It inherits the larger picture's perspective. A port of time; a place to rest and reflect on what the larger cycle brought, perhaps at the end of the day. The classical center: everything comes to you and nothing is displaced; stay put, receive, do not initiate.",
+   "img": "Your image: the yin-yang holding still, opposites holding each other's seeds. Receives both 8's one held thing and the larger picture.",
+   "shadow": "High Chair Tyrant ↔ Weakling Prince. Balanced: the Divine Child, the boy form of the King (Moore & Gillette). \"Works for now; may rename later.\"",
+   "q": "What landed here from above?",
+   "practice": "Unblock, whatever that means in the moment: mental, emotional, physical. Tend to yourself, not outward, so that what is coming through can land. Clear the channel, so the reflection at 7 is true and the cut at 6 rings clear.",
+   "tarot": "Three cards, read together, because three things land at once: the order from above (the Hierophant, who receives it and gives it), the turn of the larger cycle (the Wheel of Fortune), and the karmic bind (the Devil, Capricorn: \"if 5 is about karma, what better judge than Capricorn, Saturn and time itself\"). The Lo Shu is Saturn's own square, with 5 at its center.",
+   "rejected": null,
+   "status": "settled",
+   "since": "23–25 Oct, done for now; named 28 Oct",
+   "family": "2·5·8 substrate",
+   "fam": "the center · inherits the nearest higher cycle that is not 5 (day from month, month from year)",
+   "chat": "Passive poll five · this chat, 30 Oct"
+  },
+  "6": {
+   "name": "Will",
+   "fn": "The second force, the one circumstance cannot supply. Two thirds in; from the inside out. Sustained will against dispersal: drift, inner entropy. Not a fight with the ego (the ego is the warrior) and not with imbalance (the symptom). The dragon is internal at 6; unconquered, it sits down and hoards at 8.",
+   "img": "1 The Dynamic. Force from the inside out, brought under will. The sickle separating wheat from chaff.",
+   "shadow": "Self-Righteousness (the ego's will passed off as the Self's; acts as if right no matter what; cuts what doesn't need cutting) ↔ Indulgence (the ego's appetite with the Self forgotten; gives in and forgets there was anything right to do). Balanced: Divine Will, adherence to the higher Self.",
+   "q": "What was the ego magnetic to?",
+   "practice": "Doing the right thing and sticking to it when nothing pushes you. First half readiness, second half action. Integrity is the result of an integrated 6. Whether the strike was made decides whether the next octave is a loop or a spiral.",
+   "tarot": "Strength: the hand closing the lion's mouth, the life force held under will, gently and tirelessly. And Justice: the sword is the sickle, the scales weigh what to carry, Libra begins at the autumn equinox when the harvest is in and the cutting back starts; her keyword is integrity, and her shadow is the judge who is sure and wrong.",
+   "rejected": "Discernment (placeholder, 28–29 Oct). Heaven. Courage, because it collides with 1's Balanced. Arrogant Dragon, Passenger, Zealot, Prodigal, Reaper. For tarot: the Lovers (choice between attractions, not discernment), the Emperor (taken by 3).",
+   "status": "settled",
+   "since": "30 Oct",
+   "family": "3·6·9 expansive",
+   "fam": "father · northwest · pre-winter, cutting back",
+   "chat": "Reflecting on the system's past days"
+  },
+  "7": {
+   "name": "Lake",
+   "fn": "Reflection, the settling. What landed at 5 becomes clear because a lake is reflective. In the nine-year mapping: force and cultivate, the Mountain standing up to take the yield.",
+   "img": "The King in his triumph: sees the reflection, leaves it still, and acts from it right away. The reflection informs him; it does not belong to him. The lake's virtue is emptiness; it fails when overfull or disturbed.",
+   "shadow": "Tyrant (grasps the reflection to control it, which breaks the picture: hasty decisions, ruin, loses the loyalty of his forces) ↔ Princess (Haner's image: smooths the surface over despite knowing what is beneath; control by doing nothing). Balanced: the King.",
+   "q": "What is the yield?",
+   "practice": "Stop, look at what is already there, say what is plain, do that one thing. Write the sentence.",
+   "tarot": "The Chariot: 7 in motion from stillness. Waite: the Chariot is the King in his triumph, the victory that creates kingship.",
+   "rejected": "Reveler, Smoother, Grasper. The imagery (the lake filling, the king leaving the shore) was flagged as shaky on 25 Oct and settled on 30 Oct: the lake reflects 5 directly.",
+   "status": "settled",
+   "since": "25 Oct",
+   "family": "1·4·7 receptive",
+   "fam": "youngest daughter · west · autumn, harvest and celebration",
+   "chat": "Passive poll five · Reflecting on the system's past days"
+  },
+  "8": {
+   "name": "Mountain",
+   "fn": "Cultivate and boundary: the Mountain, still. The first pattern on the hexad to cross Gardener and Warrior. The boundary is passive, a wall that stands; a cultivated boundary grew, it was not built. The Hermit's boundary is the lantern, not a fence.",
+   "img": "The one thing that lasted, held visible, not planted. Keeping is not hiding; it is not touching. Haner: the Transformer; the 8 year is the caterpillar in the cocoon; in the mountain there is a cave, and the cave holds the treasure.",
+   "shadow": "Dragon, the Hoarder (over-closing: lives in the mountain but is not the mountain; keeps instead of carries; the Warrior half taking over; an unconquered dragon at 6 sits down here) ↔ Barrow, the Recluse (the grave, the mound of the dead: keeps nothing; the Gardener half failing). Balanced: Stillness. Maturation: Smotherer → Dragon, Stagnation → Barrow. Quality of an 8 day: choose one mountain; 52, keeping the back still.",
+   "q": "This is what lasted. Not touching it yet.",
+   "practice": "Keep the one thing that lasted and hold it still. It feels like wrapping up the whole cycle.",
+   "tarot": "The Hermit, old on the card because he has carried what the mother made the longest.",
+   "rejected": null,
+   "status": "settled",
+   "since": "22–23 Oct",
+   "family": "2·5·8 substrate",
+   "fam": "youngest son · northeast · the hour before dawn, the dormant seed",
+   "chat": "Shadow side of two and eight · Reflecting on the system's past days"
+  },
+  "9": {
+   "name": "Clarity",
+   "fn": "The third force: source and arrival, the seeing from which the strikes come and to which they return. 9 sees rather than stages. In the nine-year mapping, the Ocean: collects everything, keeps nothing; the King; no function; pure sight.",
+   "img": "30 Clarity. The force that sees the two as one. Light that lives on what it burns.",
+   "shadow": "Settled for now without named poles; the failure is sleep. Pontificator / Sleeper were offered and not taken.",
+   "q": "What is clear from here?",
+   "practice": "See one clear question; do not act on it directly. Its clarity is itself activating and can spread you thin. Its clarity is the source of the next octave's 3 and 6.",
+   "tarot": "The Sun and the World, for now. The Sun: the child on the white horse, nothing hidden, nothing carried; 9 as what it does, the seeing. The World: the dancer in the wreath, completion that is also the start, the wreath a zero; 9 as where it sits, source and arrival.",
+   "rejected": null,
+   "status": "settled",
+   "since": "origin notes, 9 Oct; settled for now 30 Oct",
+   "family": "3·6·9 expansive",
+   "fam": "middle daughter · south · peak summer",
+   "chat": "Reflecting on the system's past days"
+  }
+ },
+ "CONDITION": {
+  "Water": {
+   "Water": "Deep water. Stillness doubled. Rest and listen; nothing here answers to force.",
+   "Wood": "Water nourishing the root. You give and the field grows. Spend freely, but keep your source.",
+   "Fire": "Water on flame. You cool the field; your restraint is wanted, but take care not to extinguish.",
+   "Earth": "The river in its bank. The field contains you. Move within the channel; the limit is the gift.",
+   "Metal": "Metal gathering dew. The field provides. Receive and collect; let it come to you."
+  },
+  "Wood": {
+   "Water": "Roots in water. Growth is supported. Take it; this is the season to extend.",
+   "Wood": "The forest. Growth crowds growth. Choose one trunk and prune the rest.",
+   "Fire": "Wood becoming light. You are spent into the field's brightness. Glorious and consuming; keep a reserve.",
+   "Earth": "Roots breaking soil. You draw from the field and it yields slowly. Push at a tree's pace, not a shoot's.",
+   "Metal": "The axe. The field prunes you. Accept the cut; what remains is what grows."
+  },
+  "Fire": {
+   "Water": "Flame under rain. Keep small and go inward. Protect the ember.",
+   "Wood": "Dry fuel. The field feeds your flame. Abundant; watch for wildfire.",
+   "Fire": "The blaze. Brilliance and exhaustion together. Shine, then rest before you are asked to.",
+   "Earth": "Fire becoming ash. You give yourself to the field. An ending that fertilizes.",
+   "Metal": "The forge. You shape the field; you are the smith. Patience with the heat."
+  },
+  "Earth": {
+   "Water": "The bank shaping the river. You regulate the field. This is responsibility, not support.",
+   "Wood": "Roots in the soil. The field draws on you. Yield; do not resist what is growing.",
+   "Fire": "Ash enriching the ground. The field feeds you. A carried time; receive it.",
+   "Earth": "Earth on earth. Weight and stillness. Nothing cuts, nothing pushes; the risk is Stagnation. Do not grasp.",
+   "Metal": "Earth bearing ore. You give the field its form. It costs, and something is made."
+  },
+  "Metal": {
+   "Water": "Metal yielding water. You are drained into flow. Let go; you are turning into motion.",
+   "Wood": "The blade. You cut the field. Discernment: cut only what needs cutting.",
+   "Fire": "In the forge. You are being reshaped by heat you did not choose. Hold form; submit to the work.",
+   "Earth": "Ore in the mountain. The field holds and forms you. Rest in it.",
+   "Metal": "Metal on metal. Sharpness doubled. Clarity or brittleness; do not over-cut."
+  }
+ },
+ "COND_CLAUSE": {
+  "Water": {
+   "Water": "while nothing here answers to force",
+   "Wood": "as you give and the field grows",
+   "Fire": "as your restraint cools the field",
+   "Earth": "held within the channel",
+   "Metal": "while the field gathers it for you"
+  },
+  "Wood": {
+   "Water": "with your roots in water and room to extend",
+   "Wood": "in a forest where growth crowds growth",
+   "Fire": "as you are spent into the field's light",
+   "Earth": "as your roots break the soil at a tree's pace",
+   "Metal": "under the axe that prunes you"
+  },
+  "Fire": {
+   "Water": "as flame under rain",
+   "Wood": "with dry fuel all around you",
+   "Fire": "in the blaze, brilliance and exhaustion together",
+   "Earth": "as you burn down to the ash that feeds the ground",
+   "Metal": "at the forge, with you as the smith"
+  },
+  "Earth": {
+   "Water": "as the bank that shapes the river",
+   "Wood": "with roots drawing on you",
+   "Fire": "with ash enriching your ground",
+   "Earth": "with weight on weight and nothing to push against",
+   "Metal": "as you bear the ore that gives the field its form"
+  },
+  "Metal": {
+   "Water": "as you are drained into flow",
+   "Wood": "with the blade in your hand",
+   "Fire": "in the forge, reshaped by heat you did not choose",
+   "Earth": "as ore held in the mountain",
+   "Metal": "metal on metal, sharpness doubled"
+  }
+ },
+ "HOUSES": {
+  "1": {
+   "dir": "North",
+   "line": "Winter. Dormancy and the hidden work; rest, plan, do not push."
+  },
+  "2": {
+   "dir": "South-west",
+   "line": "Germination. Preparation, listening, slow groundwork; the risk is Stagnation."
+  },
+  "3": {
+   "dir": "East",
+   "line": "Spring. Sudden starts and new energy that outruns its body; begin, but keep Composure."
+  },
+  "4": {
+   "dir": "South-east",
+   "line": "Growth. Expansion, travel, communication; things take off and can scatter."
+  },
+  "5": {
+   "dir": "Center",
+   "line": "The pivot. Everything comes to you and nothing is displaced; stay put, receive, do not initiate."
+  },
+  "6": {
+   "dir": "North-west",
+   "line": "Authority. Responsibility and the first harvest; maturity with a perfectionist edge."
+  },
+  "7": {
+   "dir": "West",
+   "line": "Harvest. Joy, money, reflection, pleasure and its excesses."
+  },
+  "8": {
+   "dir": "North-east",
+   "line": "The turning point. Stillness before change; revolution held in the mountain."
+  },
+  "9": {
+   "dir": "South",
+   "line": "Illumination. Recognition and exposure; things come to light."
+  }
+ },
+ "RELATION_WORD": {
+  "resonates": "resonates",
+  "fed_by": "fed by",
+  "feeds": "feeds",
+  "controls": "controls",
+  "controlled_by": "controlled by"
+ },
+ "FLOW_WORD": {
+  "resonates": "resonates",
+  "fed_by": "fed",
+  "feeds": "feeds",
+  "controls": "controls",
+  "controlled_by": "controlled"
+ },
+ "PAIRS": {
+  "1>4": {
+   "title": "1 → 4",
+   "kind": "interval trace",
+   "status": "settled",
+   "note": "",
+   "lines": "Nourish. Top line only, yin → yang. Kan becomes Xun. The water stays under as root and the firm thing rises. Water generates Wood.",
+   "shadows": "Timid Boy = no line moves (Kan stays Kan, nothing surfaced) → Paralyzer at 4. Blue Belt = too many lines move (Li or Qian, all surface, no root) → Drifter at 4. The Balanced is exactly one line moving, the right one.",
+   "hex": "59 Dispersion (Xun over Kan): the wind moves what the water held, outward, across the great water. 48 The Well (Kan over Xun): the bucket going down; too short a rope is the Timid Boy, a broken jug the Blue Belt.",
+   "tarot": "The Fool goes into the Priestess's water and comes back up as the Magician. Same person at two different times.",
+   "practice": "What the one day went under for, the four day points one way.",
+   "chat": "Octave Method: 7-1-4"
+  },
+  "4>2": {
+   "title": "4 → 2",
+   "kind": "octave trace",
+   "status": "settled",
+   "note": "Drafted 23 Oct, locked 30 Oct. \"Magnetic and dynamic\", not regressive.",
+   "lines": "Break. Lines 3 and 6 both go yang → yin. Xun becomes Kun. Wood breaks Earth: the plow, the one link on the controlling cycle and the single half-step on the circuit.",
+   "shadows": "Failure modes: Smotherer / Stagnation. Undershoot: Xun stays (Drifter). Top line only turns → Kan, a regress to 1. Middle line only → Gen, the field sealed unworked.",
+   "hex": "46 Pushing Upward (Kun over Xun), locked 30 Oct: a turn toward the Self (south is 9, between southeast and southwest on the Lo Shu); the pace of a tree; the Magician grows what will fall. 20 Contemplation is background only.",
+   "tarot": "The Magician's wand going into the Empress's earth.",
+   "practice": "The direction stops being something you steer and becomes something you give to the ground.",
+   "chat": "Octave Method: 7-1-4 · Reflecting on the system's past days"
+  },
+  "2>8": {
+   "title": "2 → 8",
+   "kind": "interval trace",
+   "status": "settled",
+   "note": "",
+   "lines": "Inherit. Line 6 firms. Kun becomes Gen. Earth to Earth, no element change: one element in two states. The trace runs through the Lo Shu center, so it reads as inheritance, not movement. 8's one yang line is boundary, not force.",
+   "shadows": "Undershoot: Kun stays Kun, the field left to rot, nothing grows a skin and there is nothing for 8 to hold (Stagnation → Barrow). Overshoot: the top line firms too early, Gen before the field has been received (the Smotherer → Dragon).",
+   "hex": "23 Disintegration (Gen over Kun), confirmed 30 Oct as the one figure for the line: do not act, meaning don't grasp; the superior man stabilizes his responses; line 6 the large fruit still uneaten, the carriage; the Hermit inherits only the one fruit. 15 Temperance (Kun over Gen) is held loosely as the inversion: the mountain hidden beneath the earth, greatness held underneath.",
+   "tarot": "Empress → Hermit. 15 is the Hermit already standing in the Empress's garden, hidden by the bloom; 23 is the Hermit alone on the stripped ground.",
+   "practice": "2 says yes to everything; 8 keeps the one thing that lasted and holds it still, visible, not planted.",
+   "chat": "Octave Method: 2-8-5 · Okta strategy and Enneagram pairs · Shadow side of two and eight"
+  },
+  "8>5": {
+   "title": "8 → 5",
+   "kind": "octave trace",
+   "status": "settled",
+   "note": "Settled 30 Oct; no fixed hexagram, since 5 has no trigram.",
+   "lines": "Keep. 5 has no trigram; it borrows the larger cycle's. The hexagram is built on the day: the inherited trigram over Gen. The moving lines measure the distance between what was kept at 8 and what the larger cycle demands, and the Gnostic line texts are the prescription.",
+   "shadows": "If 8 isn't lived, 5 balances you from outside: karmic retribution.",
+   "hex": "Built on the day, inherited trigram over Gen. In a Kan month: 39. In a Kun month: 15. The 23 Oct worked example (Gen → Kan, 39, lines 5 and 6) was this rule before it was stated.",
+   "tarot": "Hermit → Hierophant (overlay only).",
+   "practice": "5 is the one place the day touches the larger cycle; 8 is the virtue that opens it. The one held thing carried into the Delta together with the larger picture.",
+   "chat": "Okta strategy and Enneagram pairs · Reflecting on the system's past days"
+  },
+  "5>7": {
+   "title": "5 → 7",
+   "kind": "interval trace",
+   "status": "settled",
+   "note": "Settled 30 Oct; hexagram rule stated the same day. 7's imagery no longer shaky. Mapping all nine changing lines for 5 deferred.",
+   "lines": "Reflect. Earth generates Metal. The hexagram is built on the day: Dui over the inherited trigram. The lake reflects whatever 5 inherited.",
+   "shadows": "High Chair Tyrant / Weakling Prince at 5 mature into Tyrant / Princess at 7.",
+   "hex": "Built on the day, Dui over the inherited trigram. In a Kan month: 60. In a Kun month: 45.",
+   "tarot": "Hierophant → Chariot: the order received from above, then that order in motion.",
+   "practice": "5 hands what it received to the lake. 7 sees the reflection, leaves it still, acts from it right away.",
+   "chat": "Passive poll five · Inner circuitry study progress · Reflecting on the system's past days"
+  },
+  "7>1": {
+   "title": "7 → 1",
+   "kind": "octave trace",
+   "status": "settled",
+   "note": "Worked 26 Oct. A trace is both contained within its own octave and extends into the next; this is an octave trace.",
+   "lines": "Shape. Only line 1 changes, yang → yin: the lake floor opens. Dui becomes Kan. Metal generates Water, the one octave trace that runs with the generative cycle.",
+   "shadows": "Lines carry no shadows of their own (30 Oct). Two failure modes: the lake held full, nothing goes under; the lake run out over the field, nothing channeled.",
+   "hex": "47 Oppression (Kan over Dui): the dry lake bed; the water is below, out of reach from the surface; the superior man stakes everything on will; sacrifice with sincerity. 48 The Well is 47 rotated: the same water, seen from where one draws it. 60 Limitation (Dui over Kan), the inversion, held loosely: a light heart over the source.",
+   "tarot": "The Chariot left on the shore; the King gets down and stands at the edge as the Fool (26 Oct reading).",
+   "practice": "In practice it is a seed: 7 writes the sentence, acts once, closes the entry and does not reread it; 1 reads it.",
+   "chat": "this chat, 26 Oct"
+  }
+ },
+ "VERB": {
+  "1>4": "nourish",
+  "4>2": "break",
+  "2>8": "inherit",
+  "8>5": "keep",
+  "5>7": "reflect",
+  "7>1": "shape"
+ },
+ "TENDING": {
+  "2": {
+   "scale": "all",
+   "text": "tends everything: all of it generated in the dark, in private, not for show."
+  },
+  "5": {
+   "scale": "self",
+   "text": "tends the self: unblocking, whatever that means in the moment, mental, emotional or physical, so that what is coming through can land; not pushing outward."
+  },
+  "8": {
+   "scale": "one",
+   "text": "tends one thing, with great care."
+  }
+ },
+ "STAR": {
+  "1": "White Water",
+  "2": "Black Earth",
+  "3": "Jade Wood",
+  "4": "Green Wood",
+  "5": "Yellow Earth",
+  "6": "White Metal",
+  "7": "Red Metal",
+  "8": "White Earth",
+  "9": "Purple Fire"
+ },
+ "LPOINTS": {
+  "1": {
+   "name": "Potential",
+   "glyph": "☵",
+   "tri": "Kan, water",
+   "fam": "middle son · north · deep winter",
+   "family": "1·4·7 receptive",
+   "status": "settled",
+   "since": "22–23 Oct; renamed 28 Oct",
+   "fn": "Supply. An internal supply. It completes into the River at 4.",
+   "img": "Hidden power, the unknown and unmanifested. Potential in the electrical sense too: voltage held, nothing yet flowing. The High Priestess is the water itself, the scroll half hidden, the law under the surface.",
+   "q": "What's under the surface?",
+   "practice": "Deep meditation is warranted on water days. The fork at the water is mystery or fear, and that fork is healthy, not shadow.",
+   "shadow": "Timid Boy (the fear state; over-engineering is what he does with it, building the apparatus so he never has to step) ↔ Blue Belt (rash: has been under before and come up with something, and mistakes that for knowing the depths; earned the right to be confident, not the right to be sure). Balanced: Courage, facing fear with preparation. The axis reads timid, blue belt, courage.",
+   "tarot": "The Fool, stepping off into the Priestess's water.",
+   "rejected": "Names: the well, then the depths. Over-Engineer and Unmoored, kept as the mechanisms under the two figures. Drowner, Plunger, Deep End, Compulsive. For the Balanced: Black Belt, Diver, Initiate, Swimmer, Apprentice, Precocious Child, Hero. For the name: Wuji, Pleroma, Tehom, Source, Abyss, Seed, Reservoir, among others.",
+   "chat": "Octave Method: 7-1-4 · this chat, 27 Oct"
+  },
+  "2": {
+   "name": "Field",
+   "glyph": "☷",
+   "tri": "Kun, earth",
+   "fam": "mother · southwest · late summer, fertile or scorched ground",
+   "family": "2·5·8 substrate",
+   "status": "settled",
+   "since": "22–23 Oct",
+   "fn": "Cultivate.",
+   "img": "The field is the capacity to receive, not the crop. Three open lines, nothing concealed. It says yes to everything.",
+   "q": "What is being received?",
+   "practice": "Say yes. Don't dig the seed up to check on it; the work is being done underneath. 2 is germinating, not eroding: live the 2 day with the end in mind. Haner: Germination, the year of planting seeds; keywords Stagnation, Preparation, Listening, Friendship.",
+   "shadow": "Smotherer (Jung's devouring mother: over-cultivation, can't stop tending, digs the seed up) ↔ Stagnation (the abandoning mother: she has left the field to rot; Erikson's stagnation, whose two failures, overextension and rejectivity, are this axis). Balanced: Generative, which is wu wei. The Empress at her best does nothing and everything grows; only the Balanced field produces.",
+   "tarot": "The Empress, the generative mother. The Gnostic 2 is The Magnetic, The Bearer: the mare bears its load, and the editor quotes Case on Daleth, the Empress's own letter.",
+   "rejected": "Hoarfrost (replaced 28 Oct: the field is not frozen, it is left to rot). Calm (the abandoning mother looks calm from outside). Hoarder, Spendthrift, Scorched, Ghost, Deserter, Locust, Blight, Fallow, Warden. For the Balanced: Bearing, Patience, Devotion, Presence, Trust, Ripening.",
+   "chat": "Shadow side of two and eight · this chat, 28 Oct"
+  },
+  "3": {
+   "name": "Power",
+   "glyph": "☳",
+   "tri": "Zhen, thunder",
+   "fam": "eldest son · east · spring, the cotyledon bursting through soil",
+   "family": "3·6·9 expansive",
+   "status": "settled",
+   "since": "30 Oct",
+   "fn": "The first of the three forces. One third in, from outside; it happens to you. A given loan of energy, not income, spent on one job: reach the light. Strong force in a weak body; fast, vulnerable, forward.",
+   "img": "51 Shock, Zhen doubled, at any scale. The seed cracking from below. Hero's journey: the Mentor.",
+   "q": "What arrived?",
+   "practice": "Spend exactly enough to break the surface. Adjust tempo, keep the goal, double-check premises. The source of this strike is the previous octave's 9.",
+   "shadow": "Manic Wildfire (thunder on the untended field: Stagnation at 2 leaves dry material, and the energy is spent overcorrecting for the neglect; it takes everything at once and topples) ↔ Argos (Greek argós, \"without work\": the charge that never fires; meets the mentor and goes home; the shock comes anyway, harder; Odysseus's dog on the dung heap, the hundred-eyed watcher). Balanced: Composure. Shadows at the triangle are conditions, not figures. The passive of 2 becoming the active of 3 may be a rule: the Triforce flips polarity.",
+   "tarot": "The Ace of Wands: the hand from the cloud holding a sprouting wand, the loan handed in from outside, the leaves already falling as it is spent. And the Emperor: Aries, the first fire of spring, power as authority. The Knight of Wands is the Wildfire, not the point.",
+   "rejected": "Thunder as the headline (28 Oct). Shock as the headline. Convert, Bunker, Flash Flood, Early Bloom, Bolting, Mayfly, Heir, Golden Boy. For tarot: the Tower, Judgement, Wheel of Fortune.",
+   "chat": "Reflecting on the system's past days"
+  },
+  "4": {
+   "name": "River",
+   "glyph": "☴",
+   "tri": "Xun, wind / wood",
+   "fam": "eldest daughter · southeast · branching, connecting",
+   "family": "1·4·7 receptive",
+   "status": "settled",
+   "since": "22–23 Oct",
+   "fn": "Supply and cultivate running together: the River. On the hexad it traces to 2; the Delta is downstream on the path of time, not on the hexad.",
+   "img": "Rooted wood, flexible above because the roots are deep and fed by water. Healthy four is rooted.",
+   "q": "Which way?",
+   "practice": "The Magician is the four day reading the one day's note. The piece of scroll is on the table; point it one way.",
+   "shadow": "Paralyzer (stands in the doorway doubting; no root to stand on) ↔ Drifter (goes wherever the wind already blows; motion without a choice). Maturation: Timid Boy → Paralyzer, Blue Belt → Drifter (his confidence was never a real choice, so by 4 it is momentum, and momentum is the wind). Boy forms at 1, man forms at 4, the same line as 5 → 7.",
+   "tarot": "The Magician choosing the wand: the Fool numbered, the same substance in its next state.",
+   "chat": "Octave Method: 7-1-4"
+  },
+  "5": {
+   "name": "Delta",
+   "glyph": "☯",
+   "tri": "no trigram of its own",
+   "fam": "the center · inherits the nearest higher cycle that is not 5 (day from month, month from year)",
+   "family": "2·5·8 substrate",
+   "status": "settled",
+   "since": "23–25 Oct, done for now; named 28 Oct",
+   "fn": "No fixed function. A point of karma: the place where time loops from a larger cycle down into a smaller one. It inherits the larger picture's perspective. A port of time; a place to rest and reflect on what the larger cycle brought, perhaps at the end of the day. The classical center: everything comes to you and nothing is displaced; stay put, receive, do not initiate.",
+   "img": "Your image: the yin-yang holding still, opposites holding each other's seeds. Receives both 8's one held thing and the larger picture.",
+   "q": "What landed here from above?",
+   "practice": "Read fresh on the day. 5 has no hexagram of its own. Its trigram is the larger cycle's (if that cycle is also a 5, the one above that), and the hexagrams are the two lines, built on the day by pairing that trigram with what 5 touches on the hexad: 8 and 7. In a Kan month, 8 → 5 reads 39 and 5 → 7 reads 60; in a Kun month, 15 and 45. Moving lines are the difference between the inherited figure and what the cycle asks.",
+   "shadow": "High Chair Tyrant ↔ Weakling Prince. Balanced: the Divine Child, the boy form of the King (Moore & Gillette). \"Works for now; may rename later.\"",
+   "tarot": "Three cards, read together, because three things land at once: the order from above (the Hierophant, who receives it and gives it), the turn of the larger cycle (the Wheel of Fortune), and the karmic bind (the Devil, Capricorn: \"if 5 is about karma, what better judge than Capricorn, Saturn and time itself\"). The Lo Shu is Saturn's own square, with 5 at its center.",
+   "chat": "Passive poll five · this chat, 30 Oct"
+  },
+  "6": {
+   "name": "Will",
+   "glyph": "☰",
+   "tri": "Qian, heaven",
+   "fam": "father · northwest · pre-winter, cutting back",
+   "family": "3·6·9 expansive",
+   "status": "settled",
+   "since": "30 Oct",
+   "fn": "The second force, the one circumstance cannot supply. Two thirds in; from the inside out. Sustained will against dispersal: drift, inner entropy. Not a fight with the ego (the ego is the warrior) and not with imbalance (the symptom). The dragon is internal at 6; unconquered, it sits down and hoards at 8.",
+   "img": "1 The Dynamic, Qian doubled: \"the life force itself.\" The dragon is the life force; the ego is the warrior who brings it under will; the treasure is higher consciousness. Not the cave (that is 8), not the harvest party (that is 7): the discernment of what to carry into winter after the party, and the carrying. The sickle separating wheat from chaff. A battle against winter.",
+   "q": "Was the strike made?",
+   "practice": "Doing the right thing and sticking to it when nothing pushes you. First half readiness, second half action. Integrity is the result of an integrated 6. Whether the strike was made decides whether the next octave is a loop or a spiral.",
+   "shadow": "Self-Righteousness (the ego's will passed off as the Self's; acts as if right no matter what; cuts what doesn't need cutting) ↔ Indulgence (the ego's appetite with the Self forgotten; gives in and forgets there was anything right to do). Balanced: Divine Will, adherence to the higher Self.",
+   "tarot": "Strength: the hand closing the lion's mouth, the life force held under will, gently and tirelessly. And Justice: the sword is the sickle, the scales weigh what to carry, Libra begins at the autumn equinox when the harvest is in and the cutting back starts; her keyword is integrity, and her shadow is the judge who is sure and wrong.",
+   "rejected": "Discernment (placeholder, 28–29 Oct). Heaven. Courage, because it collides with 1's Balanced. Arrogant Dragon, Passenger, Zealot, Prodigal, Reaper. For tarot: the Lovers (choice between attractions, not discernment), the Emperor (taken by 3).",
+   "chat": "Reflecting on the system's past days"
+  },
+  "7": {
+   "name": "Lake",
+   "glyph": "☱",
+   "tri": "Dui, lake",
+   "fam": "youngest daughter · west · autumn, harvest and celebration",
+   "family": "1·4·7 receptive",
+   "status": "settled",
+   "since": "25 Oct",
+   "fn": "Reflection, the settling. What landed at 5 becomes clear because a lake is reflective. In the nine-year mapping: force and cultivate, the Mountain standing up to take the yield.",
+   "img": "The King in his triumph: sees the reflection, leaves it still, and acts from it right away. The reflection informs him; it does not belong to him. The lake's virtue is emptiness; it fails when overfull or disturbed.",
+   "q": "What is the yield?",
+   "practice": "Stop, look at what is already there, say what is plain, do that one thing. Write the sentence.",
+   "shadow": "Tyrant (grasps the reflection to control it, which breaks the picture: hasty decisions, ruin, loses the loyalty of his forces) ↔ Princess (Haner's image: smooths the surface over despite knowing what is beneath; control by doing nothing). Balanced: the King.",
+   "tarot": "The Chariot: 7 in motion from stillness. Waite: the Chariot is the King in his triumph, the victory that creates kingship.",
+   "rejected": "Reveler, Smoother, Grasper. The imagery (the lake filling, the king leaving the shore) was flagged as shaky on 25 Oct and settled on 30 Oct: the lake reflects 5 directly.",
+   "chat": "Passive poll five · Reflecting on the system's past days"
+  },
+  "8": {
+   "name": "Mountain",
+   "glyph": "☶",
+   "tri": "Gen, mountain",
+   "fam": "youngest son · northeast · the hour before dawn, the dormant seed",
+   "family": "2·5·8 substrate",
+   "status": "settled",
+   "since": "22–23 Oct",
+   "fn": "Cultivate and boundary: the Mountain, still. The first pattern on the hexad to cross Gardener and Warrior. The boundary is passive, a wall that stands; a cultivated boundary grew, it was not built. The Hermit's boundary is the lantern, not a fence.",
+   "img": "The one thing that lasted, held visible, not planted. Keeping is not hiding; it is not touching. Haner: the Transformer; the 8 year is the caterpillar in the cocoon; in the mountain there is a cave, and the cave holds the treasure.",
+   "q": "This is what lasted. Not touching it yet.",
+   "practice": "Keep the one thing that lasted and hold it still. It feels like wrapping up the whole cycle.",
+   "shadow": "Dragon, the Hoarder (over-closing: lives in the mountain but is not the mountain; keeps instead of carries; the Warrior half taking over; an unconquered dragon at 6 sits down here) ↔ Barrow, the Recluse (the grave, the mound of the dead: keeps nothing; the Gardener half failing). Balanced: Stillness. Maturation: Smotherer → Dragon, Stagnation → Barrow. Quality of an 8 day: choose one mountain; 52, keeping the back still.",
+   "tarot": "The Hermit, old on the card because he has carried what the mother made the longest.",
+   "chat": "Shadow side of two and eight · Reflecting on the system's past days"
+  },
+  "9": {
+   "name": "Clarity",
+   "glyph": "☲",
+   "tri": "Li, fire",
+   "fam": "middle daughter · south · peak summer",
+   "family": "3·6·9 expansive",
+   "status": "settled",
+   "since": "origin notes, 9 Oct; settled for now 30 Oct",
+   "fn": "The third force: source and arrival, the seeing from which the strikes come and to which they return. 9 sees rather than stages. In the nine-year mapping, the Ocean: collects everything, keeps nothing; the King; no function; pure sight.",
+   "img": "30 Clarity, Li doubled. The Sun: a broader vantage point not available at 1 or 5. Light that exists only in relation to what it burns. Virtue: docility, self-remembering. Failure: sleep.",
+   "q": "What is clear from here?",
+   "practice": "See one clear question; do not act on it directly. Its clarity is itself activating and can spread you thin. Its clarity is the source of the next octave's 3 and 6.",
+   "shadow": "Settled for now without named poles; the failure is sleep. Pontificator / Sleeper were offered and not taken.",
+   "tarot": "The Sun and the World, for now. The Sun: the child on the white horse, nothing hidden, nothing carried; 9 as what it does, the seeing. The World: the dancer in the wreath, completion that is also the start, the wreath a zero; 9 as where it sits, source and arrival.",
+   "chat": "Reflecting on the system's past days"
+  }
+ },
+ "LLINKS": [
+  {
+   "from": 1,
+   "to": 4,
+   "dir": "forward",
+   "status": "settled",
+   "name": "1 → 4",
+   "lines": "Nourish. Top line only, yin → yang. Kan becomes Xun. The water stays under as root and the firm thing rises. Water generates Wood.",
+   "shadows": "Timid Boy = no line moves (Kan stays Kan, nothing surfaced) → Paralyzer at 4. Blue Belt = too many lines move (Li or Qian, all surface, no root) → Drifter at 4. The Balanced is exactly one line moving, the right one.",
+   "hex": "59 Dispersion (Xun over Kan): the wind moves what the water held, outward, across the great water. 48 The Well (Kan over Xun): the bucket going down; too short a rope is the Timid Boy, a broken jug the Blue Belt.",
+   "tarot": "The Fool goes into the Priestess's water and comes back up as the Magician. Same person at two different times.",
+   "practice": "What the one day went under for, the four day points one way.",
+   "chat": "Octave Method: 7-1-4"
+  },
+  {
+   "from": 4,
+   "to": 2,
+   "dir": "crosses",
+   "status": "settled",
+   "name": "4 → 2",
+   "lines": "Break. Lines 3 and 6 both go yang → yin. Xun becomes Kun. Wood breaks Earth: the plow, the one link on the controlling cycle and the single half-step on the circuit.",
+   "shadows": "Failure modes: Smotherer / Stagnation. Undershoot: Xun stays (Drifter). Top line only turns → Kan, a regress to 1. Middle line only → Gen, the field sealed unworked.",
+   "hex": "46 Pushing Upward (Kun over Xun), locked 30 Oct: a turn toward the Self (south is 9, between southeast and southwest on the Lo Shu); the pace of a tree; the Magician grows what will fall. 20 Contemplation is background only.",
+   "tarot": "The Magician's wand going into the Empress's earth.",
+   "practice": "The direction stops being something you steer and becomes something you give to the ground.",
+   "note": "Drafted 23 Oct, locked 30 Oct. \"Magnetic and dynamic\", not regressive.",
+   "chat": "Octave Method: 7-1-4 · Reflecting on the system's past days"
+  },
+  {
+   "from": 2,
+   "to": 8,
+   "dir": "forward",
+   "status": "settled",
+   "name": "2 → 8",
+   "lines": "Inherit. Line 6 firms. Kun becomes Gen. Earth to Earth, no element change: one element in two states. The trace runs through the Lo Shu center, so it reads as inheritance, not movement. 8's one yang line is boundary, not force.",
+   "shadows": "Undershoot: Kun stays Kun, the field left to rot, nothing grows a skin and there is nothing for 8 to hold (Stagnation → Barrow). Overshoot: the top line firms too early, Gen before the field has been received (the Smotherer → Dragon).",
+   "hex": "23 Disintegration (Gen over Kun), confirmed 30 Oct as the one figure for the line: do not act, meaning don't grasp; the superior man stabilizes his responses; line 6 the large fruit still uneaten, the carriage; the Hermit inherits only the one fruit. 15 Temperance (Kun over Gen) is held loosely as the inversion: the mountain hidden beneath the earth, greatness held underneath.",
+   "tarot": "Empress → Hermit. 15 is the Hermit already standing in the Empress's garden, hidden by the bloom; 23 is the Hermit alone on the stripped ground.",
+   "practice": "2 says yes to everything; 8 keeps the one thing that lasted and holds it still, visible, not planted.",
+   "chat": "Octave Method: 2-8-5 · Okta strategy and Enneagram pairs · Shadow side of two and eight"
+  },
+  {
+   "from": 8,
+   "to": 5,
+   "dir": "crosses",
+   "status": "settled",
+   "name": "8 → 5",
+   "lines": "Keep. 5 has no trigram; it borrows the larger cycle's. The hexagram is built on the day: the inherited trigram over Gen. The moving lines measure the distance between what was kept at 8 and what the larger cycle demands, and the Gnostic line texts are the prescription.",
+   "shadows": "If 8 isn't lived, 5 balances you from outside: karmic retribution.",
+   "hex": "Built on the day, inherited trigram over Gen. In a Kan month: 39. In a Kun month: 15. The 23 Oct worked example (Gen → Kan, 39, lines 5 and 6) was this rule before it was stated.",
+   "tarot": "Hermit → Hierophant (overlay only).",
+   "practice": "5 is the one place the day touches the larger cycle; 8 is the virtue that opens it. The one held thing carried into the Delta together with the larger picture.",
+   "note": "Settled 30 Oct; no fixed hexagram, since 5 has no trigram.",
+   "chat": "Okta strategy and Enneagram pairs · Reflecting on the system's past days"
+  },
+  {
+   "from": 5,
+   "to": 7,
+   "dir": "forward",
+   "status": "settled",
+   "name": "5 → 7",
+   "lines": "Reflect. Earth generates Metal. The hexagram is built on the day: Dui over the inherited trigram. The lake reflects whatever 5 inherited.",
+   "shadows": "High Chair Tyrant / Weakling Prince at 5 mature into Tyrant / Princess at 7.",
+   "hex": "Built on the day, Dui over the inherited trigram. In a Kan month: 60. In a Kun month: 45.",
+   "tarot": "Hierophant → Chariot: the order received from above, then that order in motion.",
+   "practice": "5 hands what it received to the lake. 7 sees the reflection, leaves it still, acts from it right away.",
+   "note": "Settled 30 Oct; hexagram rule stated the same day. 7's imagery no longer shaky. Mapping all nine changing lines for 5 deferred.",
+   "chat": "Passive poll five · Inner circuitry study progress · Reflecting on the system's past days"
+  },
+  {
+   "from": 7,
+   "to": 1,
+   "dir": "crosses",
+   "status": "settled",
+   "name": "7 → 1",
+   "lines": "Shape. Only line 1 changes, yang → yin: the lake floor opens. Dui becomes Kan. Metal generates Water, the one octave trace that runs with the generative cycle.",
+   "shadows": "Lines carry no shadows of their own (30 Oct). Two failure modes: the lake held full, nothing goes under; the lake run out over the field, nothing channeled.",
+   "hex": "47 Oppression (Kan over Dui): the dry lake bed; the water is below, out of reach from the surface; the superior man stakes everything on will; sacrifice with sincerity. 48 The Well is 47 rotated: the same water, seen from where one draws it. 60 Limitation (Dui over Kan), the inversion, held loosely: a light heart over the source.",
+   "tarot": "The Chariot left on the shore; the King gets down and stands at the edge as the Fool (26 Oct reading).",
+   "practice": "In practice it is a seed: 7 writes the sentence, acts once, closes the entry and does not reread it; 1 reads it.",
+   "note": "Worked 26 Oct. A trace is both contained within its own octave and extends into the next; this is an octave trace.",
+   "chat": "this chat, 26 Oct"
+  }
+ ],
+ "LRULES": [
+  {
+   "h": "Three figures, one diagram",
+   "id": "three-figures",
+   "items": [
+    "Time, the rim 1–9: the circle, the path, the one actually lived. The order in which things happen, nothing more. Its verb is moves; its unit is the step.",
+    "The hexad 1-4-2-8-5-7, the Law of Seven: the pattern (li, 理), structure with no force of its own. Which points trace to which, regardless of when they occur. Left alone it loops at the same level forever. It cannot lift itself. Not a path; a harmonic process. Name still open.",
+    "The Triforce, the triangle 3-6-9, the Law of Three: the energy (qi, and Ki is qi), the three forces, what makes anything happen at all. It touches the rim and never touches the hexad. The Zelda mapping (Power, Courage, Wisdom; splits in an unbalanced heart) is a side note, not part of the names.",
+    "Practice is framed on the rim with the hexad underneath, never as a walk along the hexad. \"Trace\" is the hexad's verb only: 4 traces to 2; the River reaching the Delta is Time.",
+    "A whole name for the inner circuitry, hexad and Triforce together, is still open."
+   ]
+  },
+  {
+   "h": "The poisoned trace",
+   "id": "poisoned-trace",
+   "src": "Buckley, The Architecture of Emergence, Part III, 2 Nov 2026",
+   "paras": [
+    "The hexad carries residue, never a verdict. Each line hands forward what its origin could not finish: 1 leaves what the water held for 4, 2 leaves the one surviving thing for 8, 5 leaves what landed for 7 to reflect. That is stigmergy: an agent responding to a trace, with no plan above it. It is why the circuit is perfectly efficient and why it cannot lift itself.",
+    "A human is not a termite. We leave psychological traces as well as physical ones. When the trace written at a point is a story about the point (\"this happened because I am inadequate\") instead of what was observed there, the line carries the story forward as if it were residue. 4 then grows the story 1 told, 8 keeps the story 2 told, 7 reflects the story 5 told. The spiral still turns, the hexad still feeds, and every pass confirms the narrative. This is a loop at the same level, not an octave. In the essay's terms, a termite will build a mound over a piece of trash if it carries the right scent.",
+    "The Triforce is the only remedy, because the hexad has no force of its own. 6 is the veto: the conscious decision not to build on a poisoned trace. 3 is the shock from outside that breaks the ground the story was growing in. 9 is the sight that recognizes the trace as a story at all. None of these can arrive from inside the hexad. A spiral that bends downward is one where the shocks were not made and the stories were carried. A spiral that rises is one where the trace stayed residue and the shocks were received at 3, made at 6, and seen at 9.",
+    "Practice: the trace written at Reflect is an observation, never a verdict. \"I was avoidant\" is itself a trace. Note where the energy went, note which story showed up, and leave judgement to the pattern across many days."
+   ]
+  },
+  {
+   "h": "The Triforce",
+   "items": [
+    "3 Power: the first force, one third in, from outside. A given loan of energy, not income. Gardener. Balanced: Composure.",
+    "6 Will: the second force, two thirds in, from the inside out. The one thing circumstance cannot supply and the hexad cannot generate. Warrior. Balanced: Divine Will. Whether the strike was made decides loop or spiral.",
+    "9 Clarity: the third force, source and arrival, the reconciling: the seeing from which the strikes come and to which they return. 9 sees rather than stages.",
+    "\"Given shock\" and \"made shock\" are retired from the lexicon; they stay only as Gurdjieff's source in the reasoning.",
+    "Triangle points carry active and passive shadows like the hexad, but as conditions, not figures. The passive of 2 becoming the active of 3 (Stagnation → Manic Wildfire) may be a rule: the Triforce flips polarity.",
+    "Forces are qualities and rotate; points are positions. Not a duality, a trinity: the Earth turning produces the pair; dawn and dusk are where the third force shows.",
+    "The three Lo Shu families sum to 3, 6, 9 mod 9. The Law of Three is in the hexad's own material."
+   ]
+  },
+  {
+   "h": "Lo Shu",
+   "items": [
+    "Families: 1·4·7 receptive (Kan, Xun, Dui); 2·5·8 substrate (Kun, center, Gen); 3·6·9 expansive (Zhen, Qian, Li). Add 3 and you stay in your family at any size of square.",
+    "2-5-8 is the only diagonal that is itself a family and it is the mirror axis: reflect across it and the yin family lands on the yang family (1↔3, 4↔6, 7↔9). On the infinite tiling the three families are three parallel diagonal lines.",
+    "The Lo Shu is a yin-yang symbol as numbers: 9 and 1 are each other's seed; Kan and Li straddle the line, each carrying its opposite inside.",
+    "Seasons: 1 deep winter, 8 the dormant seed, 3 spring burst, 4 branching, 9 peak summer, 2 late summer, 7 harvest, 6 pre-winter cutting back. 5 is the center, not walked."
+   ]
+  },
+  {
+   "h": "Figures and lines",
+   "items": [
+    "A period's hexagram is its own trigram over the trigram of the cycle that contains it: day over month, month over year, year over great year.",
+    "On a hexad line, the destination trigram goes over the origin: one hexagram per line. The inversion is held loosely, a side note at most.",
+    "5 has no trigram and no hexagram of its own. It inherits the trigram of the nearest higher cycle that is not 5; a chain of 5s keeps looking up. The two lines touching 5 are built on the day from that trigram, destination over origin: 8 → 5 is the inherited trigram over Gen, 5 → 7 is Dui over the inherited trigram. Nothing is doubled.",
+    "The center is where the larger cycle reaches down into the smaller one; the inheritance is that idea as a figure rule.",
+    "Moving lines are always the difference between two resolved figures. No fixed tables.",
+    "In the interval traces yin becomes yang, never the reverse: 1↔4 and 2↔8 move line 6 (completed from outside); 5↔7 moves whatever the parent makes it.",
+    "Each line has an element verb, what crosses it: nourish 1→4, break 4→2, inherit 2→8, keep 8→5, reflect 5→7, shape 7→1. Lines use a shorter template (what crosses, verb, hexagram, two failure modes) and carry no shadows of their own.",
+    "The triangle points take their own trigram doubled: 51 Shock at 3, 1 The Dynamic at 6, 30 Clarity at 9, at any scale.",
+    "Readings come only from The Gnostic Book of Changes through Stella: judgment, superior-man line, editor's notes, changing lines."
+   ]
+  },
+  {
+   "h": "Field, shi, ji",
+   "id": "field-shi-ji",
+   "items": [
+    "Field: the period's hexagram as the page builds it, the period's trigram over its container's. Shown in every profile.",
+    "Shi (勢, momentum, the tendency of a situation): the field's course in time, the moving lines between this period's field and the previous or next period's at the same level. What the rim shows, and the hexad along its wiring; it gets the name, nothing else changes.",
+    "Ji (機, the pivot, the incipient moment): the native in the field, the moving lines between the native hexagram and the field at the same level and moment. Read field → native: the field is the given, the native the response; the text is the field's at those lines.",
+    "The native hexagram: the personal number's trigram at a level over the house of the natal month number at the same level, ki(natal month − global + 5); a house of 5 resolves by inheritance. A construction, not traditional Nine Star Ki; the inner and outer trigram convention is classical I Ching. Not built for the Global profile."
+   ]
+  },
+  {
+   "h": "The clock",
+   "items": [
+    "Ki years run Lichun to Lichun; months begin when the Sun crosses 15° of each sign. Every level counts down by one and never resets at a seam.",
+    "Seven levels: great age, Ki Age, great year, year, month, day, hour. Day octave: the day trigram above the month's.",
+    "Your position: natal 5.9.1. Li 9 year, Kan 1 month; the year rolls to Kan 1 at Lichun, 3 Feb 2027. Personal great year 9 Li inside the global gate 1 Kan, Lichun 2022 to 2034. The nine-month arc runs 63 → 64.",
+    "Haner's houses, adopted for the rim: 1 winter, dormant, Dream the Dream; 2 Germination, the year of planting seeds; 8 Caterpillar in the Cocoon, the Transformer. \"Revolution\" was not his word for 8; verified in Stella's knowledge graph 30 Oct."
+   ]
+  },
+  {
+   "h": "The Gardener–Warrior method",
+   "items": [
+    "Warrior = force; Gardener = cultivation and receptivity; both held under the King, the higher vision.",
+    "Four functions: supply, cultivate, boundary, force. Four patterns: Wall, Water, Mountain, River; the Ocean collects everything and keeps nothing. A pattern is two functions; a function named by itself is a single function, and the first member of each interval trace is one: 1 Supply, 2 Cultivate, completed into River at 4 and Mountain at 8.",
+    "Shadow Warrior: Judge / Martyr. Shadow Gardener: Over-Engineer / Paralyzer.",
+    "Nine-year mapping (20 Oct): Water 1–2, Wall struck 3, River 4, the reset 5, Wall built 6, Mountain standing 7, Mountain still 8, Ocean 9."
+   ]
+  },
+  {
+   "h": "The template for a point",
+   "items": [
+    "One function, too much of it, too little of it, and the Balanced, where the King is present.",
+    "Shadow poles are true Jungian opposites; two compulsions is one trait with two outlets.",
+    "On the hexad, names are figures doing the point's failure, not the point itself and not an adjective. On the Triforce, shadows are conditions. Strong, concise, not trite. No \"gloss\"; a second name beside a figure is interchangeable with it (Dragon, the Hoarder).",
+    "Headlines are one capitalised word naming the point's place in this system, not its trigram: Potential, Field, Power, River, Delta, Will, Lake, Mountain, Clarity.",
+    "Six parts to a pair: trigrams, line change, shadow axis, functions, stacked hexagrams, tarot. Plus the practice line. Lines get the shorter template."
+   ]
+  },
+  {
+   "h": "Vocabulary",
+   "items": [
+    "Points are the numbers 1 to 9. No solfège, no \"note\".",
+    "No \"charge\", \"deposit\" or \"return\". The two kinds of trace: the interval trace acts within its own octave (1→4, 2→8, 5→7); the octave trace extends into the next (4→2, 8→5, 7→1). \"Echo pair\" is retired in favor of interval trace.",
+    "\"Potential\" for 1, not \"the depths\" or \"the well\". \"Delta\" for 5, not \"the hub\". \"Power\" for 3, not Thunder or Shock. \"Will\" for 6, not Discernment or Courage. 1's shadows are the Timid Boy and the Blue Belt; Over-Engineer and Unmoored are what they do, not their names. 2's passive shadow is Stagnation, not Hoarfrost; 2's Balanced is Generative, not Calm.",
+    "\"Given shock\" and \"made shock\" are retired. The three forces are Power, Will, Clarity; the figure is the Triforce.",
+    "Trace is the verb for every link, never feeds or fed by. 1 traces to 4; 4 traces back to 1; 4 is traced from 1. On the day: the 1 day leaves a trace, the 4 day traces it. From stigmergy (Grassé, stigma + ergon, work by the mark): the trace is left in the medium, it stimulates rather than instructs, it is read by the same agent later, and it decays unless reinforced.",
+    "The trace is your word for what a day leaves behind; it can be either shadow or the middle way.",
+    "Rim differences read as movement; interval-trace differences read as inheritance.",
+    "Jungian and Ki-nature metaphors only. Nothing new-agey (\"what are you holding\" is out)."
+   ]
+  },
+  {
+   "h": "Practice",
+   "items": [
+    "One entry a day; the day's question answered. The Arc (an IGC and an EGC per moon cycle) runs underneath as the hands and feet; the octave is the weather it runs in.",
+    "The nine-month arc, Oct 2026 to Jun 2027: health (build muscle) and career. The frame is anti-fragile: did it yield abundance or degenerate, never pass/fail.",
+    "First trial, week of 20 Oct: write Thursday's one held thing before Friday, check Saturday's yield against it.",
+    "The three questions from the origin notes: Where on the rim am I? What is the echo? What is the third force?"
+   ]
+  }
+ ],
+ "LREADINGS": [
+  [
+   51,
+   "Shock",
+   "Zhen over Zhen",
+   "3 Power, at any scale",
+   "The given loan of energy; did the sacrifice continue? Composure: shaken, head kept, goal kept, premises checked."
+  ],
+  [
+   1,
+   "The Dynamic",
+   "Qian over Qian",
+   "6 Will, at any scale",
+   "\"The life force itself.\" The dragon is the life force; unconquered it rules you and life is created by chance. The ego is the warrior who brings it under will; the treasure is higher consciousness; in a regulated psyche the ego is magnetic to the Self."
+  ],
+  [
+   30,
+   "Clarity",
+   "Li over Li",
+   "9 Clarity, at any scale; also your personal great-year figure",
+   "9 sees rather than stages. Virtue: docility, self-remembering. Failure: sleep. Becomes 63 at Lichun 2027."
+  ],
+  [
+   64,
+   "Unfinished Business",
+   "Li over Kan",
+   "the 9 day of 26 Oct; the nine-month arc's arrival",
+   "Every line in a correct correlate but upside-down; a priorities check, not a push. \"No direction, harvesting.\""
+  ],
+  [
+   63,
+   "After Completion",
+   "Kan over Li",
+   "the nine-month arc's departure; the 2027 year figure",
+   "The top line \"going back under\", your building-not-using pattern."
+  ],
+  [
+   47,
+   "Oppression",
+   "Kan over Dui",
+   "7 → 1, the movement",
+   "The dry lake bed; the water is below, out of reach from the surface. Actions speak louder than words. Line 1: under the bare tree three years, a trap of your own making."
+  ],
+  [
+   48,
+   "The Well",
+   "Kan over Xun",
+   "1 → 4 from 1's side; 47 rotated",
+   "The bucket and the rope. Too short a rope is the Timid Boy, a broken jug the Blue Belt."
+  ],
+  [
+   2,
+   "The Magnetic",
+   "Kun over Kun",
+   "2's own figure; read 28 Oct for the Balanced",
+   "The ego bears the burden of the Work; if the superior man takes the initiative he goes astray; the mare bears its load. The editor quotes Case on Daleth, the Empress's letter."
+  ],
+  [
+   29,
+   "Danger",
+   "Kan over Kan",
+   "1's own figure; mined for shadow names, 27 Oct",
+   "Line 6: bound with cords and ropes between thorn hedges, three years. Line 1: in the abyss one falls into a pit. Neither name was taken; the figures came from you."
+  ],
+  [
+   59,
+   "Dispersion",
+   "Xun over Kan",
+   "1 → 4, arrival on top",
+   "The wind moves what the water held; it furthers one to cross the great water."
+  ],
+  [
+   60,
+   "Limitation",
+   "Dui over Kan",
+   "7 → 1, the inversion, held loosely",
+   "The light heart over the source; cheerfulness as the thing that carries 47."
+  ],
+  [
+   23,
+   "Disintegration",
+   "Gen over Kun",
+   "2 → 8, confirmed 30 Oct",
+   "Do not act, meaning don't grasp; the superior man stabilizes his responses. Line 6: the large fruit still uneaten, the carriage. The Hermit inherits only the one fruit."
+  ],
+  [
+   15,
+   "Temperance",
+   "Kun over Gen",
+   "2 → 8, the inversion, held loosely",
+   "The mountain hidden beneath the earth. Greatness held underneath: the 10,000 hours behind the napkin sketch."
+  ],
+  [
+   46,
+   "Pushing Upward",
+   "Kun over Xun",
+   "4 → 2, locked 30 Oct",
+   "A turn toward the Self: south is 9, between southeast and southwest. The pace of a tree; the Magician grows what will fall."
+  ],
+  [
+   20,
+   "Contemplation",
+   "Xun over Kun",
+   "4 → 2, background only",
+   "The other stacking of the same pair."
+  ],
+  [
+   52,
+   "Keeping Still",
+   "Gen over Gen",
+   "8's own figure",
+   "Keeping the back still. The quality of an 8 day: choose one mountain."
+  ],
+  [
+   39,
+   "(Obstruction)",
+   "Kan over Gen",
+   "8 → 5 worked example, lines 5–6",
+   "The distance between what was kept at 8 and what the month demands."
+  ],
+  [
+   53,
+   "Gradual Progress",
+   "Xun over Gen",
+   "side note, 22 Oct",
+   "The eldest daughter cares for the family but does not inherit the house."
+  ],
+  [
+   6,
+   "Stress",
+   "Qian over Kan",
+   "the live 6 day, 23 Oct",
+   "Hold work pressure and the study in stable tension; don't force a resolution. Not \"Conflict\"."
+  ],
+  [
+   7,
+   "Discipline → 4 Inexperience",
+   "Kan under Kun, top line moving",
+   "the 2-day trace, 25 Oct",
+   "Something mobilised and not closed by its follow-through; the same figure across two cycles, an unresolved loop."
+  ]
+ ],
+ "LLOG": [
+  {
+   "d": "10 Nov",
+   "t": "this chat",
+   "items": [
+    {
+     "q": "Each earth period is a sort of tending. 2 tends the field: all is generated in the dark, tending to everything, but in private, and not for show. 5 is about unblocking, whatever that means in the moment, mental, emotional, physical, for what is coming through to land; it is tending to oneself, not pushing outward. 8 is about tending to one thing with great care.",
+     "on": "the three earth points as three scales of tending, all / self / one. Adopted for the reading (5's practice, which was method) and for the forecast packet"
+    },
+    {
+     "q": "What I really need to be doing is unblocking myself, my environment, so that I can receive, so that the reflection is clear at 7 and the discernment at 6 rings clear and true.",
+     "on": "5 → 7 reflect, read as a practice: clear the channel at 5 so the lake at 7 holds a true image"
+    }
+   ]
+  },
+  {
+   "d": "9 Nov",
+   "t": "Element Condition Table — Native in House",
+   "items": [
+    "Field, shi and ji named; the native hexagram and the ji adopted as a construction (not traditional Nine Star Ki; the inner and outer trigram convention is classical I Ching). Names rejected on the way: native, bearing.",
+    "The classical center reading added under 5 Delta, and the center as the larger cycle reaching down into the smaller one added to the Frame after the 5-inherits rule. Provenance: the center reading is classical; the inheritance rule is this system's construction.",
+    "Element condition and flow adopted for the page: the native's element in the house, the house in its container, five relations, the 25 readings kept in the traditional register. The Lo Shu palace and the plot added as faces of the clock."
+   ]
+  },
+  {
+   "d": "1 Nov",
+   "t": "this chat",
+   "items": [
+    {
+     "q": "1 water nourishes the roots.",
+     "on": "the element verb for 1 → 4: nourish, replacing feed"
+    }
+   ]
+  },
+  {
+   "d": "30 Oct",
+   "t": "Reflecting on the system's past days",
+   "items": [
+    {
+     "q": "Like Triforce.",
+     "on": "the triangle's name: the three forces, the Law of Three; the Zelda mapping a side note only"
+    },
+    "Headlines locked: 3 Power, 6 Will, 9 Clarity. Given shock and made shock retired. Gloss rejected as a word.",
+    {
+     "q": "Those are powerful imageries.",
+     "on": "Argos, the passive shadow of 3: Odysseus's dog on the dung heap, the hundred-eyed watcher"
+    },
+    "3 Power closed: 51 Shock as its figure; Balanced Composure; Manic Wildfire and Argos. Stagnation at 2 leaves the tinder Wildfire burns; the Triforce may flip polarity.",
+    {
+     "q": "If three is the shock, six is the force, it is the will.",
+     "on": "6's name; Courage rejected because it collides with 1's Balanced"
+    },
+    "6 Will closed: 1 The Dynamic, the dragon as the life force and the ego as the warrior; sustained will against dispersal; the sickle after the harvest party; Balanced Divine Will; Self-Righteousness and Indulgence. Integrity is the result of an integrated 6.",
+    "9 Clarity provisional on 30 Clarity: sees rather than stages; virtue self-remembering; failure sleep. Shadows open.",
+    "Lines: destination over origin, one hexagram per line, inversions held loosely. Element verbs nourish, break, inherit, keep, reflect, shape. Lines carry no shadows.",
+    "4 → 2 locked on 46. 2 → 8 confirmed on 23. 5 → 7 settled with no hexagram; 7's imagery no longer shaky. 8 → 5: 5 is the one place the day touches the larger cycle, and 8 is the virtue that opens it.",
+    "Dragon, the Hoarder; Barrow, the Recluse. Haner's Germination adopted for 2.",
+    {
+     "q": "If 5 is about karma, what better judge than Capricorn, Saturn and time itself?",
+     "on": "tarot for 5: the Wheel of Fortune and the Devil beside the Hierophant"
+    },
+    {
+     "q": "It's the trigram of the larger cycle paired with whatever it's interacting with in the system, so 8 and 7.",
+     "on": "5's hexagrams: none of its own; the two lines are built on the day from the inherited trigram. Not doubled."
+    },
+    {
+     "q": "The Ace of Wands and the Emperor for 3. Strength and Justice for 6. 9 for now is the Sun and the World.",
+     "on": "tarot for the Triforce; every point now has a card"
+    },
+    "The ledger reached v1. Pin sweep: 8 → 5 settled, 9's shadows settled for now, wu wei on 2 settled, Haner on 8 verified, Stagnation-as-figure dropped."
+   ]
+  },
+  {
+   "d": "28 Oct",
+   "t": "this chat",
+   "items": [
+    "Correction: 4 does not trace to the Delta. The River reaching the Delta is the path of time; on the hexad 4 traces to 2. Trace is the hexad's verb only.",
+    {
+     "q": "5 is Delta.",
+     "on": "5's name, replacing the hub; where this cycle merges into the larger one"
+    },
+    {
+     "q": "6 should be Discernment for now.",
+     "on": "6's headline, a placeholder; Heaven not taken"
+    },
+    {
+     "q": "Thunder.",
+     "on": "3's headline; the trigram image as the name, one capitalised word for every point"
+    },
+    {
+     "q": "Interval trace and octave trace.",
+     "on": "the two qualities of trace; the three links unnamed since 23 Oct now have a name"
+    },
+    "The circuit as you hold it now: everything moves forward and there is always a trace. Lived time only moves to the next moment; the hexad is how we process it inside, and we can stay caught there while time moves on. A trace is both held within its own octave and extends into the next. 9 gathers and disperses what the cycle held, the fruit bearing new seeds; no two seeds, and no two spirals, are the same.",
+    {
+     "q": "Potential is good, let's go with that.",
+     "on": "1's name, replacing the depths; the plain word and the electrical one"
+    },
+    {
+     "q": "Let's go with \"What's under the surface?\"",
+     "on": "1's question, replacing \"Can you face what is down there?\""
+    },
+    {
+     "q": "Trace it is.",
+     "on": "the verb for every link, replacing feeds and fed by; grounded in stigmergy"
+    },
+    {
+     "q": "Generative is the right word.",
+     "on": "the Balanced at 2, replacing Calm"
+    },
+    {
+     "q": "It's not that it's frozen, it's that she's left the field to rot.",
+     "on": "the passive shadow of 2; Hoarfrost replaced by Stagnation"
+    },
+    "Calm failed the test: the abandoning mother looks calm from outside. The Balanced word has to exclude both poles.",
+    "Erikson's generativity against stagnation, with overextension and rejectivity as its two failures, is the same axis in a clinician's words."
+   ]
+  },
+  {
+   "d": "27 Oct",
+   "t": "this chat",
+   "items": [
+    {
+     "q": "Timid and rash.",
+     "on": "the axis at 1, in your words, parallel to Haner's worry and calm at 2"
+    },
+    {
+     "q": "The timid boy, and the blue belt.",
+     "on": "the two shadows of 1, your figures, locked"
+    },
+    {
+     "q": "Courage, that does make the most sense. Timid, blue belt, courage.",
+     "on": "the Balanced at 1, kept as a state with no figure"
+    },
+    "The integrated pole of every point is now labelled Balanced, not middle.",
+    "Over-Engineer and Unmoored stay underneath as the mechanisms. Timid is the state; over-engineering is one thing the timid do with it.",
+    "A blue belt: earned the right to be confident, not the right to be sure."
+   ]
+  },
+  {
+   "d": "26 Oct",
+   "t": "this chat",
+   "items": [
+    "Charge and return are out as names for the hexad links. Pinned, unnamed.",
+    "1 is \"the depths\" everywhere, not \"the well\". Written to the brief the same hour.",
+    "\"The hub\" is rejected for 5. Replacement open.",
+    "Framing rule: the hexad is the inner circuitry, the rim is the external path lived in time. Practice is framed on the rim.",
+    {
+     "q": "Yes. That's all it is.",
+     "on": "7 → 1 in practice: a seed, written at 7, read at 1"
+    },
+    {
+     "q": "Yeah, I mean, that makes sense.",
+     "on": "47: water over the lake is the lake the water has left"
+    },
+    {
+     "q": "That's cool.",
+     "on": "the King Wen sequence pairs each figure with its rotation"
+    },
+    "Impulsive, not compulsive; Over-Engineer and Unmoored reconfirmed after a transcript check.",
+    "Decisions made together are written to the brief immediately. Exploratory points still wait for your call."
+   ]
+  },
+  {
+   "d": "25–26 Oct",
+   "t": "Interactive Enneagram octave calendar",
+   "items": [
+    "Seven-level Ki engine (great age to degree-hour) verified against Stella at three dates before the page was built.",
+    "External (rim) and internal (hexad) changing-line modes; a 3-6-9 view; live Gnostic text through Stella; your own Rider-Waite-Smith scans as the tarot overlay.",
+    "Point and pair text replaced with the real briefs; 7 → 1 and 8 → 5 marked not yet worked.",
+    "Two restyles: Japandi minimal, then the storybook theme with the star cursor."
+   ]
+  },
+  {
+   "d": "25 Oct",
+   "t": "Inner circuitry study progress",
+   "items": [
+    "1↔4 and 2↔8 declared fully settled. 5↔7 done for now.",
+    "Correction: 5 has no stacked hexagrams; it is a situational point read on the day, not a fixed template. All nine changing lines for 5 deferred.",
+    "The \"Generating Cycle\" doc written for review; next focus set to 4 → 2 and 7 → 1."
+   ]
+  },
+  {
+   "d": "25 Oct",
+   "t": "Passive poll five",
+   "items": [
+    "5 restructured on Moore & Gillette: the Divine Child, with High Chair Tyrant and Weakling Prince. \"Works for now; may rename later.\"",
+    "7 as the King; Tyrant and Princess as the poles; the gesture: see the reflection, leave it still, act from it right away.",
+    "Hierophant receives the order from above and gives it; the Chariot is that order in motion.",
+    "Reveler, Smoother and Grasper rejected as adjective-like and trite.",
+    "Full 2↔8 brief recovered from the transcripts and written to the project file after you corrected the inventory."
+   ]
+  },
+  {
+   "d": "23 Oct",
+   "t": "Shadow side of two and eight",
+   "items": [
+    "2: the Smotherer and the Hoarfrost, Calm as the Balanced. 8: the Dragon and the Barrow, Stillness as the Balanced.",
+    {
+     "q": "Powerful images, definitely remember that.",
+     "on": "15 Temperance as greatness held underneath; 23 Disintegration as the one thing on display"
+    },
+    "Warden, Deserter, Locust, Ghost, Blight, Fallow rejected. The rule: a figure doing the failure, not a description of a place."
+   ]
+  },
+  {
+   "d": "23 Oct",
+   "t": "Okta strategy and Enneagram pairs",
+   "items": [
+    "The devouring mother and the abandoning mother confirmed as the two poles of 2.",
+    "15 is Temperance in this edition, not Modesty. The seed buried in the field; 23 the seed as the last thing exposed.",
+    "5 borrows the month's figure: a delta point where the day touches a larger scale.",
+    "4 → 2 and 7 → 1 to be read as magnetic and dynamic, not regressive."
+   ]
+  },
+  {
+   "d": "23 Oct",
+   "t": "Octave Method: 7-1-4 (later)",
+   "items": [
+    "Solfège and the do-re-mi rim rejected; raw interval counts only.",
+    "\"What are you holding\" rejected as new-agey; Jungian and Ki-nature metaphors instead.",
+    "The live 6 day read as 6 Stress: hold the tension, don't force it.",
+    "Naming of the three backward links paused: seed, carry, inheritance, retrograde, root, yield, relay, wake, paradosis, diadoche, lampas, anamnesis, recall, overtone, return all set aside."
+   ]
+  },
+  {
+   "d": "22–23 Oct",
+   "t": "Octave Method: 7-1-4",
+   "items": [
+    {
+     "q": "It does. It does.",
+     "on": "the fork (mystery / fear) is separate from the shadow axis"
+    },
+    {
+     "q": "That tracks.",
+     "on": "courage as the middle: willing to face fear, with preparation"
+    },
+    {
+     "q": "Yeah, I like it. I like it.",
+     "on": "the Unmoored as the reckless pole, after Compulsive was struck"
+    },
+    {
+     "q": "I love the idea of the one yin line closing… how the water stays underneath and the top expands up.",
+     "on": "1 → 4 as the top line alone turning"
+    },
+    {
+     "q": "Dang, that's really good.",
+     "on": "the Priestess's concealed thing is the one firm line in Kan"
+    },
+    {
+     "q": "That's what I like better. Yeah, let's do that one.",
+     "on": "the Fool becomes the Magician; the Fool is the substance, the cards are its states"
+    },
+    {
+     "q": "Nice.",
+     "on": "the Magician is the four day reading the one day's note"
+    },
+    "Deep meditation warranted on water days. Supply at 1 is internal; the question is whether you can go where it is."
+   ]
+  },
+  {
+   "d": "22 Oct",
+   "t": "Octave Method: 2-8-5",
+   "items": [
+    "The hexad is one continuous six-link circuit, not three pairs plus a bridge.",
+    "23 and 15 identified as the two stackings of 2↔8. 8's one yang line is boundary, not force.",
+    "Correction: the eldest daughter cares for the family even though she does not inherit the house (53)."
+   ]
+  },
+  {
+   "d": "20–22 Oct",
+   "t": "Octave cycle of days",
+   "items": [
+    "Correction: 6 Qian is pre-winter, not summer. The seasonal reading reset around it.",
+    "The 1–9 walk is symmetric under a half-turn about 5; 1-4-7 and 3-6-9 are complementary triangles on the 2-5-8 axle.",
+    "The Gardener–Warrior patterns mapped onto the nine years; the Ocean collects everything and keeps nothing; rivers move toward it with purpose.",
+    "The one thing from the 9 year that hasn't dimmed: curiosity, and building things for their own sake.",
+    "First falsifiable trial set for the week of 20 Oct."
+   ]
+  },
+  {
+   "d": "9 Oct",
+   "t": "notes on the day I started my journey in this",
+   "items": [
+    "The three figures: the rim is where things happen, the hexagon is why they happen in the shape they do, the triangle is what makes them happen at all.",
+    "Self-remembering as divided attention against mindfulness as a one-way trip: an open circuit. The arrow points in two directions.",
+    "The three questions: Where on the rim am I? What is the echo? What is the third force?",
+    "The personality Enneagram set aside; a better archetypal tool to be built on the figure."
+   ]
+  }
+ ],
+ "LARCHIVE": [
+  {
+   "h": "1 Potential",
+   "entries": [
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "The one pole we figured out is the fear, or over-engineering; the other is the reckless, the more impulsive side of it. And then we have courage, which is someone who's willing to face fear, but with preparation. In terms of the Gardener aspect this is the supply. It's an internal supply, deep in the water. And the supply internally is asking: do you have the courage, can you face what's down there? Maybe on water days a deep meditation is warranted."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "Kan is stillness on the outside with one firm thing in the middle. Sitting still and going under is the only way to find the firm thing, and it is the opposite of both shadows at once: the fearful one won't sit, the reckless one won't sit still."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "If you look at Jung's shadow poles, they are typically opposites. If both are compulsion that defeats the purpose. If you over-engineer because you're afraid, then you are literally not engaging with the thing because you're afraid, but the structure is built around it. The impulsive or reckless side is the opposite of that: there is no structure, there is no thought, it's just blind engagement, which is guaranteed to have a higher failure rate. Which is not always bad. But in its shadow side it ends up being a lost thread, because you can't connect impulsive threads."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "A mooring is what ties a boat in place, the rope and the post it's fastened to. Unmoored means cut loose, no line holding you to anything fixed. The Over-Engineer is all mooring and never leaves the dock. The Unmoored dives with no line, and the thread is lost. A boat with no mooring at 1 is a boat going wherever the wind blows at 4."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "I love the idea of the one line closing, and how the water stays underneath and the top expands up. Which is what happens in the tree: if there are proper roots, proper water, the energy flows upward into the stem, into the leaves, which then can be healthy and flexible. The middle way can take a hundred faces. This is a primordial archetype which can be applied to a myriad of things in life; the symbolism is what helps us understand it."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "The Over-Engineer never lets the top line turn. The structure stays in place, so Kan stays Kan: yin on top, the firm thing still buried. Four comes and the trigram hasn't changed. The Unmoored is the other error: the top line turns, but there's no bottom line left to hold. Picture the yin at the bottom turning too, so you get Li, all surface and a hollow center, or the whole trigram going to Qian, a tree with no root. The middle way isn't a line position; it's the fact that exactly one line moves and it's the right one. The two shadows are zero lines moving, or too many."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "The High Priestess is the water itself, the mystery. She sits between the pillars with the veil behind her and the scroll half hidden: pure yin surface with one firm thing concealed, which is Kan's shape exactly. Her concealed thing is the scroll in her lap, the law, the whole knowledge, finished and exact, and you can only read the edge of it. Behind her the veil with pomegranates hides the water that runs under everything in the deck; every later card with water in it is drawing from what's behind her curtain. You only get the piece you're prepared to carry up."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "Dang, that's really good."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "The Fool is card zero and the Magician is card one. The Fool carries everything in a bag on a stick, unsorted; the Magician has opened that bag, laid its contents on the table, and picked up the wand. Two readings exist. The common one is the Fool's journey: he meets each card as a teacher and carries on, still the Fool, collecting. The structural one is that the Fool is the substance and the cards are its states: zero becomes one. For water's journey to 4 the second is the one that works, because that's exactly what a trigram change is: the same three lines, one state becoming the next. Kan to Xun isn't water meeting wood and carrying on, it's water becoming wood."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "That's what I like better. Yeah, let's do that one."
+    },
+    {
+     "d": "27 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "The timid boy, and the blue belt."
+    },
+    {
+     "d": "27 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "A blue belt is the second rank, the first one you earn. White is given to you for showing up. Blue means you've trained long enough to have real technique, you can beat an untrained person, and you've started to roll with people who can hurt you. It's the rank where the most people quit and the rank with the worst reputation for injuring training partners, because skill has outrun judgment. Someone who has earned the right to be confident and has not yet earned the right to be sure. In Jung's terms it's inflation: one real contact with the unconscious and the ego thinks it's initiated. In Gurdjieff's, the man who had one moment of self-remembering and now believes he's awake. In the deck, the Fool who has forgotten he's the Fool. Every blue belt has a real win behind him, which is why he's seductive in a way the timid boy never is. He drifts at 4 because he came up with momentum, not with the thing, and momentum is the wind."
+    },
+    {
+     "d": "27 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Timid is the state; over-engineering is one thing the timid do with it. The timid boy at the water can freeze, wander off, keep asking if it's safe, or build a boat. Over-engineering is the last one: fear turned into preparation that never ends, the Gardener's version of timidity. Both poles are failures of preparation against the depth; timid and rash is what they feel like from inside."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "Potential is good, let's go with that. And \"What's under the surface?\""
+    }
+   ]
+  },
+  {
+   "h": "2 Field",
+   "entries": [
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "Kun is three yin lines, the mother, the earth itself. No hidden line anywhere, nothing concealed, which is the opposite of 1. Kan had one firm thing hidden in the dark. Kun has nothing firm at all, and that's its power: it receives everything and holds its shape. Southwest, late summer, fertile or scorched ground, and that fork is the whole point: the same field either grows the crop or burns."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "You",
+     "t": "The two poles of 2 are Jung's devouring mother, who holds everything and releases nothing, and the abandoning mother, who refuses to receive anything."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "Three things, and I'd been sliding between them. The field is the ground, not the crop: it's 2 itself, worked all summer, so it's the capacity to receive. The Empress doesn't own what grows on it; she is the condition for growing. The seed is the one thing that came off that field with a future in it. Everything else gets eaten or rots, and that's what it was for. The light I'd drop; it was muddying things. The lantern on the card is just the container, the Hermit's firm top line, the cap that keeps the seed from scattering. So the field is 2's ground, the seed is what's selected from it, and the lantern is 8's hold on it."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "He doesn't inherit the last seed because the farm dwindled. He inherits one seed because that's all a seed ever is. The hundreds of fruits were never going to carry forward; they were the yield, and yield gets spent. That's what 7 was for. What's left after the harvest is always small, and that's not a loss, it's the shape of the thing."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "You",
+     "t": "It is the greatness held underneath. Modesty, temperance. The mountain of work, say an artist's 10,000 hours to become a master: when they scribble something on a napkin and it's the most beautiful thing ever, it's the result of those 10,000 hours, the mountain that's under the earth. And the other one is the thing on full display, but the only thing left."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Shadow side of two and eight",
+     "w": "Claude",
+     "t": "Hoarfrost came from Kun's first line, \"hoarfrost underfoot, solid ice is not far off\": the abandoning mother who feels the first chill and does nothing. Calm was the Gardener trusting the mother to do the work. Both were replaced on 28 Oct."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "Reading",
+     "t": "<b>2 The Magnetic.</b> Other titles: The Receptive, Field, The Flow, Responsive Service, Yin, The Bearer. Editor's judgment: the ego bears the burden of the Work; success is found in compliance with the will of the Self. The Superior Man supports the Work through its many transformations. \"If the superior man takes the initiative, he goes astray,\" supplemented by the image of a docile mare which uncomplainingly bears its load. The editor quotes Case on Daleth, the Door: \"I am the fruitful womb whence all creatures have their birth.\" Daleth is the Empress's own letter."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "At her best the Empress does nothing and everything grows. Waite: the fruitful mother of thousands, the door by which entrance is obtained into this life. She sits; the wheat ripens at her feet; she holds the scepter and doesn't use it. The problem with Calm: the abandoning mother looks calm from outside. The Balanced word has to exclude both poles, the way Courage excludes both the timid boy and the blue belt. Generative passes: the Smotherer thinks she's generative and nothing comes up because she keeps digging it out; the Stagnant field is left to rot; only the Balanced field produces. Erikson's seventh stage is generativity against stagnation, and he names its two failures: overextension and rejectivity. That's the Smotherer and the abandoning mother in a clinician's words."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "Generative is the right word. And let's replace Hoarfrost. It's not that it's frozen, it's that she's left the field to rot. Stagnation is a good one for that."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "2 is germinating, not eroding. Live the 2 day with the end in mind. Haner calls the 2 year Germination, the year of planting seeds; her keywords are Stagnation, Preparation, Listening, Friendship. Wu wei is settled as the Balanced's manner."
+    },
+    {
+     "d": "10 Nov",
+     "s": "this chat",
+     "w": "You",
+     "t": "2 tends the field: all is generated in the dark, tending to everything, but in private, and not for show."
+    }
+   ]
+  },
+  {
+   "h": "3 Power",
+   "entries": [
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Reading",
+     "t": "<b>51 Shock.</b> Zhen doubled. Other titles: The Arousing, The Beginning of Movement, Sudden Change, Surprise, and Hook's line, the necessity to keep tranquil in the midst of upheaval. Judgment: during sudden changes, adjust your tempo and move ahead, remembering that while conditions may alter, the goal remains the same. The Superior Man double-checks his premises, confronts his weak spots, and adheres to the rules and ideals of the Work. The editor: a sudden, dramatic release of energy, power and force; sometimes the oracle's way of saying \"Surprise,\" with wry humour at the ego's expense; on rare occasions a warning about an upcoming event."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "The sprout runs on what the seed stored. No leaf yet, so no income, only savings. All that energy is spent on one job: reach the light before the savings run out. The force is huge, the body is frail, and it gets one try. That's 3: a fixed charge of energy with a single purpose, and the vices are about spending the charge. Spend it all at once: the sprout that shoots up fast and thin, no root under it, and topples the first windy day. Refuse to spend it: the seed that keeps its reserve underground and never cracks; the charge doesn't keep, it rots in the shell. Between them the sprout that spends exactly enough to break the surface, then starts making leaves and paying its own way. Which is what 51 says in different words: adjust the tempo, the goal stays."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Three is a loan of energy, spent on one job: reach the light. Overactive spends it all at once and topples. Underactive never draws on it and the charge rots in the shell. The virtue spends exactly enough to break the surface, then starts making its own."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "Yeah. That's it. But the words we're choosing to describe it are the important next step."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "The Convert, which you turned down: power that runs you looks like action, which is why it's hard to see as a vice. The shock hits and there's a surge. He feels that surge and takes it as his own will, so whatever direction the force came in is the direction he goes. From inside it feels like decisiveness, like finally being alive. From outside it's a man being carried. The 51 editor's test: did the sacrifice continue? The Convert's altar is empty, because the shock became the thing he's serving instead of the thing he was already serving. He hasn't been struck, he's been replaced."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "When stagnation is there, it leaves a lot of dry material that the thunder will ignite. And I think the reason, in lived experience, is that when stagnation is felt in a deep sense, sometimes there is a manic sense of recalibrating. It's almost like a bipolar situation where you are compensating for the neglect of what had happened before. So wildfire, but manic too; manic covers that energy a bit."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Argos, Greek argós, \"without work,\" faith without works. Odysseus's dog in the story didn't fail; he's the one creature in Ithaca who stays faithful and knows Odysseus on sight. The failure, if you read him as a figure, is in what the waiting cost. He was a hunting dog bred for speed, and he spent twenty years on a dung heap doing nothing, because the one thing that would have made him move never came. When it finally did, all he had left was the recognition, and then he died. The force was real, and it was spent entirely on waiting for permission from outside. That's the passive 3: faithful to the goal, and he let the whole charge go waiting for the mentor to arrive rather than acting as if he already had. The other image is the hundred-eyed giant, all watchfulness and no motion."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "Those are powerful imageries."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "\"Shock\" named the giving; \"Power\" names what's given. That sharpens the shadows: Manic Wildfire is power spent as if it were income, Argos is power never drawn down. What you lose is the match to 51's title, which was the reason Shock won earlier; a side note now."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "The Triforce is three golden triangles making one, each held by a goddess: Power, Wisdom, Courage. The lore that fits: it grants a wish to whoever touches it, but if the heart holding it isn't balanced among the three, it splits apart and the person keeps only the piece they're strongest in. Ganon gets Power alone. That's the guardrail from your own origin notes: the higher centers won't open until personality is mature, because premature access is dangerous. Kept as a side note under the name, not applied to the names themselves."
+    }
+   ]
+  },
+  {
+   "h": "4 River",
+   "entries": [
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "One isn't a complete picture, and that's correct, not a gap. Your four patterns, Wall, Water, Mountain, River, are each two functions together. River is supply plus cultivate. So 1 is supply alone, a function, not yet a pattern. It only becomes a pattern at 4 when cultivate joins it. Which maps onto the whole hexad: the first member of every pair is a single function, the second completes it into one of the four patterns. The fact that there isn't a landscape word for 1 on its own is the point: a function on its own hasn't taken a shape yet."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "Taken literally, the Fool steps off the cliff and the water is where he lands. So the one day isn't a chosen dive, it's a fall, and the courage question is really whether you accept where you landed. Then the Magician isn't who he turns into; he's who meets him there, the one who's done this before and knows what's in the bag. That's conscience as the memory of last time. The Magician is the four day reading the one day's note. In the recursion he's the previous octave's four, or at the month level the earlier month's. The two cards are the same person at two different times."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "You",
+     "t": "Nice."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Reading",
+     "t": "<b>59 Dispersion</b>, Xun over Kan: wind blowing across water and breaking it into ripples, dissolving what was frozen or clotted. The king approaches his temple; it furthers one to cross the great water. The healthy 4 reading 1: the wind moves what the water held, and the move is outward, across. <b>48 The Well</b>, Kan over Xun: the wooden bucket going down into the well and bringing water up. The town may change but the well does not; if the rope doesn't reach, or the jug breaks, misfortune. Too short a rope is the Timid Boy, a broken jug the Blue Belt."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Claude",
+     "t": "One's two shadows are about depth: won't go in and won't come out. Four's two shadows are about direction: won't move and moves without choosing. And they match across the link. The one who never went under becomes the Paralyzer with no root to stand on; the one who never surfaced becomes the Drifter with water but no channel. That gives a recursion test: if the shadows at 1 predict the shadows at 4, a bad 1 day should produce a recognizable bad 4 day three days later, and you can check that in the log."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "You said if you lived a four day with two in mind, the cycle would continue, and that's the practice for 4. The Magician at 4 isn't just passing the test, he's growing what will fall. What he makes under the sun is what the field gets. So the question on a four day is less \"did I pass\" and more \"what am I producing that's worth the ground.\""
+    }
+   ]
+  },
+  {
+   "h": "5 Delta",
+   "entries": [
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "5 has no fixed trigram and borrows the current month's figure, which makes it a delta point, where the day touches a larger time scale. Worked example: Gen to Kan, hexagram 39, lines 5 and 6. The moving lines measure the distance between what was kept at 8 and what the larger cycle demands, and the Gnostic line texts are the prescription."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "The classical Ki reading of 5: everything flies around you and nothing moves for you. It's described as pivotal: what you've built comes to you, what you've neglected comes to you too. Absorb, in Haner's word. A year to stay put and let things arrive rather than go after them. So the classical relationship is earth generating metal: the center that absorbs everything feeds the lake that reflects it."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "You",
+     "t": "What you just said just kind of says it outright. Not settled necessarily, because we have a whole template to go over, but I think we're finding the seam here, which to me is what classically it represents and what I'm trying to make it do."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "Classically 5 and 7 are a stretch of the walk: you sit in the center, things arrive, then two years later you enjoy and reflect on what arrived, with 6 between them. In yours, 5 and 7 are a pair on the inner lines with 6 skipped: 5 is a delta that injects the parent, 7 reads what 5 injected. That's a wire, not a stretch of road. The classical 5 absorbs because it's empty; your 5 inherits because it's empty. Same emptiness, but one fills from life and the other fills from the figure above."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "The Divine Child is the boy form of the King. He's the source of life and blessing, at the center of everything, cared for because of what he is rather than what he does. His active shadow is the High Chair Tyrant: demands to be served, throws down what's offered, no gratitude, hurts the ones who feed him. His passive shadow is the Weakling Prince: no life force of his own, wants to be carried, gets attention through helplessness and secretly manipulates everyone to look after him. The High Chair Tyrant matures into the Tyrant at 7: the boy who throws down what he's given becomes the man who seizes it. The Weakling Prince matures into the Princess: the boy who got carried becomes the one who runs things by never lifting anything."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "You",
+     "t": "I think the boy forms fit five. It works for now; I might come up with different names later. They represent what they do. My own image of 5 is the yin-yang: balance holding still, opposites holding each other's seeds."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat, while chatting",
+     "w": "You",
+     "t": "Five, to me, is the nascent externalized karmic reconciliation. Almost like three, it's something outside of ourselves where we are shown something about our hand, about our time, about our cycle. What we choose to do with it becomes either the high chair tyrant or the weakling prince, where we try to force it into submission or we do nothing about it. And the alternative route is to give blessings, for that to evolve into six. When five is done correctly, six's role is pretty clear. Or five brings the larger cycle into context, maybe even judging the eight against the larger cycle."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "If 5 is about karma, what better judge than Capricorn, Saturn and time itself? Three cards, meant to be read together. And the hexagram: it's the trigram of the larger cycle paired with whatever it's interacting with in the system, so 8 and 7."
+    },
+    {
+     "d": "10 Nov",
+     "s": "this chat",
+     "w": "You",
+     "t": "5 is about unblocking, whatever that means in the moment, mental, emotional, physical, for what is coming through to land. It is tending to oneself, not pushing outward. I was pushing during the 8 and 9 hours, but when my hour shifted into 1, at the pinnacle of 9, it dawned on me that what I really need to be doing is unblocking myself, my environment, so that I can receive, so that the reflection is clear at 7 and the discernment at 6 rings clear and true."
+    }
+   ]
+  },
+  {
+   "h": "6 Will",
+   "entries": [
+    {
+     "d": "20 Oct",
+     "s": "Octave cycle of days",
+     "w": "You",
+     "t": "Qian at 6 is late autumn, pre-winter, not summer. 6 is the selection of the next seed, not expansion."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Octave Method: 7-1-4",
+     "w": "Reading",
+     "t": "<b>6 Stress</b>, Qian over Kan, read on the live 6 day: hold the work pressure and the draw toward this study in stable tension rather than forcing a resolution. The editor's title is Stress, not Conflict."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Reading",
+     "t": "<b>1 The Dynamic.</b> Qian doubled. Other titles: The Creative, Heaven, Force, The Key, Primal Power, The Life Force, Kundalini, God the Father. Judgment: the Dynamic is the life force itself. The Superior Man tirelessly furthers the Great Work of Transformation. Editor: a dragon appears in every line except the third. In Western myth the dragon is the adversary the hero must conquer to get the treasure; the Chinese regard it positively, dragons provide rain and rule the ocean. Wilhelm compares the dragon to the electricity in a thunderstorm: as lightning it destroys, harnessed it does useful work. When the dragon remains unconquered in the depths of the unconscious, the life force rules our lives autonomously and we become passive vehicles for random desires; a life is created by chance and circumstance. When one begins the Work, one assumes the role of the hero or warrior who battles the dragon to bring it under his will. If one can control the life force, the treasure is obtained, which amounts to a higher level of consciousness. The first two hexagrams must be studied together: Heaven and Earth, Force and Form. As consciousness is to the body, so Force is to Form."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "If three is the shock, six is the force, it is the will. Maybe call it the will."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Gurdjieff's line is that man as he is has no will, only competing wants, and real will is what the Work produces. So naming 6 Will is naming the one thing the hexad can't generate on its own, which is exactly what the second shock is supposed to be. Courage at 6 I'd hold: it's 1's Balanced, the Timid Boy stepping onto the mat. That's nerve, the willingness to begin. What 6 asks for is holding the dragon once you're already in, tirelessly, all winter. Nerve gets you in the ring; will keeps the grip."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "The integrated 6 is choosing, discernment: you know that is right and you act on it with clear conviction, like a sickle separating the wheat from the chaff. An active shadow is acting as if you are in the right no matter what, and you pass judgement and cut what doesn't need to be cut. The passive side is giving in to temptation to do the opposite, to indulge and forget there was anything right to do."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "It doesn't have to be a \"the this\" kind of phrasing. If Will is the integrated 6, a sharper read would be Divine Will, an adherence to a higher self; the shadow sides are adherence to the ego in different shapes. Integrity is the result of an integrated 6."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "That matches the editor exactly: in a regulated psyche the ego is magnetic to the Self. Divine Will is the ego pointed at the Self; both shadows are the ego pointed at itself. Self-Righteousness: the ego's will passed off as the Self's, \"I know what's right\" with the knowing coming from the wrong seat, so the cut is really the ego protecting itself and calling it conviction. Indulgence: the ego's appetite with the Self forgotten entirely. Rejected on the way: the Arrogant Dragon (hexagram 1's own top line, the dragon that flies too high and has cause to repent), the Passenger (the editor's \"passive vehicle for random desires\"), the Zealot, the Prodigal, the Reaper."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Where 6 sits: not the cave, that's 8, and not the harvest party, that's 7. It's the discernment of what to carry into winter after the party, plus the carrying. First half readiness, second half the action. A battle against winter. The fight is sustained will against dispersal, drift, inner entropy; not against the ego, which is the warrior, and not against imbalance, which is the symptom. The dragon is internal at 6; an unconquered dragon at 6 sits down and hoards at 8."
+    }
+   ]
+  },
+  {
+   "h": "7 Lake",
+   "entries": [
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "Haner's Seven is the Artist: charming, gracious, aware of what's going on around, sensitive to nuance and detail, always refining. The failure she names is denial, pretending things are fine for years, and under stress denying your own needs to keep things lovely for everyone else. Her line that matters: Sevens maintain such poise that nobody sees anything is wrong, and it's only if things start to go wrong in ways the Seven can't control that the ripples appear on the lake. Her image for 7 is the Princess, the longing to live the good life and be taken care of. The Yoshikawa line is simpler: autumn, west, harvest and pleasure, reward for previous work; enjoy and celebrate but watch for excess; youngest daughter, joy, beauty, natural sensuality. The Gnostic text on Dui: in Joy, the lake doubled, the superior man encourages the conversation of friends and the stimulus of their common practice; in Influence, lake on the mountain, he receives people by virtue of emptiness; in Following, thunder in the lake, he goes inside and rests when the sun goes down. The lake is open at the top, empty enough to receive, and it's the figure for speech and shared practice, not private pleasure."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "Haner's shadow is the ripple on the surface, and the I Ching's virtue is emptiness. The lake works when it's still and open; it fails when it's either full of itself or disturbed. Put the three together and 7 has a clear job: be a still, open surface. It receives by emptiness, shows what the sky put in it, and shares that out loud. The harvest is partly the seeing and partly the telling."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "Claude",
+     "t": "Waite on the Chariot: the King in his triumph, the victory that creates kingship. Outwardly active, inwardly still, steered by equanimity rather than force. The Hierophant explicitly receives and shows a higher order; the Chariot is that order in motion. Reveler and Smoother, then Grasper and Smoother, were rejected as adjective-like and trite."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Passive poll five",
+     "w": "You",
+     "t": "For seven, the tyrant and the princess are pretty good, and king is the integrated form. The tyrant is the one who tries to grasp at the meaning in a manipulative way, in a controlling way. And the princess is the one who just smooths it over despite knowing what's held beneath: passively taking control without doing anything of substance."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "Seven is what's left after the sixth shock, and it is to some degree clarity, because it's what has been stripped away, and then you can see clearly in it the next right thing to do. That's what the king energy is. The chariot means to reflect on the water and carry it into the next phase."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Li is the seeing itself, light on everything, which is why 9 is where you see one clear question. Seven isn't the light, it's the surface the light lands on. A lake reflects because it's still, and it's still because six cut away everything that was churning it. So the reflection is what's visible once nothing's moving: the obvious thing, whether or not it's comfortable. And the trace is naming it. Not \"I saw clearly,\" but the sentence. So the seven-day note has two parts: what the reflection said, and what you did about it."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "In practice, smaller than meditation: don't add anything new to the pile, look at what was held, notice what's obvious about it now that the week has stopped churning. Then do the next concrete step the obvious thing implies, without arguing with the picture or improving it. The Tyrant's version is \"now let me use this clarity to fix five other things.\" The Princess is \"good, I see it, I'll note it for later.\""
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "5 → 7 settled: the lake reflects what 5 inherited. 7's imagery, the lake filling and the king leaving the shore, flagged as shaky on 25 Oct, no longer is."
+    }
+   ]
+  },
+  {
+   "h": "8 Mountain",
+   "entries": [
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "Kun is the mother, Gen is the youngest son, not the eldest. Zhen, thunder, is the eldest, with the firm line at the bottom; Gen has it at the top, the one born latest. That changes the Hermit picture. The Empress is the mother with everything growing, and the Hermit is her youngest, the one who was there when the field emptied. The older sons took the force and the movement and went out into the world. The youngest stays, gets the house, and inherits what's left when she's done. That's why he's old on the card despite being the youngest: he's carrying what the mother made for longer than anyone. His firm top line is the one thing she wasn't, a cap, and that's the only thing he adds to her."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "What survives her is the ground she made. Cultivation isn't the crop, it's soil that can hold a seed through a winter without her standing over it. So what the Empress hands the Hermit is a ground that's already been taught to keep things alive. His lantern isn't his own light, it's hers with the field removed. Her yes to everything becomes his yes to one thing. The Hermit is cultivate with no sun, which is the first time it becomes a pattern. He's proof that she worked. If he can keep the seed, the ground was good. If it dies in his lantern, that's scorched ground."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Claude",
+     "t": "15 and 23 are the same single yang line in two positions. In 15 it's buried under the earth, the mastery nobody can see. In 23 it's the one thing left standing on top after everything else fell away. The seed hidden, and the seed exposed. 15 is the field with the mountain already in it; the seed isn't something 8 adds later."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Shadow side of two and eight",
+     "w": "Claude",
+     "t": "The Dragon lives in the mountain but is not the mountain; he keeps all of it. The Barrow is the burial mound, the grave: it keeps nothing. Stillness between them. Warden, Deserter, Locust, Ghost, Blight and Fallow were turned down; the rule that came out of it was a figure doing the failure, not a description of a place."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Shadow side of two and eight",
+     "w": "You",
+     "t": "Powerful images, definitely remember that."
+    },
+    {
+     "d": "23 Oct",
+     "s": "Okta strategy and Enneagram pairs",
+     "w": "Reading",
+     "t": "<b>23 Disintegration</b>, Gen over Kun: do not act; the superior man stabilizes his responses. Line 6: the large fruit still uneaten, an accrual of karma; the carriage, a new way of going. <b>15 Temperance</b>, Kun over Gen: a dynamic, magnetic balance of forces; the mountain hidden beneath the earth."
+    },
+    {
+     "d": "25 Oct",
+     "s": "Earth Day trace inquiry",
+     "w": "Claude",
+     "t": "An 8 Mountain day over water: stillness sitting atop the receptive. The 2-day trace, followed back two cycles, read 7 Discipline turning to 4 Inexperience on the top line: something mobilised earlier in the month and not closed by the follow-through it needed, the same figure across two cycles, an unresolved loop."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Dragon and the Hoarder, Barrow and the Recluse: interchangeable names, figure and feel. The Hoarder keeps instead of carries; the Recluse is the mound of the dead. The quality of an 8 day: choose one mountain. 52, keeping the back still. Haner's 8 year is the caterpillar in the cocoon; her first-number 8 is the Transformer; in the mountain there is a cave, and the cave holds the treasure."
+    },
+    {
+     "d": "10 Nov",
+     "s": "this chat",
+     "w": "You",
+     "t": "8 is about tending to one thing with great care."
+    }
+   ]
+  },
+  {
+   "h": "9 Clarity",
+   "entries": [
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "Fire at 9: Li, the Clinging; yin held inside yang; light that exists only in relation to what it burns. Consciousness as the seeing, not a stage of the seen. 9 is the source and the destination, the arm; 3 and 6 are the hands."
+    },
+    {
+     "d": "20 Oct",
+     "s": "Octave cycle of days",
+     "w": "You",
+     "t": "The Ocean collects everything but keeps nothing. Rivers move toward the ocean with purpose. Year 9 delivers sight, not a harvest. The one thing from my 9 year that hasn't dimmed is curiosity, and building things for their own sake. From nine lived years: 9's clarity is itself activating and leads to being spread too thin; at 9 the job is to see one clear question, not act."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "9 isn't a stage. Every hexad point does something: grows, keeps, reflects. Li doesn't do, it sees. And the editor's instruction on 30 is the opposite of what fire suggests: not blaze, but docility, the cow. The power originates somewhere else and your job at 9 is not to interfere with it. Which is self-remembering exactly: the arrow back to \"I, here.\" The sun and moon line is the hexad and the triangle in one sentence: growing things are the hexad, they aren't luminous, they're lit. The Self is the sun, 9, and the ego is what grows under it. So 9 doesn't appear in the wiring because it's the light the wiring is seen by. That's why the triangle never touches the hexagon. Then the net: clarity as comprehension, a mesh that catches insight. 9 is the King's actual seat; he lives here, the hexad is where he works. The failure is sleep, not being there when the light's on."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "You",
+     "t": "Sure. For now."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "The Sun: a naked child on a white horse under a full sun, sunflowers behind a low wall. Nothing hidden, nothing carried, everything lit; illumination, the plain seeing of a child. That is 9 as what it does. The World: a dancer inside a wreath, the four fixed creatures at the corners; completion that is also the start, the whole seen from outside. The wreath is a zero, the Fool's number, so it closes the deck back onto its beginning. That is 9 as where it sits."
+    }
+   ]
+  },
+  {
+   "h": "The lines",
+   "entries": [
+    {
+     "d": "22 Oct",
+     "s": "Octave Method: 2-8-5",
+     "w": "Claude",
+     "t": "Gurdjieff's enneagram has three bridge links, 4→2, 8→5, 7→1, alongside the three echo pairs, and together they make one continuous six-link circuit. You asked for this to be held and integrated, and on 23 Oct revised the rules so the hexad is one chain, not three pairs plus a bridge."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "The editor says 47 and 48, the Well, are the same figure flipped. In 47 you're on the surface of a dry lake bed and the water is below you, out of reach. In 48 you're at the well, drawing from that same water. Nothing was lost; it changed level. So 7 → 1 isn't a loss link: the lake empties because the harvest sinks down into the source the next one draws from. Water over the lake is the lake the water has left; in 60 the water is below the lake, so the lake holds."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Reading",
+     "t": "<b>47 Oppression.</b> Other titles: Exhaustion, Dried Up, \"Actions speak louder than words.\" Editor's judgment: with enough will, success can be won; the answer lies beyond the realm of reason and logic. The Superior Man stakes everything he's got on his will to succeed. The image is a dry lake bed; the Well is its upside-down image, an unending source flowing from deep beneath the surface. To be under Oppression is to be cut off from sustenance although there is water down below. The lower trigram of Peril goes on to the upper trigram of Cheerfulness, which 60 also turns on: a light heart under hard conditions. Lines 2 and 5 mention sacrifice; sincerity is the condition. Line 1: one sits oppressed under a bare tree and strays into a gloomy valley; for three years one sees nothing. Wing: a trap of your own making, discouragement. The editor: self-pity, lack of clarity, some illusion prevails; sometimes it means you have misunderstood a previous hexagram."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "The King Wen sequence pairs almost every hexagram with its upside-down twin: 3 and 4, 5 and 6, 11 and 12, up to 63 and 64. The eight that look the same flipped, Qian and Kun, 27 and 28, 29 and 30, 61 and 62, are paired by inverting every line instead. So 47 and 48 are doing what the sequence always does. What nobody has explained is why the twenty-eight pairs sit in the order they do. Three live readings: a narrative, which the Sequence commentary tells and which can be fitted to any order; a hidden structure, where there are real partial results, more line-count symmetries than chance would give, but no generating rule; or historical accident. The evidence sits between the last two. Which, for your work, is the interesting case: a fully solved order would be a machine, a random one would be noise, and one with partial pattern is exactly what the hexad is: structure that can't lift itself."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "In practice it's literally just a seed. It's just something I write down that I read on the one day."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Yes. The whole 47-48 business is just saying why that works: the sentence isn't on the surface anymore when 1 arrives; it's the thing under the water you go in for. The only part that's really a practice is at 7: don't keep rereading it. Write it, act once, close the note. That's the floor opening. If you keep it visible it's a lake, not a well."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "In stigmergy the trace is the whole mechanism. Grassé coined the word in 1959 watching termites: stigma, a mark, plus ergon, work. A termite drops a pellet; the pellet, not the termite, is what makes the next termite drop one beside it. Nobody instructs anybody. Ant trails are the other case: pheromone laid down by whoever passed, read by whoever comes next, and it evaporates unless it's reinforced. Three things in that were already yours: the trace is left in the medium, not handed to anyone; it stimulates, it doesn't instruct; and the agent who reads it is usually the same one who left it, later, which is self-remembering across time. The evaporation is the part you didn't have: an unread trace decays, and that's the difference between a loop and a spiral in the medium itself."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Trace comes from Latin tractus, drawn: a trace is a line drawn, and to trace is either to draw the line or to follow it. Same word for the one who leaves it and the one who comes after. A tracing is the copy you make by following lines through paper. The Magician at 4 holds a tracing of the Priestess's scroll, not the scroll."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "Everything moves forward and there is always a trace. That is just how lived time is: internally we process it in the hexad pattern, externally it's all just moving to the next moment, the next hour, the next minute. The spiral pattern is moving forward but we can stay trapped in internal processes that feel like we aren't moving forward even though time is. And so the traces that are left behind are both contained within their own octave and also the next. 9 is the great culminator of all, as it gathers and disperses what was held in the cycle. The fruit bearing new seeds. The seeds themselves are products of the past and contain within them a blueprint, but no one seed is the same. Even though we go through nested 9-step cycles, no one spiral is the same. The trace that acts within its octave and the trace that extends to the next: it's almost like a harmonic. Interval trace and octave trace."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Reading",
+     "t": "<b>46 Pushing Upward</b>, Kun over Xun. Other titles: Rising, Ascending, Sprouting from the Earth, Organic Growth. Editor's judgment: ascend in accordance with the will of the Self; turn toward clarity. The Superior Man grows a little every day. The image is a plant in the earth gradually pushing upward toward the sun. \"An advance to the south is fortunate\" means that as all plants turn southward toward the sun, their source of nourishment, so should we turn toward the light and clarity of the great man, the Self within us. There is no such thing as instant enlightenment; the stories of instant satori are the final few moments' resolution after a lifetime of slow and patient devotion. The Work progresses at the pace of a tree. He calls this growth an accumulation of countless \"gathering togethers,\" which is 45, the hexagram 46 is the upside-down image of, and closes with Origen: \"thou art a second little world, and the sun and moon are within thee, and also the stars.\""
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "What crosses from 4 to 2 is the seed, and 46 is the seed after it's landed. The text's whole weight is on pace. And \"advance to the south\" names the direction: on the Lo Shu, 4 is southeast, 2 is southwest, and 9 fire sits between them. The sprout doesn't push back toward 4 where it came from; it pushes toward 9. The ground is holding it but the sun is pulling it. 45 Gathering Together is Dui over Kun, lake on the earth, so 7's residue is in 2's soil too, not just 4's seed; the field gets fed from two directions. Failure modes from 46: wanting instant enlightenment, pushing up fast and hollow; and the sprout turning the wrong way, back toward where it came from, the field refusing disturbance. 20 Contemplation sits behind it as the condition: the Magician on the tower who had to actually let it fall, not just contemplate. Preparation without the act and nothing's in the ground."
+    },
+    {
+     "d": "30 Oct",
+     "s": "Reflecting on the system's past days",
+     "w": "Claude",
+     "t": "Stacking rule for a line: destination over origin, one hexagram per line, the inversion held loosely. Element verbs for what crosses, concept only, not used language: feed, break, inherit, keep, reflect, shape. Lines take a shorter template and carry no shadows of their own. 2 → 8: \"do not act\" means don't grasp; the Hermit inherits only the one fruit. 8 → 5: 5 is the one place the day touches the larger cycle and 8 is the virtue that opens it; if 8 isn't lived, 5 balances you from outside."
+    }
+   ]
+  },
+  {
+   "h": "Time's path",
+   "entries": [
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "Time is the rim: the circle, the path. The laws are separate from the names. The rim is the path of time, the hexad is the Law of Seven, the triangle is the Law of Three. 4 does not trace to the Delta; the River reaching the Delta is the path of time, not the hexad. Is the hexad a path at all? More of a harmonic process. And the triangle is transformative."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "1 into 2. The water meets ground. Whatever was under the surface stops being a question and sinks into the field, where it becomes capacity rather than depth. You stop diving and start receiving. Earth holds water, so this is potential being given a shape to sit in. From outside it looks like nothing happening; that's the refusal beat, and it's correct."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "2 into 3. The field is still, and then something comes up through it that you didn't plant. The seed splits and the shoot breaks the surface, wood breaking earth. Receiving produced it, but it arrives with force you didn't supply and at a tempo you didn't set. That's why it feels like an event, and why it's the mentor: it comes from outside the ground you were tending."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "3 into 4. Thunder becomes wind. Same wood, but the yang burst goes yin and flexible. Power with no direction is wildfire; power given a channel is a river. This is where you choose which way the loan runs, and the trace back to 1 is what you choose by: you point the river at what the water held. The tests begin because you now have a direction that can be wrong."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "4 into 5. The river reaches the end of itself. It meets earth again, but this earth is bigger than the river: the delta, where your current drops what it carried into a body you don't control. The day touches the month. Everything you've been steering since 4 gets handed to a scale that was turning before you started."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "5 into 6. Earth makes metal. Out of what the larger cycle showed you, a blade. You're standing in the delta with what you carried and what landed, and the one thing left is to decide what goes on into winter. Nothing outside does this part; the shock at 3 was given, this one isn't. The ordeal is that it's yours."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "6 into 7. Metal to metal: the sword becomes the mirror. Once the cut is made the surface goes still, and what the will kept shows itself plainly for the first time. The reward isn't new; it's the same thing you've carried since 4, finally visible."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "7 into 8. The lake drains into the mountain. Metal goes back to its mother, earth. The reflection is done with, and the one thing that lasted is carried into the cave and set down, not planted, not touched. The road back, in the hour before dawn."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "8 into 9. The sun comes up on the mountain. What was kept in the dark is seen from above with the whole octave around it, and seeing is all 9 does. The fruit is ripe and carries seeds, and none of them are the seed you started with."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "9 into 1. The sun goes down into the water. Clarity becomes potential again; the thing seen sinks under the surface and waits. The lake's sentence from 7 is already down there. The next dive starts one turn higher, into water that already holds something."
+    },
+    {
+     "d": "30 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Not pinned, mine: Time's path barely runs the generative cycle. Of its nine steps, three are controlling (water held, earth broken, river swallowed), two return child to mother (lake to mountain, mountain to sun), two stay in one element, and only 5 into 6 generates. The generating runs on the hexad. Time mostly constrains; the pattern underneath is what grows."
+    }
+   ]
+  },
+  {
+   "h": "Frame and sources",
+   "entries": [
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "The circle is the process: drawn closed because the end is the beginning one level up, 9 and 0 coincide; from above a ring, from the side a spiral. The rim is time: the order in which things happen, nothing more. The hexagon is the wiring, from 1/7 = 0.142857 repeating; every seventh is the same six digits rotated, which is why the six lines form one closed loop; 3, 6, 9 never appear. It says which stages are feeding which regardless of when they occur; left alone it loops at the same level forever; structure but no force. The triangle touches the rim but never the hexagon: if the shocks were part of the wiring the process could self-start, and Gurdjieff's whole claim is that it cannot. \"The rim is where things happen, the hexagon is why they happen in the shape they do, the triangle is what makes them happen at all.\""
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "The 1/7 wiring mechanically: long division gives digit and remainder, 1 r3, 4 r2, 2 r6, 8 r4, 5 r5, 7 r1, back to start. Every leftover 1 to 6 exactly once; nothing wasted, nothing escapes; 7 itself never appears because it is the measure, not a stage. \"1 produces 4\" means the incompleteness of stage 1 is the material of stage 4. The circuit is perfectly efficient at recycling its own residue, which is exactly why it cannot lift itself. Gurdjieff gave only the arithmetic and the food example; the echo reading is defensible interpretation, not scripture."
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "The Law of Seven and the intervals: the major scale has two half-steps, and Gurdjieff treated these literally. Any process stalls at those two positions, about a third and two thirds through, and unshocked it bends, eventually curving back toward the opposite of its origin: revolutions to tyrannies, diets to binges. In the food octave, food enters at do, stalls at mi-fa, and is carried by air, the automatic first shock. Impressions enter and die at do unless the second shock, self-remembering at the moment of receiving the impression, is made consciously. The engineering reading: failure is not randomly distributed; it concentrates at two fixed points. Design the shock in: fuses, expansion joints, crumple zones. Pre-install the third force, a review, an outside deadline, a person whose job is to be the shock, rather than hoping the mentor shows up."
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "Forces are qualities: active, passive, reconciling. They rotate around the circle; every stage has one. Pushing harder against passive resistance only strengthens the standoff; the question at a stall is \"what is the third thing that is neither push nor resistance?\" Points are positions: at 3 and 6 what is needed is always the reconciling force, and 9 is where it comes from. The night-and-day image: the sun is not day, the shadow is not night; the Earth turning is what produces the pair, and dawn and dusk are where the third force becomes visible. Not a duality, a trinity."
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "Hero's journey compressed to nine beats: 9 ordinary world and return with the elixir; 1 the call; 2 the refusal; 3 the mentor, the first shock, given; 4 tests, allies, enemies; 5 approach to the inmost cave; 6 the ordeal, death and rebirth, the second shock, made; 7 the reward; 8 the road back. Inner lines as plot: the call shapes the tests; the tests expose the refusal; the refusal determines the road back; the hero carries home what they first ran from. Campbell's departure, initiation, return is the Law of Three. The agency gap: in Campbell the shocks arrive; in Gurdjieff the second must be made. Roughly the difference between a story about a hero and the practice of being one."
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "You",
+     "t": "Self-remembering makes more sense when you consider the particle and wave phenomenon: an observer attempts to see a wave function in flux but is presented instead with a particle; because we are viewing it, it changes. The arrow points in two directions, not one. Mindfulness is a one-way trip, an open circuit. Nature works in polarity and circuitry. The three questions: Where on the rim am I? What is the echo? What is the third force? \"The tool shows you the shape of your prison. The shock at 6 is the key you have to forge yourself.\""
+    },
+    {
+     "d": "9 Oct",
+     "s": "origin notes",
+     "w": "Notes",
+     "t": "Your three-figure I Ching reading: moving lines as the active figure, still lines as the passive figure, the resulting hexagram as what the reconciling force produces; the cast hexagram is the sum, not a separate card. Caveats on provenance: Gurdjieff drew the figure in Russia around 1916 and never gave a derivation beyond 1/7 and the Law of Three. Rodin's doubling mod 9 is a modern arithmetic pattern; the resemblance is real, the link is ours. The Tesla \"3, 6, 9\" quote is almost certainly apocryphal. The personality Enneagram is a later attribution and deliberately set aside."
+    },
+    {
+     "d": "20 Oct",
+     "s": "Octave cycle of days",
+     "w": "Claude",
+     "t": "The 1 to 9 walk is symmetric under a half-turn around 5; 1-4-7 and 3-6-9 are complementary triangles pinned to the 2-5-8 axle. The Gardener-Warrior nine-year mapping as settled that day: Water at 1 and 2 (supply plus cultivation), Wall struck at 3, River at 4 (boundary from above), the reset at 5, Wall built at 6 (force plus boundary by choice), Mountain standing at 7 (force plus cultivation), Mountain still at 8, Ocean at 9 (the King, no function, pure sight)."
+    },
+    {
+     "d": "20 Oct",
+     "s": "Octave cycle of days",
+     "w": "Claude",
+     "t": "The farm parable, the version you asked to read rather than hear. A woman took over her father's farm the winter he died. Wheat came in every autumn; the question was what the place would become. Year one she changed nothing, worked every job the way he had, and the farm filled her: his rhythm, the neighbors' habits, where each field held water. Year two she picked one thing to build: on the useless east slope she planted apple trees that wouldn't bear for most of a decade, and tended them every evening, and told no one why. Year three a spring storm took the roof off the barn; she stood in it and held, and the open roof showed her what it had hidden: the whole yard drained west, into the wheat, away from the apples. Year four the creek rose and cut through the west field, carrying off a season of topsoil; her brother drove over to dam it; she stopped him and let the water finish. Year five she sat on the barn floor with one question, what is this farm for, and didn't rebuild and didn't plant. Year six, the field bare and every row visible, she ploughed under half the wheat: one day, one decision, no going back; the farm had an edge now, grain west, trees east. Year seven the apples bore; nobody brought them in; she walked out and picked from trees she'd planted on bad ground five years before. Year eight the old west field gave out, as the drainage had promised; she let it lie fallow and kept what the orchard had raised. Year nine she walked down to where the creek met the sea and watched the sun lift the water that had carried off her soil, and saw what the question in the barn had been about: her father's farm had become hers, not because of the apples, but because she could now see the whole place at once. The next spring something new came to her, a seed she hadn't asked for. She didn't plan it yet. She took it in."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Jung and the I Ching method",
+     "w": "You",
+     "t": "The bend is enantiodromia, Jung's term for the way an extreme one-sidedness turns into its opposite. The method's warning that an unshocked process curves back toward the opposite of its origin is the same law, and the cause is the same: a system running on one force. The reconciling force is the transcendent function: holding two opposites in consciousness without collapsing into either until a third thing appears that was in neither, \"of a different kind from both,\" the method's exact phrase. Pushing harder or giving up are each a refusal to hold the tension. Standstill is the tension held badly, as deadlock instead of as container."
+    },
+    {
+     "d": "22 Oct",
+     "s": "Jung and the I Ching method",
+     "w": "You",
+     "t": "The shock has to come from outside the wiring; the shadow is what's outside the ego's wiring. The hexagon is the complex: autonomous, self-sufficient, recycling its own residue at the same level. That's repetition compulsion drawn as geometry. The method says the system cannot start itself; Jung says the impulse comes from the Self, which the ego experiences as other. 9 in the method, the Self in Jung. And the shadow is the first thing you meet on the way there. The third force very often turns out to be the thing the ego has been calling weakness. Echo pairs are the return of the repressed: nothing unfinished disappears; it reappears in a different place with a different face, and the line readings are what it will look like when it comes back. Differentiation is individuation's basic move: withdrawing projection, separating what is mine from what is hers. Insight into the shadow is not integration. Integration is when it's acted on and the self-image changes to include it. That's the same distinction the method makes between the lesson of a missed 6 and the shock itself."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "You",
+     "t": "If you expand the magic square from a three by three to a nine by nine, you can repeat the pattern and eventually you'll see all of them are on a diagonal. 714, 258, 369 always repeat, and they're on a diagonal; in the three by three all you see is two on one side and one on the other, but extended, those are two different diagonals repeating on their own line, infinitely. It's simple math, the mod three thing; it looks like it's something meaningful, and in the system I guess it is. The Lo Shu is quite literally a yin-yang symbol, squared and in cells and as numbers. You can take it as far as to say nine and one are the seeds of the other, the complementary side, the black with the white dot. I've always considered Kan and Li as straddling the line between yin and yang: fire is all yang but only as good as the substance it has to burn from, so it's pretty yin in nature; water fits the container of anything on the surface but will wear down any substance on earth, you can't break water, so it's almost the most yang thing. The 1/7 wiring gives the harmonic pattern. The law of seven is tied to Saturn through the magic squares of the planets."
+    },
+    {
+     "d": "26 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Earth is the only family that's a straight line, and it's the mirror axis: reflect across 2-5-8 and the yin family lands on the yang family, 1 on 3, 4 on 6, 7 on 9. Reflect across the other diagonal and each family maps onto itself. The three families sum to 3, 6, 9 mod 9: the Law of Three isn't painted on top of the square, it's in the hexad's own material, and earth, with 5 at the center, is the hinge the reconciling force moves through. The Lo Shu is Saturn's own square, the 3 by 3 kamea, with 5 at its center."
+    },
+    {
+     "d": "28 Oct",
+     "s": "this chat",
+     "w": "Claude",
+     "t": "Watts would call the inner process the Watercourse Way: water never forces, goes with the grain, around what it can't move, always toward the sea. His li, 理, is the organic pattern, the veins in jade, the grain in wood; it is a different character from the trigram Li, 離, fire, and reads as fire on any page with trigrams on it. His \"mutual arising\" translates 相生, xiang sheng, which is the Wu Xing generative cycle's own name, and five of the hexad's six links run with it; the sixth, 4 → 2, is wood breaking earth, the one controlling link, which is why the hexad can't be named for pure generation. Watercourse and Weather were rejected as names; the li and qi split stayed as the kinds: the hexad is the pattern, the triangle is the energy, and Ki is qi."
+    },
+    {
+     "d": "22–30 Oct",
+     "s": "several chats",
+     "w": "Notes",
+     "t": "Rules of language that came out of corrections, in the order they were made: no solfège, points are numbers; \"what are you holding\" is new-agey and out, Jungian and Ki-nature metaphors only; no \"charge,\" \"deposit,\" or \"return\"; \"compulsive\" was a mishearing of \"impulsive\"; \"the hub,\" \"the well,\" \"the depths,\" \"Hoarfrost,\" \"Calm,\" \"Discernment,\" \"Heaven,\" \"Thunder\" all replaced; \"echo pair\" retired for \"interval trace\"; \"feeds\" and \"fed by\" replaced by \"trace\"; \"alone\" dropped from the function lines; \"gloss\" rejected as a word, a second name is interchangeable with its figure; \"given shock\" and \"made shock\" retired; the Balanced is the label for every integrated pole; headlines are one capitalised word naming the point's place in the system, not its trigram."
+    }
+   ]
+  }
+ ],
+ "exported": "2026-11-12T05:28:22.112Z",
+ "source": "216693f"
+}

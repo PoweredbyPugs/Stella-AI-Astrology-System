@@ -194,7 +194,7 @@ ki(anchorKi − (idx − anchorIdx)), where
 [code]
 ki wraps into 1..9. The personal number at every level is 
 [code]
-ki(natal − global + 5), natal being the person's year number (1986 → 6 for the owner; the natal month number, 9 for 1986-05-01, is used only by the native figure). The hour boundary is a solar-longitude twelfth, not a clock double-hour; boundaries land within about ten seconds of Stella's (truncated VSOP87 Sun, nutation, aberration, ΔT table).
+ki(natal − global + 5), natal being the person's year number (1986 → 5 for the owner, ki(2027 − 1986); the natal month number, 9 for 1986-05-01, is used only by the native figure). The hour boundary is a solar-longitude twelfth, not a clock double-hour; boundaries land within about ten seconds of Stella's (truncated VSOP87 Sun, nutation, aberration, ΔT table).
 The 5 rule (ledger, 30 Oct 2026, second revision): 5 has no trigram and no hexagram of its own. It inherits the trigram of the nearest level above it that is not 5 (
 [code]
 resolve(stack, level) returns 

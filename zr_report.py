@@ -5,7 +5,7 @@ Comprehensive ZR analysis using Chris Brennan's worksheet framework.
 
 from datetime import datetime
 from typing import Dict, Any, Optional, List
-from zr import calculate_zr, ZRSnapshot, SIGN_YEARS
+from zr import zr_for_chart, ZRSnapshot, SIGN_YEARS, opposite_sign
 
 SIGN_ORDER = [
     "Aries", "Taurus", "Gemini", "Cancer", "Leo", "Virgo",
@@ -221,184 +221,233 @@ def get_peak_type(sign: str, fortune_sign: str) -> Optional[str]:
     return None
 
 
-def generate_zr_report(
+def _ordinal(n: int) -> str:
+    if 10 <= n % 100 <= 20:
+        suffix = "th"
+    else:
+        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    return f"{n}{suffix}"
+
+
+def _duration_str(duration: float) -> str:
+    if duration >= 365:
+        return f"{duration/365.25:.1f} years"
+    if duration >= 30:
+        return f"{duration/30:.1f} months"
+    if duration >= 1:
+        return f"{duration:.1f} days"
+    return f"{duration*24:.1f} hours"
+
+
+def build_zr_report_data(
     chart_data: Dict[str, Any],
     target_dt: datetime,
-    lot: str = "spirit"
-) -> str:
+    lot: str = "spirit",
+) -> Dict[str, Any]:
     """
-    Generate comprehensive ZR report using Brennan worksheet framework.
+    Structured ZR worksheet (Brennan framework) for one lot at one instant.
+    Peaks, triads and phases are always from Fortune; the released lot only
+    chooses the period sequence.
     """
     lots = chart_data.get("lots", {})
-    birth_data = chart_data.get("birthData", {})
-    
     fortune_data = lots.get("fortune", {})
     spirit_data = lots.get("spirit", {})
-    
     fortune_sign = fortune_data.get("sign")
-    fortune_degree = float(fortune_data.get("degreeInSign", 0))
     spirit_sign = spirit_data.get("sign")
-    spirit_degree = float(spirit_data.get("degreeInSign", 0))
-    
-    # Calculate current ZR
-    birth_date = birth_data.get("date")
-    birth_time = birth_data.get("time", "12:00:00")
-    birth_dt = datetime.fromisoformat(f"{birth_date}T{birth_time}")
-    
-    from zr import calculate_zr
-    snapshot = calculate_zr(spirit_sign, spirit_degree, birth_dt, target_dt, lot)
-    
-    # Get framework data
-    peaks = get_angular_signs_from_fortune(fortune_sign)
-    triads = get_angular_triads(fortune_sign)
+
+    snapshot = zr_for_chart(chart_data, target_dt, lot)
+
     sect_planets = get_sect_planets(chart_data)
     planets_by_mod = get_planets_by_modality(chart_data)
     fortune_modality = get_modality(fortune_sign)
-    
-    # Determine phase modalities
     if fortune_modality == "Mutable":
         prep_mod, peak_mod, comp_mod = "Fixed", "Mutable", "Cardinal"
     elif fortune_modality == "Fixed":
         prep_mod, peak_mod, comp_mod = "Cardinal", "Fixed", "Mutable"
     else:
         prep_mod, peak_mod, comp_mod = "Mutable", "Cardinal", "Fixed"
-    
-    # Build report
+
+    planets = chart_data.get("planets", [])
+    periods = {}
+    for p in snapshot.levels:
+        d = p.to_dict()
+        d["planets_in_sign"] = [pl["name"] for pl in planets if pl.get("sign") == p.sign]
+        periods[f"L{p.level}"] = d
+
+    l1, l2 = snapshot.L1, snapshot.L2
+    loosing = {
+        "L1_loosing_at": l1.loosing_at.isoformat() if l1.loosing_at else None,
+        "L1_looses_to": opposite_sign(l1.sign) if l1.loosing_at else None,
+        "L2_is_loosed": l2.is_loosing_of_bond,
+        "L2_is_pre_loosing": l2.is_pre_loosing,
+        "loosed_levels": [f"L{p.level}" for p in snapshot.levels if p.is_loosing_of_bond],
+        "details": snapshot.loosing_details,
+    }
+
+    return {
+        "generated": target_dt.isoformat(),
+        "lot": lot,
+        "release_sign": snapshot.release_sign,
+        "lots": {
+            "fortune": {"sign": fortune_sign, "degree": float(fortune_data.get("degreeInSign", 0)),
+                        "ruler": RULERS.get(fortune_sign, "")},
+            "spirit": {"sign": spirit_sign, "degree": float(spirit_data.get("degreeInSign", 0)),
+                       "ruler": RULERS.get(spirit_sign, "")},
+        },
+        "fortune_modality": fortune_modality,
+        "phase_modalities": {"preparatory": prep_mod, "peak": peak_mod, "completion": comp_mod},
+        "peaks": get_angular_signs_from_fortune(fortune_sign),
+        "triads": get_angular_triads(fortune_sign),
+        "sect": sect_planets,
+        "planets_by_phase": {"preparatory": planets_by_mod.get(prep_mod, []),
+                             "peak": planets_by_mod.get(peak_mod, []),
+                             "completion": planets_by_mod.get(comp_mod, [])},
+        "periods": periods,
+        "loosing": loosing,
+        "active_peaks": [f"L{p.level} {p.sign} ({p.peak_type})" for p in snapshot.levels[:4] if p.is_peak],
+    }
+
+
+def render_zr_report_markdown(data: Dict[str, Any]) -> str:
+    """Render the worksheet data as markdown."""
     lines = []
-    
-    # Header
+    f = data["lots"]["fortune"]
+    s = data["lots"]["spirit"]
+    pm = data["phase_modalities"]
+
     lines.append("# Zodiacal Releasing Report")
-    lines.append(f"**Generated:** {target_dt.strftime('%Y-%m-%d %H:%M')}")
+    lines.append(f"**Generated:** {datetime.fromisoformat(data['generated']).strftime('%Y-%m-%d %H:%M')}")
+    release_note = ""
+    if data["release_sign"] != data["lots"][data["lot"]]["sign"]:
+        release_note = f" (Spirit shares Fortune's sign, so it releases from {data['release_sign']})"
+    lines.append(f"Releasing from: **{data['lot'].title()}**{release_note}")
     lines.append("")
-    
-    # Section 1: Lot Positions
+
     lines.append("## 1. Lot Positions")
-    lines.append(f"- **Lot of Fortune:** {fortune_sign} {fortune_degree:.0f}° (ruler: {RULERS[fortune_sign]})")
-    lines.append(f"- **Lot of Spirit:** {spirit_sign} {spirit_degree:.0f}° (ruler: {RULERS[spirit_sign]})")
+    lines.append(f"- **Lot of Fortune:** {f['sign']} {f['degree']:.0f}° (ruler: {f['ruler']})")
+    lines.append(f"- **Lot of Spirit:** {s['sign']} {s['degree']:.0f}° (ruler: {s['ruler']})")
     lines.append("")
-    
-    # Section 2: Peak Periods from Fortune
+
     lines.append("## 2. Peak Periods (from Lot of Fortune)")
-    lines.append(f"Fortune is in **{fortune_sign}** ({fortune_modality}), so peak periods = **{peak_mod}** signs")
+    lines.append(f"Fortune is in **{f['sign']}** ({data['fortune_modality']}), so peak periods = **{pm['peak']}** signs")
     lines.append("")
     lines.append("| Position | Sign | Peak Type |")
     lines.append("|----------|------|-----------|")
-    for key, data in peaks.items():
-        lines.append(f"| {data['position']} | **{data['sign']}** | {data['type']} {data['emoji']} |")
+    for key, pk in data["peaks"].items():
+        lines.append(f"| {pk['position']} | **{pk['sign']}** | {pk['type']} {pk['emoji']} |")
     lines.append("")
-    
-    # Section 3: Sect & Planet Conditions
+
+    sect = data["sect"]
     lines.append("## 3. Sect Analysis")
-    lines.append(f"**Chart Sect:** {sect_planets['sect']}")
+    lines.append(f"**Chart Sect:** {sect['sect']}")
     lines.append("")
     lines.append("| Role | Planet | Sign | Notes |")
     lines.append("|------|--------|------|-------|")
-    for key, data in sect_planets.items():
+    for key, d in sect.items():
         if key == "sect":
             continue
-        dignity = data.get("dignity", "")
+        dignity = d.get("dignity", "")
         dignity_note = f" ({dignity})" if dignity else ""
-        lines.append(f"| {data['role']} | **{data['planet']}** | {data['sign']}{dignity_note} | {key.replace('_', ' ').title()} |")
+        lines.append(f"| {d['role']} | **{d['planet']}** | {d['sign']}{dignity_note} | {key.replace('_', ' ').title()} |")
     lines.append("")
-    
-    # Section 4: Angular Triads
+
     lines.append("## 4. Angular Triads")
     lines.append("")
     lines.append("| Phase | Preparatory | Peak | Completion |")
     lines.append("|-------|-------------|------|------------|")
-    for triad in triads:
-        prep = triad["preparatory"]["sign"]
+    for triad in data["triads"]:
         peak = triad["peak"]["sign"]
-        comp = triad["completion"]["sign"]
-        peak_type = get_peak_type(peak, fortune_sign) or ""
-        peak_marker = " ⭐" if peak_type else ""
-        lines.append(f"| **{triad['name']}** | {prep} | {peak}{peak_marker} | {comp} |")
+        peak_marker = " ⭐" if get_peak_type(peak, f["sign"]) else ""
+        lines.append(f"| **{triad['name']}** | {triad['preparatory']['sign']} | {peak}{peak_marker} | {triad['completion']['sign']} |")
     lines.append("")
-    
-    # Section 5: Planets by Modality Phase
+
     lines.append("## 5. Planets by Phase")
     lines.append("")
-    lines.append(f"| Phase | Modality | Planets | Experience |")
+    lines.append("| Phase | Modality | Planets | Experience |")
     lines.append("|-------|----------|---------|------------|")
-    
-    for phase, mod in [("Preparatory", prep_mod), ("Peak", peak_mod), ("Completion", comp_mod)]:
-        planet_list = planets_by_mod.get(mod, [])
-        planet_str = ", ".join([f"{p['planet']} ({p['sign']})" for p in planet_list[:4]])
-        if not planet_str:
-            planet_str = "None"
-        lines.append(f"| {phase} | {mod} | {planet_str} | |")
+    for phase in ("preparatory", "peak", "completion"):
+        plist = data["planets_by_phase"][phase]
+        planet_str = ", ".join(f"{p['planet']} ({p['sign']})" for p in plist[:4]) or "None"
+        lines.append(f"| {phase.title()} | {pm[phase]} | {planet_str} | |")
     lines.append("")
-    
-    # Section 6: Current ZR Periods
-    lines.append("## 6. Current Periods")
+
+    lines.append(f"## 6. Current Periods (releasing from {data['lot'].title()})")
     lines.append("")
-    
-    for level, period in [("L1", snapshot.L1), ("L2", snapshot.L2), 
-                          ("L3", snapshot.L3), ("L4", snapshot.L4), ("L5", snapshot.L5)]:
-        peak_type = get_peak_type(period.sign, fortune_sign)
-        peak_marker = f" ⭐ ({peak_type})" if peak_type else ""
-        
-        duration = period.duration_days
-        if duration >= 365:
-            dur_str = f"{duration/365.25:.1f} years"
-        elif duration >= 30:
-            dur_str = f"{duration/30:.1f} months"
-        elif duration >= 1:
-            dur_str = f"{duration:.1f} days"
-        else:
-            dur_str = f"{duration*24:.1f} hours"
-        
-        lines.append(f"**{level}: {period.sign}** ({period.ruler}){peak_marker}")
-        lines.append(f"- {period.start.strftime('%Y-%m-%d')} → {period.end.strftime('%Y-%m-%d')} ({dur_str})")
+    for level in ("L1", "L2", "L3", "L4", "L5"):
+        p = data["periods"][level]
+        peak_marker = f" ⭐ ({p['peak_type']})" if p["peak_type"] else ""
+        marks = ""
+        if p["is_loosing_of_bond"]:
+            marks += " ⚡ LB"
+        if p["is_pre_loosing"]:
+            marks += " ⏳ pre-LB"
+        start = datetime.fromisoformat(p["start"])
+        end = datetime.fromisoformat(p["end"])
+        lines.append(f"**{level}: {p['sign']}** ({p['ruler']}){peak_marker}{marks}")
+        lines.append(f"- {start:%Y-%m-%d} → {end:%Y-%m-%d} ({_duration_str(p['duration_days'])})")
+        lines.append(f"- {_ordinal(p['house_from_fortune'])} from Fortune, {p['angularity']}: **{p['phase']}** phase")
+        if p["loosing_at"]:
+            lines.append(f"- sub-periods loose the bond {datetime.fromisoformat(p['loosing_at']):%Y-%m-%d} (to {opposite_sign(p['sign'])})")
         lines.append("")
-    
-    # Section 7: Loosing of the Bond
-    if snapshot.is_loosing_of_bond:
-        lines.append("## 7. ⚡ Loosing of the Bond")
-        lines.append(f"{snapshot.loosing_details}")
-        lines.append("")
-    
-    # Section 8: Interpretation Notes
+
+    lo = data["loosing"]
+    lines.append("## 7. Loosing of the Bond")
+    if lo["details"]:
+        lines.append(f"⚡ {lo['details']}")
+    elif lo["L1_loosing_at"]:
+        lines.append(f"L1 {data['periods']['L1']['sign']} looses the bond on "
+                     f"{datetime.fromisoformat(lo['L1_loosing_at']):%Y-%m-%d}, when L2 jumps to {lo['L1_looses_to']}.")
+    else:
+        lines.append(f"L1 {data['periods']['L1']['sign']} is too short for its sub-periods to complete a cycle; no loosing at L2.")
+    if lo["loosed_levels"]:
+        lines.append(f"Levels currently in a loosed portion of their parent: {', '.join(lo['loosed_levels'])}")
+    lines.append("")
+
     lines.append("## 8. Key Observations")
     lines.append("")
-    
-    # Count active peaks
-    active_peaks = []
-    for level, period in [("L1", snapshot.L1), ("L2", snapshot.L2), 
-                          ("L3", snapshot.L3), ("L4", snapshot.L4)]:
-        pt = get_peak_type(period.sign, fortune_sign)
-        if pt:
-            active_peaks.append(f"{level} {period.sign} ({pt})")
-    
-    if active_peaks:
-        lines.append(f"**Active Peak Periods:** {', '.join(active_peaks)}")
+    if data["active_peaks"]:
+        lines.append(f"**Active Peak Periods:** {', '.join(data['active_peaks'])}")
     else:
         lines.append("**Active Peak Periods:** None at major levels")
-    
-    # Note planets coloring current periods
     lines.append("")
     lines.append("**Planets in Current Signs:**")
-    for level, period in [("L2", snapshot.L2), ("L3", snapshot.L3)]:
-        planets_in_sign = [p["name"] for p in chart_data.get("planets", []) 
-                          if p.get("sign") == period.sign]
-        if planets_in_sign:
-            lines.append(f"- {level} {period.sign}: {', '.join(planets_in_sign)}")
-    
+    for level in ("L2", "L3"):
+        p = data["periods"][level]
+        if p["planets_in_sign"]:
+            lines.append(f"- {level} {p['sign']}: {', '.join(p['planets_in_sign'])}")
+
     return "\n".join(lines)
 
 
-def zr_report_for_chart(chart_data: Dict[str, Any], target_dt: datetime) -> str:
+def generate_zr_report(
+    chart_data: Dict[str, Any],
+    target_dt: datetime,
+    lot: str = "spirit",
+    format: str = "markdown",
+):
+    """
+    Comprehensive ZR report using Brennan's worksheet framework.
+    lot: "spirit" or "fortune". format: "markdown" (str) or "json" (dict).
+    """
+    data = build_zr_report_data(chart_data, target_dt, lot)
+    if format == "json":
+        return data
+    return render_zr_report_markdown(data)
+
+
+def zr_report_for_chart(chart_data: Dict[str, Any], target_dt: datetime, lot: str = "spirit") -> str:
     """Convenience wrapper for Stella integration."""
-    return generate_zr_report(chart_data, target_dt, "spirit")
+    return generate_zr_report(chart_data, target_dt, lot)
 
 
 if __name__ == "__main__":
     import json
-    
-    # Test with sample chart
-    with open("charts/chris.json", "r") as f:
-        chart = json.load(f)
-    
-    target = datetime(2026, 2, 5, 1, 30)
-    report = generate_zr_report(chart, target)
-    print(report)
+    import sys
+
+    if len(sys.argv) < 2:
+        print("usage: python zr_report.py charts/<name>.json [YYYY-MM-DD] [spirit|fortune]")
+        sys.exit(1)
+    with open(sys.argv[1], "r") as fh:
+        chart = json.load(fh)
+    target = datetime.fromisoformat(sys.argv[2]) if len(sys.argv) > 2 else datetime.now()
+    print(generate_zr_report(chart, target, sys.argv[3] if len(sys.argv) > 3 else "spirit"))

@@ -1,5 +1,22 @@
 # Stella Changelog
 
+## 2026.11.12 — Zodiacal releasing: the loosing of the bond
+
+### `zr.py`
+- The loosing of the bond is now applied at every level. Sub-periods run the twelve signs from the parent's sign (211 units); a longer parent (Gemini, Cancer, Leo, Virgo, Capricorn, Aquarius at L1, and the same signs one level down) then jumps to the sign opposite the parent and continues in order. Before this the sequence restarted at the parent's own sign, so every L2 under a long L1 was wrong after month 211, and every L3–L5 with it. The last sub-period is now cut at the parent's end.
+- Checked against Brennan's published tables (Cancer Spirit example: ten L2 dates reproduce exactly; Virgo looses to Pisces, Aquarius to Leo, Capricorn to Cancer).
+- Each period now carries `house_from_fortune`, `angularity` (angular/succedent/cadent) and `phase` (preparatory/peak/completion, the angular triads), `loosing_at` (when its own sub-periods loose), `is_loosing_of_bond` (in the loosed portion of its parent) and `is_pre_loosing` (last sub-period before the jump). The snapshot's `is_loosing_of_bond` now means the L2 jump has happened; it used to mean "L2 angular, L1 not", which is a different thing.
+- Spirit in Fortune's sign releases from the next sign (Valens via Brennan); `release_sign` is reported beside `lot_sign`.
+- `zr_periods` / `zr_periods_for_chart`: every period overlapping a window at chosen levels.
+- The `__main__` block takes a chart file and date instead of hard-coded birth data.
+
+### `zr_report.py`
+- Releases the requested lot (was Spirit only) and passes Fortune to the calculator (peaks were computed from the released lot and only corrected at display time). `format="json"` returns the worksheet data. Current periods show phase, house from Fortune, LB markers and the next loosing.
+
+### Tools
+- `get_zr_periods` (new, 93 tools); `get_zr_report` gains `lot` and `format`; `get_zodiacal_releasing` and `get_timing_stack` expose the new period fields. Tests: `tests/test_zr.py`, `tests/test_zr_tools.py`.
+
+
 ## 2026.11.11 — BaZi: traditional Four Pillars on Stella
 
 ### `bazi.py`, `bazi_tables.py`, `bazi_render.py` (new)

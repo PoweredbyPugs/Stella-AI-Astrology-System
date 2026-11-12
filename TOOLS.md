@@ -1,4 +1,4 @@
-# Stella MCP Server — 92 Tools
+# Stella MCP Server — 93 Tools
 
 *Last updated: Nov 11, 2026*
 
@@ -35,8 +35,11 @@
 | # | Tool | Description |
 |---|------|-------------|
 | 19 | `get_profections` | Annual profections with lord of year |
-| 20 | `get_zodiacal_releasing` | ZR L1–L5 periods for a chart |
-| 21 | `get_zr_report` | Comprehensive ZR report (Brennan worksheet framework) |
+| 20 | `get_zodiacal_releasing` | ZR L1–L5 at one instant, with peaks (from Fortune), angular-triad phase, and the loosing of the bond at every level |
+| 21 | `get_zr_report` | Comprehensive ZR report (Brennan worksheet framework); `lot` spirit or fortune, `format` markdown or json |
+| 93 | `get_zr_periods` | Every ZR period overlapping a window at the requested levels (timelines, Octave, next loosing or peak) |
+
+ZR conventions (`zr.py`): 360-day years, 30-day months (Brennan's published tables reproduce date for date). Sub-periods run the twelve signs from the parent's sign; after 211 units the bond is loosed and they jump to the sign opposite the parent, continuing in order; the last sub-period is cut at the parent's end. Spirit in Fortune's sign releases from the next sign. Peaks and triads always count from Fortune: 1st/10th Major, 7th Moderate, 4th Minor; cadent = preparatory, angular = peak, succedent = completion.
 | 22 | `get_transits_now` | All current transits to a natal chart |
 | 23 | `get_transit_summary` | High-level outer planet transit summary |
 | 24 | `get_dignity_score` | Essential dignity score for any planet/position |

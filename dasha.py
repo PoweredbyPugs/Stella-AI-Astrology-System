@@ -458,6 +458,11 @@ def get_full_timing_stack(
                             'is_angular': lv.get('is_angular', False),
                             'is_peak': lv.get('is_peak', False),
                             'peak_type': lv.get('peak_type'),
+                            'phase': lv.get('phase'),
+                            'house_from_fortune': lv.get('house_from_fortune'),
+                            'is_loosing_of_bond': lv.get('is_loosing_of_bond', False),
+                            'is_pre_loosing': lv.get('is_pre_loosing', False),
+                            'loosing_at': lv.get('loosing_at'),
                             'duration_days': lv.get('duration_days'),
                         })
 
@@ -465,6 +470,8 @@ def get_full_timing_stack(
                     'levels': levels,
                     'is_loosing': snap_dict.get('is_loosing_of_bond', False),
                     'loosing_details': snap_dict.get('loosing_details'),
+                    'loosed_levels': snap_dict.get('loosed_levels', []),
+                    'release_sign': snap_dict.get('release_sign'),
                     'lot_sign': snap_dict.get('lot_sign'),
                     'lot_degree': snap_dict.get('lot_degree'),
                 }

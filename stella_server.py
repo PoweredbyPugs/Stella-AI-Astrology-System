@@ -310,16 +310,21 @@ async def get_zr_report(
     name: str,
     date: Optional[str] = None,
     time: Optional[str] = None,
+    lot: str = "spirit",
+    format: str = "markdown",
 ) -> str:
     """Generate comprehensive Zodiacal Releasing report using Brennan worksheet framework.
 
     Includes: peak periods from Fortune, sect analysis, angular triads,
-    planets by phase, current periods, and key observations.
+    planets by phase, current periods (with triad phase and loosing of the
+    bond at every level), and key observations.
 
     Args:
         name: Name of the stored chart
         date: Target date YYYY-MM-DD (default: today)
         time: Target time HH:MM (default: now)
+        lot: 'spirit' (default) or 'fortune' — the lot to release from
+        format: 'markdown' (default) or 'json'
     """
     from datetime import datetime
     from zr_report import generate_zr_report
@@ -340,8 +345,68 @@ async def get_zr_report(
     else:
         target_dt = datetime.now()
     
-    report = generate_zr_report(chart_data, target_dt)
+    if lot not in ("spirit", "fortune"):
+        return json.dumps({"error": "lot must be 'spirit' or 'fortune'"})
+    try:
+        report = generate_zr_report(chart_data, target_dt, lot, format)
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+    if format == "json":
+        return json.dumps(report, indent=2, default=str)
     return report
+
+
+@mcp.tool()
+async def get_zr_periods(
+    name: str,
+    start: str,
+    end: str,
+    lot: str = "spirit",
+    levels: str = "1,2",
+) -> str:
+    """List every Zodiacal Releasing period overlapping a window, at the requested levels.
+
+    Complements get_zodiacal_releasing (one instant) for anything that needs the
+    periods across a span: timelines, Octave, finding the next loosing of the bond
+    or peak. Each period carries sign, ruler, start, end, peak type (from Fortune),
+    angular-triad phase, house from Fortune, and the loosing of the bond flags
+    (is_loosing_of_bond, is_pre_loosing, loosing_at).
+
+    Args:
+        name: Name of the stored chart
+        start: Window start, ISO date or datetime (YYYY-MM-DD[THH:MM])
+        end: Window end, ISO date or datetime (exclusive)
+        lot: 'spirit' (default) or 'fortune'
+        levels: Comma-separated levels 1-5 (default "1,2"). L4/L5 over long windows are large.
+    """
+    from datetime import datetime
+    from zr import zr_periods_for_chart
+
+    chart_json = load_chart(name)
+    if not chart_json or "not found" in chart_json.lower():
+        return json.dumps({"error": f"Chart not found: {name}"})
+    chart_data = json.loads(chart_json)
+
+    if lot not in ("spirit", "fortune"):
+        return json.dumps({"error": "lot must be 'spirit' or 'fortune'"})
+    try:
+        start_dt = datetime.fromisoformat(start)
+        end_dt = datetime.fromisoformat(end)
+        level_list = [int(x) for x in str(levels).replace(" ", "").split(",") if x]
+        result = zr_periods_for_chart(chart_data, start_dt, end_dt, lot, level_list)
+    except Exception as e:
+        return json.dumps({"error": str(e)})
+
+    return json.dumps({
+        "chart": name,
+        "lot": lot,
+        "lot_sign": chart_data.get("lots", {}).get(lot, {}).get("sign"),
+        "fortune_sign": chart_data.get("lots", {}).get("fortune", {}).get("sign"),
+        "start": start_dt.isoformat(),
+        "end": end_dt.isoformat(),
+        "levels": level_list,
+        "periods": {k: [p.to_dict() for p in v] for k, v in result.items()},
+    }, indent=2, default=str)
 
 
 @mcp.tool()

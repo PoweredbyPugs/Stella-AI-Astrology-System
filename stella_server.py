@@ -823,7 +823,7 @@ async def get_synodic_gate_now(
     target_date: Optional[str] = None,
     birth_date: Optional[str] = None,
 ) -> str:
-    """Get the Synodic Gate Ki — the great-year gate (12-year level of the Ki stack).
+    """Get the Synodic Gate Ki: the great-year gate (12-year level of the Ki stack).
 
     The great year is the 12-year gate level, counted in Ki years (Lichun to
     Lichun). Gates descend 9 → 1. The anchors are ki_levels':

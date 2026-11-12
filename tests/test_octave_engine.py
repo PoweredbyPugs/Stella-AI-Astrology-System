@@ -94,7 +94,7 @@ def test_shi_is_the_next_period():
     m = E.period_at("month", datetime(2026, 11, 9, 12), n["year"])
     nxt = E.period("month", m.idx + 1, n["year"])
     s = E.shi(m)
-    assert s["to"] == nxt.number and s["fig"] is nxt.fig or s["fig"] == nxt.fig
+    assert s["to"] == nxt.number and s["fig"] == nxt.fig
     assert s["lines"] == E.moving(m.fig.lines, nxt.fig.lines)
     assert s["start"] == nxt.start and s["end"] == nxt.end
 

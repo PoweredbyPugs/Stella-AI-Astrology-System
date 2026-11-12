@@ -1,5 +1,11 @@
 # Stella Changelog
 
+## 2026.11.12 — The sky over a window (Octave's sky layer)
+
+### `sky.py` (new), `get_sky_window` (94 tools)
+- One call for everything Octave's Sky layer needs for a period: at the start the planets with speed, the Moon's phase and age, the ascendant for a place with when it rose and when it sets, transits to a stored chart with per-body orbs (orb, orb_max, applying, exact, exact_at, strength) and the annual profection; inside the window lunations, ingresses, the Moon's 15° gates, stations, eclipses (with natal contacts), void of course, exact transits (self-aspects included), and the four turnings; releasing periods for both lots at chosen levels on the fixed `zr.py`, with the frame one level up.
+- UTC ISO with `Z` in and out (naive = New York); every part that fails is named in `absent` rather than raised; windows over 13 years are refused. Runs in a thread so the shared session is not held. A CLI (`python sky.py START END ...`) prints the same JSON for fixtures. Tests: `tests/test_sky.py` (pinned against the 2026 equinox, lunations, an eclipse, a Moon ingress and void span, the Orlando ascendant, Saturn trine Saturn, the owner's Fortune L2, Mercury's stations).
+
 ## 2026.11.12 — Zodiacal releasing: the loosing of the bond
 
 ### `zr.py`

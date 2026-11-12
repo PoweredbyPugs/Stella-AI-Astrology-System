@@ -6484,6 +6484,9 @@ async def get_sabian_symbols_for_chart(
 # Octave: Nine Star Ki on the enneagram, read through the Gnostic Book of Changes (octave.py)
 from octave import register_octave  # noqa: E402
 register_octave(mcp)
+# The sky over a window: positions, Moon, ascendant, transits with orbs, lunations, ingresses, stations, eclipses, void, releasing (sky.py; Octave's sky layer, 12 Nov 2026)
+from sky import register_sky  # noqa: E402
+register_sky(mcp)
 
 
 if __name__ == "__main__":

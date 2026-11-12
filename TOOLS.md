@@ -1,6 +1,6 @@
-# Stella MCP Server — 93 Tools
+# Stella MCP Server — 94 Tools
 
-*Last updated: Nov 11, 2026*
+*Last updated: Nov 12, 2026*
 
 ## Helios Bridge (current sky data)
 
@@ -38,8 +38,11 @@
 | 20 | `get_zodiacal_releasing` | ZR L1–L5 at one instant, with peaks (from Fortune), angular-triad phase, and the loosing of the bond at every level |
 | 21 | `get_zr_report` | Comprehensive ZR report (Brennan worksheet framework); `lot` spirit or fortune, `format` markdown or json |
 | 93 | `get_zr_periods` | Every ZR period overlapping a window at the requested levels (timelines, Octave, next loosing or peak) |
+| 94 | `get_sky_window` | The sky over a window, for Octave's sky layer: at the start the positions, the Moon's phase, the ascendant (with lat/lon), transits to a chart with orbs, the profection; inside it lunations, ingresses, the Moon's 15° gates, stations, eclipses, void of course, exact transits, the turnings; releasing periods for both lots at chosen levels; UTC in and out |
 
 ZR conventions (`zr.py`): 360-day years, 30-day months (Brennan's published tables reproduce date for date). Sub-periods run the twelve signs from the parent's sign; after 211 units the bond is loosed and they jump to the sign opposite the parent, continuing in order; the last sub-period is cut at the parent's end. Spirit in Fortune's sign releases from the next sign. Peaks and triads always count from Fortune: 1st/10th Major, 7th Moderate, 4th Minor; cadent = preparatory, angular = peak, succedent = completion.
+
+Sky conventions (`sky.py`): every instant out is UTC ISO with `Z`; an input with an offset or `Z` is taken as given, a naive one is New York; transit orbs per body (Moon 3, Sun 3, Mercury 2, Venus 2, Mars 2.5, Jupiter 3, Saturn 3, Uranus, Neptune, Pluto 2.5; sextiles two thirds), `exact` within 0.5° (the Moon 1°), `exact_at` by bisection within a per-body span, `applying` from `exact_at` when it is known; a body's aspects to its own natal place are included (returns, halfway points). One call per Octave period; windows over 13 years are refused.
 | 22 | `get_transits_now` | All current transits to a natal chart |
 | 23 | `get_transit_summary` | High-level outer planet transit summary |
 | 24 | `get_dignity_score` | Essential dignity score for any planet/position |

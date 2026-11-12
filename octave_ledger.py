@@ -101,4 +101,5 @@ def statement(q: str, rel: Optional[dict]) -> str:
     if not clause:
         return q
     end = "?" if re.search(r"\?\s*$", q) else "."
-    return f"{re.sub(r'[?.]\s*$', '', q)}, {clause}{end}"
+    base = re.sub(r"[?.]\s*$", "", q)
+    return f"{base}, {clause}{end}"

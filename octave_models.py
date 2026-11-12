@@ -8,9 +8,11 @@ which the pipelines pass in as `data_dir`.
 """
 
 import json
+import math
 import os
 import socket
 import sys
+import threading
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -52,7 +54,7 @@ def level_word(answer):
     if not isinstance(answer, dict) or answer.get("type") != "score" or not answer.get("legend"):
         return None
     legend = {str(k): v for k, v in answer["legend"].items()}
-    i = min(len(legend) - 1, max(0, round(answer["score"])))
+    i = min(len(legend) - 1, max(0, math.floor(answer["score"] + 0.5)))
     return legend.get(str(i))
 
 
@@ -137,25 +139,28 @@ def write(system, prompt, *, max_tokens=1600, timeout=60.0, key=None, model=None
 # ---------------------------------------------------------------- the cache
 
 _MEM = {}   # data_dir -> the cache dict, read once
+_LOCK = threading.Lock()   # the writing tools run in worker threads
 
 
 def load_cache(data_dir):
     d = str(data_dir)
-    if d not in _MEM:
-        try:
-            c = json.loads((Path(d) / "forecasts.json").read_text(encoding="utf-8"))
-            if not isinstance(c, dict):
+    with _LOCK:
+        if d not in _MEM:
+            try:
+                c = json.loads((Path(d) / "forecasts.json").read_text(encoding="utf-8"))
+                if not isinstance(c, dict):
+                    c = {}
+            except Exception:
                 c = {}
-        except Exception:
-            c = {}
-        _MEM[d] = c
-    return _MEM[d]
+            _MEM[d] = c
+        return _MEM[d]
 
 
 def save_cache(data_dir, cache):
     d = Path(data_dir)
-    d.mkdir(parents=True, exist_ok=True)
-    f = d / "forecasts.json"
-    tmp = d / "forecasts.json.tmp"
-    tmp.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
-    os.replace(tmp, f)
+    with _LOCK:
+        d.mkdir(parents=True, exist_ok=True)
+        f = d / "forecasts.json"
+        tmp = d / "forecasts.json.tmp"
+        tmp.write_text(json.dumps(cache, indent=1, ensure_ascii=False), encoding="utf-8")
+        os.replace(tmp, f)

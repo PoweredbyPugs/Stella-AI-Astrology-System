@@ -73,3 +73,19 @@ def test_cache_round_trip(tmp_path):
     M.save_cache(tmp_path, c)
     assert json.load(open(tmp_path / "forecasts.json")) == {"k": {"text": "t"}}
     assert M.load_cache(str(tmp_path)) is c
+
+
+def test_level_word_rounds_half_up_like_math_round():
+    legend = {0: "a", 1: "b", 2: "c", 3: "d", 4: "e"}
+    assert M.level_word({"type": "score", "score": 2.5, "legend": legend}) == "d"
+    assert M.level_word({"type": "score", "score": 0.5, "legend": legend}) == "b"
+
+
+def test_save_cache_is_safe_from_two_threads(tmp_path):
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        fs = [ex.submit(M.save_cache, tmp_path, {f"k{i}": "x" * 2000, **{f"p{j}": j for j in range(300)}}) for i in range(8)]
+        for f in fs:
+            f.result()
+    assert isinstance(json.loads((tmp_path / "forecasts.json").read_text(encoding="utf-8")), dict)
+    assert not (tmp_path / "forecasts.json.tmp").exists()

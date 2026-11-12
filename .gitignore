@@ -15,6 +15,10 @@ charts/*.bak
 charts/readings/
 charts/memory/*.json
 
+# Octave written-reading cache (keys hold birth dates)
+data/forecasts.json
+data/forecasts.json.tmp
+
 # Personal readings and session memory
 reports/
 examples/

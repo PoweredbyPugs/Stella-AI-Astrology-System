@@ -206,7 +206,7 @@ def period(level: str, idx: int, natal: Optional[int]) -> Period:
     Raises ValueError when the period opens outside the ephemeris; ``end`` is None when it closes past it."""
     s, e = ki_solar.period_start_jd(level, idx), ki_solar.period_start_jd(level, idx + 1)
     if s is None:
-        raise ValueError("outside the ephemeris")
+        raise ValueError(f"{LABEL[level]} {idx} is outside the ephemeris")
     gstack = ki_solar.period_stack(level, idx)
     pstack = personal_stack(natal, gstack) if natal else None
     stack = pstack if natal else gstack

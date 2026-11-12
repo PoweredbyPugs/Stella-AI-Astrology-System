@@ -64,8 +64,9 @@ def test_relation_cycles():
 
 
 def test_period_outside_ephemeris_raises():
-    with pytest.raises(ValueError, match="outside the ephemeris"):
+    with pytest.raises(ValueError, match="outside the ephemeris") as ei:
         E.period("year", -3000, None)
+    assert "year -3000" in str(ei.value)
 
 
 def test_great_age_period_has_no_end_inside_the_ephemeris():

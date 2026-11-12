@@ -10,6 +10,7 @@
 - `octave_tools.py` registers ten tools: `get_octave_period`, `get_octave_condition`, `get_native_figure`, `get_octave_shi`, `get_palace`, `get_octave_point`, `get_octave_line`, `write_octave_forecast`, `write_octave_statement`, `explain_octave_statement`.
 - The framework is now 2.0.0: the three lenses, elements, the palace, the ledger, the reading order and the seven standing rules; the Hermes skill is regenerated at version 2.0.0; the `octave_period_reading` prompt reads one period in the page's order.
 - Checked against the page: stacks agree for 2026-11-11 12:22 natal 1986-05-01, global 8.5.1.1.8.4.8, personal 2.5.9.9.2.6.2; month of 2026-11-09 ba 36, native 11, ji line 2. Tests: `tests/test_octave_*.py`.
+- Cross-checked at every level for 2026-11-11 12:22, natal 1986-05-01: number, global, ba, native, ji, shi and the condition and flow relations all equal the page's packet; period boundaries agree within 5 s. The great age's end is None in Stella (past the ephemeris window) where the page extrapolates 3738; Stella's great-year index is the page's plus one (gate levels count from 2010). The page's own suite, `node --test` at commit 216693f with the sky weave uncommitted, passed 62 of 62.
 
 ### Fixed
 - `get_synodic_gate_now` docstring now follows `ki_levels`: the 2022 great year opened 1, not gate 8.

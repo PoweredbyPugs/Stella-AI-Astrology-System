@@ -63,7 +63,8 @@ def test_line_with_a_five_needs_a_datetime():
 
 def test_tools_report_bad_input_as_error():
     assert "error" in json.loads(run(stella_server.get_octave_period(level="week")))
-    assert "error" in json.loads(run(stella_server.get_octave_period(level="year", idx=-3000)))
+    d = json.loads(run(stella_server.get_octave_period(level="year", idx=-3000)))
+    assert "error" in d and "year -3000" in d["error"]
 
 
 def _no_key_call(monkeypatch, tool, **kw):
@@ -94,3 +95,16 @@ def test_synodic_gate_matches_the_live_stack():
     assert d["next_gate"]["ki"] == 9
     doc = stella_server.get_synodic_gate_now.__doc__
     assert "gate 8" not in doc and "2010" in doc and "2022" in doc
+
+
+def test_writing_tools_are_coroutines_and_name_data_dir():
+    import inspect
+    for fn in (stella_server.write_octave_forecast, stella_server.write_octave_statement,
+               stella_server.explain_octave_statement):
+        assert inspect.iscoroutinefunction(fn)
+        assert "DATA_DIR" in fn.__doc__
+
+
+def test_cache_files_are_gitignored():
+    text = (Path(__file__).resolve().parent.parent / ".gitignore").read_text(encoding="utf-8").splitlines()
+    assert "data/forecasts.json" in text and "data/forecasts.json.tmp" in text

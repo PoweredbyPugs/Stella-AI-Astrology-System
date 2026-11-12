@@ -4,6 +4,7 @@ then three that write: forecast, statement, explain (Jev decides and grades, a w
 Thin wrappers over octave_engine, octave_ledger and octave_packet. Times are America/New_York unless an offset is given.
 The tool functions live at module level so stella_server can re-export them; register_octave_tools(mcp) registers them.
 """
+import asyncio
 import json
 import os
 from typing import Optional
@@ -227,7 +228,7 @@ async def write_octave_forecast(natal: str, level: str, datetime: Optional[str] 
                                 fresh: bool = False) -> str:
     """Write the forecast paragraph for a native in a period; Jev decides and grades, a writer model phrases; cached per period, fresh=True rewrites.
 
-    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer.
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer. The cache (birth dates in its keys) lives in DATA_DIR, default the repo data/ (gitignored).
 
     Args:
         natal: birth date YYYY-MM-DD
@@ -236,14 +237,14 @@ async def write_octave_forecast(natal: str, level: str, datetime: Optional[str] 
         idx: period index, wins over datetime
         fresh: write it again instead of returning the cached paragraph
     """
-    return _written(F.forecast, level, datetime, idx, natal, fresh=fresh)
+    return await asyncio.to_thread(_written, F.forecast, level, datetime, idx, natal, fresh=fresh)
 
 
 async def write_octave_statement(natal: str, level: str, datetime: Optional[str] = None, idx: Optional[int] = None,
                                  fresh: bool = False) -> str:
     """Write the thought under the headline for a native in a period; Jev decides and grades, a writer model phrases; cached per period, fresh=True rewrites.
 
-    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer.
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer. The cache (birth dates in its keys) lives in DATA_DIR, default the repo data/ (gitignored).
 
     Args:
         natal: birth date YYYY-MM-DD
@@ -252,14 +253,14 @@ async def write_octave_statement(natal: str, level: str, datetime: Optional[str]
         idx: period index, wins over datetime
         fresh: write it again instead of returning the cached thought
     """
-    return _written(F.statement, level, datetime, idx, natal, fresh=fresh)
+    return await asyncio.to_thread(_written, F.statement, level, datetime, idx, natal, fresh=fresh)
 
 
 async def explain_octave_statement(natal: str, level: str, datetime: Optional[str] = None,
                                    idx: Optional[int] = None) -> str:
     """Write the reading of the written thought for a native in a period; Jev decides and grades, a writer model phrases; cached by the thought's text.
 
-    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer. Returns 404 no_statement where no thought was written.
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer. The cache (birth dates in its keys) lives in DATA_DIR, default the repo data/ (gitignored). Returns 404 no_statement where no thought was written.
 
     Args:
         natal: birth date YYYY-MM-DD
@@ -267,7 +268,7 @@ async def explain_octave_statement(natal: str, level: str, datetime: Optional[st
         datetime: instant to read (ISO; America/New_York unless an offset is given); default now
         idx: period index, wins over datetime
     """
-    return _written(F.explain, level, datetime, idx, natal)
+    return await asyncio.to_thread(_written, F.explain, level, datetime, idx, natal)
 
 
 TOOLS = (get_octave_period, get_octave_condition, get_native_figure, get_octave_shi, get_palace,

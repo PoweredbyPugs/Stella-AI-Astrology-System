@@ -525,6 +525,21 @@ def _period_dict(p, tz: ZoneInfo) -> dict:
     return d
 
 
+def default_zr_levels(days: float) -> list[int]:
+    """The releasing level a window of this length is read at when none is asked: the level
+    whose periods are about the window's own length, as Octave reads them (a few hours L5,
+    a day L4, a month L3, a year L2, longer L1). The frame one level up comes with it."""
+    if days <= 0.25:
+        return [5]
+    if days <= 3:
+        return [4]
+    if days <= 45:
+        return [3]
+    if days <= 400:
+        return [2]
+    return [1]
+
+
 def zr_window(chart: dict, jd0: float, jd1: float, lot: str = "spirit", levels=(2,)) -> dict:
     """The releasing periods of one lot overlapping [jd0, jd1): the releasing[lot] object.
     periods is the finest level's list, levels every requested level, frame the period one
@@ -614,6 +629,8 @@ def sky_window(start: str, end: str, name: Optional[str] = None, lat: Optional[f
             chart = _load_chart(name)
         except FileNotFoundError:
             return {"error": f"Chart not found: {name}"}
+        if not levels:
+            levels = default_zr_levels(jd1 - jd0)
 
     absent: list = []
     # The void scan costs about a tenth of a second per Moon sign, so the whole window is
@@ -664,7 +681,8 @@ def register_sky(mcp) -> None:
         Moon and her phase, void of course, the rising sign, transits to a stored chart with
         their orbs, the annual profection), what moves inside it (lunations, ingresses, the
         Moon crossing 15 degrees of a sign, stations, eclipses, void of course spans, exact
-        transits, equinoxes and solstices) and the zodiacal releasing periods overlapping it.
+        transits, equinoxes and solstices) and the zodiacal releasing periods overlapping it
+        (with a stored chart; null without one).
 
         Local ephemeris and chart store only, no Helios. Every instant in the reply is UTC
         ISO 8601 with Z; the window is half open [start, end). Parts that fail are named in
@@ -680,7 +698,9 @@ def register_sky(mcp) -> None:
                 moon_gates, stations, eclipses, void, transits, turnings (default all)
             planets: Bodies for ingresses, stations and transits, e.g. "Moon,Sun" (default all)
             aspects: Aspects for transits: Conjunction, Sextile, Square, Trine, Opposition (default all)
-            zr_levels: Releasing levels 1-5, e.g. [4,5] or "4,5" (default none)
+            zr_levels: Releasing levels 1-5, e.g. [4,5] or "4,5" (default: the level the
+                window's length is read at, a few hours 5, a day 4, a month 3, a year 2,
+                longer 1; the frame one level up comes with it; null without a chart)
             lots: "spirit", "fortune" or both (default both)
             orb: Cap in degrees for transits in orb at the start (default 3.0)
         """

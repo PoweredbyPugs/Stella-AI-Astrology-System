@@ -234,6 +234,23 @@ def test_two_hour_window_for_chris_has_no_absent_parts():
     assert all(s.endswith("Z") for s in instants(r))
 
 
+def test_releasing_defaults_to_the_level_the_window_is_read_at():
+    assert sky.default_zr_levels(2 / 24) == [5]
+    assert sky.default_zr_levels(1.0) == [4]
+    assert sky.default_zr_levels(30.5) == [3]
+    assert sky.default_zr_levels(365.25) == [2]
+    assert sky.default_zr_levels(12 * 365.25) == [1]
+    r = sky.sky_window("2026-11-09T05:00:00Z", "2026-12-09T05:00:00Z", name="chris", kinds="lunations")
+    assert "error" not in r and r["absent"] == []
+    assert set(r["releasing"]) == {"spirit", "fortune"}
+    assert set(r["releasing"]["spirit"]["levels"]) == {"3"}
+    assert r["releasing"]["spirit"]["frame"]["level"] == 2
+    assert r["releasing"]["fortune"]["periods"][0]["sign"] in sky.SIGN_NAMES
+    r = sky.sky_window("2026-11-09T05:00:00Z", "2026-12-09T05:00:00Z", name="chris", kinds="lunations",
+                       zr_levels=[4, 5])
+    assert set(r["releasing"]["spirit"]["levels"]) == {"4", "5"}
+
+
 def test_window_errors():
     assert "max 13 years" in sky.sky_window("2026-01-01", "2040-01-01")["error"]
     assert sky.sky_window("2026-01-02", "2026-01-01")["error"]

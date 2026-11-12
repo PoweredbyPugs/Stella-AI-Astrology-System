@@ -72,3 +72,44 @@ def test_great_age_period_has_no_end_inside_the_ephemeris():
     p = E.period_at("great_age", AT, 5)
     assert p.number == 2 and p.start.year == 2010
     assert p.end is None and p.fig is None
+
+
+def test_native_figure_and_ji_9_nov_2026():
+    n = E.natal_of("1986-05-01")
+    m = E.period_at("month", datetime(2026, 11, 9, 12), n["year"])
+    nat = E.native_figure(m, n["month"])
+    assert (m.fig.n, nat.n, E.ji_lines(m, n["month"])) == (36, 11, [2])
+    d = E.period_at("day", datetime(2026, 11, 9, 12), n["year"])
+    assert (d.fig.n, E.native_figure(d, n["month"]).n, E.ji_lines(d, n["month"])) == (20, 53, [3])
+
+
+def test_native_figure_global_profile_has_no_ji():
+    m = E.period_at("month", datetime(2026, 11, 9, 12), None)
+    assert E.native_figure(m, 9) is None
+    assert E.ji_lines(m, 9) == []
+
+
+def test_shi_is_the_next_period():
+    n = E.natal_of("1986-05-01")
+    m = E.period_at("month", datetime(2026, 11, 9, 12), n["year"])
+    nxt = E.period("month", m.idx + 1, n["year"])
+    s = E.shi(m)
+    assert s["to"] == nxt.number and s["fig"] is nxt.fig or s["fig"] == nxt.fig
+    assert s["lines"] == E.moving(m.fig.lines, nxt.fig.lines)
+    assert s["start"] == nxt.start and s["end"] == nxt.end
+
+
+def test_palace_2026_global_1():
+    pal = E.palace(1, 9)
+    assert pal["five_yellow"] == 9 and pal["broken"] == 1
+    assert pal["own"] == 9 and pal["opposite"] == 1 and pal["coincides"] is True
+    assert [c["n"] for c in pal["cells"]] == [9, 5, 7, 8, 1, 3, 4, 6, 2]
+    assert pal["cells"][4]["star"] == "White Water" and pal["cells"][4]["dir"] == "center"
+
+
+def test_palace_month_global_8_and_center_five():
+    pal = E.palace(8, 2)
+    assert pal["five_yellow"] == 2 and pal["broken"] == 8 and pal["coincides"] is True
+    assert all(c["n"] == E.ki(c["home"] + 3) for c in pal["cells"])
+    assert E.palace(1, None)["own"] is None
+    c = E.palace(5, None); assert c["five_yellow"] == 5 and c["broken"] is None

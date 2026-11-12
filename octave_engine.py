@@ -8,7 +8,7 @@ trigrams from ``hub_inheritance``. Nothing here re-derives the clock.
 A period's figure is its level's trigram over its container's (the level above). A 5 takes the
 trigram of the nearest level above it that is not 5; a stack that is 5 all the way up has no figure.
 
-Task 2 adds the native figure (field, shi, ji) and the Lo Shu palace to this module.
+The native figure (field, shi, ji) and the Lo Shu palace close the module.
 """
 
 from dataclasses import dataclass
@@ -198,6 +198,7 @@ class Period:
     own: Resolved                    # the level's own resolved trigram
     fig: Optional[Figure]
     role: str
+    natal: Optional[int] = None      # the natal year number the period was made for
 
 
 def period(level: str, idx: int, natal: Optional[int]) -> Period:
@@ -213,7 +214,7 @@ def period(level: str, idx: int, natal: Optional[int]) -> Period:
         level=level, idx=idx, start=ki_solar.jd_to_dt(s), end=ki_solar.jd_to_dt(e) if e is not None else None,
         gstack=gstack, pstack=pstack, stack=stack, number=stack[level],
         global_number=gstack[level], personal_number=pstack[level] if pstack else None,
-        own=resolve(stack, level), fig=figure(stack, level), role=_role(stack[level]),
+        own=resolve(stack, level), fig=figure(stack, level), role=_role(stack[level]), natal=natal or None,
     )
 
 
@@ -226,3 +227,61 @@ def octave(level: str, idx: int, natal: Optional[int]) -> list[Period]:
     """The nine periods of the octave containing ``idx``, from its 1 (personal when ``natal`` is given)."""
     s0 = ki_solar.octave_start_index(level, idx, natal)
     return [period(level, s0 + i, natal) for i in range(9)]
+
+
+# ── Native figure: field, shi, ji ──
+
+def native_figure(p: Period, natal_month: int) -> Optional[Figure]:
+    """The personal number's trigram at ``p.level`` over the house of the natal month number at the same
+    level. None for a Global period or when either side is unresolved."""
+    if p.pstack is None or not natal_month:
+        return None
+    mstack = personal_stack(natal_month, p.gstack)
+    up, lo = resolve(p.pstack, p.level), resolve(mstack, p.level)
+    if up.source is None or lo.source is None:
+        return None
+    return hex_of(up.source, lo.source)
+
+
+def ji_lines(p: Period, natal_month: int) -> list[int]:
+    """The lines where the field (the period's figure) and the native figure differ."""
+    nat = native_figure(p, natal_month)
+    if p.fig is None or nat is None:
+        return []
+    return moving(p.fig.lines, nat.lines)
+
+
+def shi(p: Period) -> dict:
+    """The next period at the same level: its number, figure, the lines that move into it, and its bounds."""
+    nxt = period(p.level, p.idx + 1, p.natal)
+    both = p.fig is not None and nxt.fig is not None
+    return {"to": nxt.number, "fig": nxt.fig, "lines": moving(p.fig.lines, nxt.fig.lines) if both else [],
+            "start": nxt.start, "end": nxt.end}
+
+
+# ── The Lo Shu palace ──
+# South at the top. Home arrangement 4 9 2 / 3 5 7 / 8 1 6; the period's global number takes the center and
+# every other number flies the fixed path, so the number in a palace = ki(home - 5 + global).
+
+HOMES = (4, 9, 2, 3, 5, 7, 8, 1, 6)
+DIRECTION: dict[int, str] = {1: "north", 2: "south-west", 3: "east", 4: "south-east", 5: "center",
+                             6: "north-west", 7: "west", 8: "north-east", 9: "south"}
+STAR: dict[int, str] = {1: "White Water", 2: "Black Earth", 3: "Jade Wood", 4: "Green Wood", 5: "Yellow Earth",
+                        6: "White Metal", 7: "Red Metal", 8: "White Earth", 9: "Purple Fire"}
+
+
+def _opposite(h: int) -> Optional[int]:
+    return None if h == 5 else 10 - h
+
+
+def palace(global_number: int, personal_number: Optional[int]) -> dict:
+    """The Lo Shu palace of a period: nine cells, Five Yellow's home, the broken (opposite) home, and the native's."""
+    cells = []
+    for home in HOMES:
+        n = ki(home - 5 + global_number)
+        cells.append({"home": home, "dir": DIRECTION[home], "n": n, "element": ELEMENT[n], "star": STAR[n]})
+    five_yellow = next(c["home"] for c in cells if c["n"] == 5)
+    own = personal_number or None
+    return {"global": global_number, "personal": own, "cells": cells, "five_yellow": five_yellow,
+            "broken": _opposite(five_yellow), "own": own, "opposite": _opposite(own) if own else None,
+            "coincides": own is not None and own == five_yellow}

@@ -6487,8 +6487,8 @@ register_octave(mcp)
 # The sky over a window: positions, Moon, ascendant, transits with orbs, lunations, ingresses, stations, eclipses, void, releasing (sky.py; Octave's sky layer, 12 Nov 2026)
 from sky import register_sky  # noqa: E402
 register_sky(mcp)
-# Seven deterministic Octave tools: period, condition, native figure, shi, palace, point, line (octave_tools.py)
-from octave_tools import register_octave_tools, get_octave_period, get_octave_condition, get_native_figure, get_octave_shi, get_palace, get_octave_point, get_octave_line  # noqa: E402,F401
+# Ten Octave tools: seven deterministic (period, condition, native figure, shi, palace, point, line) and three that write (forecast, statement, explain) (octave_tools.py)
+from octave_tools import register_octave_tools, get_octave_period, get_octave_condition, get_native_figure, get_octave_shi, get_palace, get_octave_point, get_octave_line, write_octave_forecast, write_octave_statement, explain_octave_statement  # noqa: E402,F401
 register_octave_tools(mcp)
 
 

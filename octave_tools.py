@@ -1,13 +1,16 @@
-"""Seven deterministic Octave tools (no model in the loop): period, condition, native figure, shi, palace, point, line.
+"""Seven deterministic Octave tools (no model in the loop): period, condition, native figure, shi, palace, point, line;
+then three that write: forecast, statement, explain (Jev decides and grades, a writer model phrases; see octave_forecast).
 
 Thin wrappers over octave_engine, octave_ledger and octave_packet. Times are America/New_York unless an offset is given.
 The tool functions live at module level so stella_server can re-export them; register_octave_tools(mcp) registers them.
 """
 import json
+import os
 from typing import Optional
 
 import ki_solar
 import octave_engine as E
+import octave_forecast as F
 import octave_ledger as L
 import octave_packet as P
 
@@ -210,8 +213,65 @@ async def get_octave_line(from_number: int, to_number: int, datetime: Optional[s
         return _err(e)
 
 
+def _written(fn, level, datetime, idx, natal, **kw) -> str:
+    try:
+        i = _idx(level, datetime, idx)
+        r = dict(fn(level, i, natal, data_dir=os.environ.get("DATA_DIR") or None, **kw))
+        r.pop("system", None)
+        return _out(r)
+    except ValueError as e:
+        return _err(e)
+
+
+async def write_octave_forecast(natal: str, level: str, datetime: Optional[str] = None, idx: Optional[int] = None,
+                                fresh: bool = False) -> str:
+    """Write the forecast paragraph for a native in a period; Jev decides and grades, a writer model phrases; cached per period, fresh=True rewrites.
+
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer.
+
+    Args:
+        natal: birth date YYYY-MM-DD
+        level: great_age, ki_age, great_year, year, month, day or hour
+        datetime: instant to read (ISO; America/New_York unless an offset is given); default now
+        idx: period index, wins over datetime
+        fresh: write it again instead of returning the cached paragraph
+    """
+    return _written(F.forecast, level, datetime, idx, natal, fresh=fresh)
+
+
+async def write_octave_statement(natal: str, level: str, datetime: Optional[str] = None, idx: Optional[int] = None,
+                                 fresh: bool = False) -> str:
+    """Write the thought under the headline for a native in a period; Jev decides and grades, a writer model phrases; cached per period, fresh=True rewrites.
+
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer.
+
+    Args:
+        natal: birth date YYYY-MM-DD
+        level: great_age, ki_age, great_year, year, month, day or hour
+        datetime: instant to read (ISO; America/New_York unless an offset is given); default now
+        idx: period index, wins over datetime
+        fresh: write it again instead of returning the cached thought
+    """
+    return _written(F.statement, level, datetime, idx, natal, fresh=fresh)
+
+
+async def explain_octave_statement(natal: str, level: str, datetime: Optional[str] = None,
+                                   idx: Optional[int] = None) -> str:
+    """Write the reading of the written thought for a native in a period; Jev decides and grades, a writer model phrases; cached by the thought's text.
+
+    Needs OPENROUTER_API_KEY and TYPESAFE_API_KEY on the server; FORECAST_MODEL and FORECAST_URL choose the writer. Returns 404 no_statement where no thought was written.
+
+    Args:
+        natal: birth date YYYY-MM-DD
+        level: great_age, ki_age, great_year, year, month, day or hour
+        datetime: instant to read (ISO; America/New_York unless an offset is given); default now
+        idx: period index, wins over datetime
+    """
+    return _written(F.explain, level, datetime, idx, natal)
+
+
 TOOLS = (get_octave_period, get_octave_condition, get_native_figure, get_octave_shi, get_palace,
-         get_octave_point, get_octave_line)
+         get_octave_point, get_octave_line, write_octave_forecast, write_octave_statement, explain_octave_statement)
 
 
 def register_octave_tools(mcp) -> None:

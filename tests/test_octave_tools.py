@@ -64,3 +64,24 @@ def test_line_with_a_five_needs_a_datetime():
 def test_tools_report_bad_input_as_error():
     assert "error" in json.loads(run(stella_server.get_octave_period(level="week")))
     assert "error" in json.loads(run(stella_server.get_octave_period(level="year", idx=-3000)))
+
+
+def _no_key_call(monkeypatch, tool, **kw):
+    monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
+    raw = run(tool(natal="1986-05-01", level="month", datetime="2026-11-09T12:00", **kw))
+    return json.loads(raw)
+
+
+def test_write_octave_statement_without_keys_says_so(monkeypatch):
+    d = _no_key_call(monkeypatch, stella_server.write_octave_statement)
+    assert d["ok"] is False and d["error"] == "no_key" and "system" not in d
+
+
+def test_write_octave_forecast_without_keys_says_so(monkeypatch):
+    d = _no_key_call(monkeypatch, stella_server.write_octave_forecast, fresh=True)
+    assert d["ok"] is False and d["error"] == "no_key" and "system" not in d
+
+
+def test_explain_tool_passes_through_404(monkeypatch):
+    d = _no_key_call(monkeypatch, stella_server.explain_octave_statement)
+    assert d["ok"] is False and "system" not in d

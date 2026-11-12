@@ -188,7 +188,7 @@ class Period:
     level: str
     idx: int
     start: datetime
-    end: datetime
+    end: Optional[datetime]          # None when the period closes past the ephemeris
     gstack: dict                     # global numbers, top of stack down to ``level``
     pstack: Optional[dict]           # personal numbers (natal given), else None
     stack: dict                      # pstack when natal is given, else gstack
@@ -201,15 +201,16 @@ class Period:
 
 
 def period(level: str, idx: int, natal: Optional[int]) -> Period:
-    """One period at ``level`` by Stella's continuous index; personal when ``natal`` is given."""
+    """One period at ``level`` by Stella's continuous index; personal when ``natal`` is given.
+    Raises ValueError when the period opens outside the ephemeris; ``end`` is None when it closes past it."""
     s, e = ki_solar.period_start_jd(level, idx), ki_solar.period_start_jd(level, idx + 1)
-    if s is None or e is None:
+    if s is None:
         raise ValueError("outside the ephemeris")
     gstack = ki_solar.period_stack(level, idx)
     pstack = personal_stack(natal, gstack) if natal else None
     stack = pstack if natal else gstack
     return Period(
-        level=level, idx=idx, start=ki_solar.jd_to_dt(s), end=ki_solar.jd_to_dt(e),
+        level=level, idx=idx, start=ki_solar.jd_to_dt(s), end=ki_solar.jd_to_dt(e) if e is not None else None,
         gstack=gstack, pstack=pstack, stack=stack, number=stack[level],
         global_number=gstack[level], personal_number=pstack[level] if pstack else None,
         own=resolve(stack, level), fig=figure(stack, level), role=_role(stack[level]),

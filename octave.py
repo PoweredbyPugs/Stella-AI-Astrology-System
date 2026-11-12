@@ -15,6 +15,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Optional
 
+import octave_ledger
 from octave_math import build_report
 
 GNOSTIC_JSON = os.environ.get("GNOSTIC_JSON") or str(Path(__file__).parent / "data" / "gnostic.json")
@@ -75,16 +76,119 @@ the Work of individuation.
   moving lines are exactly the lines that differ. If the great year shifted between them, lower lines
   move too; say so.
 
+## The three lenses
+- Ba (場), the field: the period's hexagram, its own trigram over its container's (hour over day, day over
+  month, month over year, year over great year). The top level has no container and no figure. The
+  Gnostic text for it is get_octave_reading(hexagram).
+- Shi (勢), the movement: the lines (1 = bottom) where the next period's figure differs from this one.
+  Quote the ba's text at those lines; where it lands is the next figure.
+- Ji (機), the native in the field: the person's own hexagram, built from the natal month number the
+  same way the ba is built from the period, where it differs from the ba. The ji lines are the lines
+  that differ, read field to native, so the text quoted is the ba's at those lines. Profiles only;
+  the Global period has no ji.
+- The circuit 1-4-2-8-5-7 gives every line one figure: destination over origin, both resolved. The
+  Tri-force (3, 6, 9, the Law of Three) takes its own trigram doubled at any scale: 51 at 3, 1 at 6,
+  30 at 9. It touches the path of time and never the circuit.
+
+## Elements: condition and flow
+- One relation between an actor and a field, in five words: resonates (same element), fed by (the field
+  generates the actor), feeds (the actor generates the field), controls, controlled by. Generative cycle
+  Wood, Fire, Earth, Metal, Water; controlling cycle Wood, Earth, Water, Fire, Metal.
+- The condition is the native in the period: the native's element (from the natal year number; a 5
+  native is earth) against the period's element (a 5 period takes what it inherits). It reads from the
+  25 condition texts.
+- The flow is the period in its container (an earth hour in a metal day: feeds). There is none at the
+  top level.
+- Always say whose element it is: "Your earth in an earth hour". An earth hour feeds its metal day while
+  the earth native resonates in it; without the subject the two read as a contradiction.
+
+## The palace
+- The Lo Shu with south at the top, home arrangement 4 9 2 / 3 5 7 / 8 1 6. The period's global number
+  takes the center and every other number flies the fixed path: the number in a palace is
+  ki(home - 5 + global).
+- Flags: Five Yellow (the home palace where 5 landed), Broken (the palace opposite Five Yellow), Own (the
+  home palace of the person's number at the level), Opposite (opposite Own), Coincides (Own is the Five
+  Yellow palace).
+- On the palace face each number carries its traditional star, not the point name. The palace steps one
+  period at a time and reads no traces and no circuit: the house, the condition and the folded ba only.
+- House 1, North: Winter. Dormancy and the hidden work; rest, plan, do not push.
+- House 2, South-west: Germination. Preparation, listening, slow groundwork; the risk is Stagnation.
+- House 3, East: Spring. Sudden starts and new energy that outruns its body; begin, but keep Composure.
+- House 4, South-east: Growth. Expansion, travel, communication; things take off and can scatter.
+- House 5, Center: The pivot. Everything comes to you and nothing is displaced; stay put, receive, do not initiate.
+- House 6, North-west: Authority. Responsibility and the first harvest; maturity with a perfectionist edge.
+- House 7, West: Harvest. Joy, money, reflection, pleasure and its excesses.
+- House 8, North-east: The turning point. Stillness before change; revolution held in the mountain.
+- House 9, South: Illumination. Recognition and exposure; things come to light.
+
+## The ledger
+The nine points, each a name and the question every reading is built from:
+- 1 Potential: What's under the surface?
+- 2 Field: What is being received?
+- 3 Power: What arrived?
+- 4 River: Which way?
+- 5 Delta: What landed here from above?
+- 6 Will: What was the ego magnetic to?
+- 7 Lake: What is the yield?
+- 8 Mountain: This is what lasted. Not touching it yet.
+- 9 Clarity: What is clear from here?
+- Families: 1·4·7 receptive, 2·5·8 substrate, 3·6·9 expansive.
+- The three forces take their own trigram doubled: 3 Power, 51 Shock, force from the outside in; 6 Will,
+  1 The Dynamic, force from the inside out, brought under will; 9 Clarity, 30 Clarity, the force that
+  sees the two as one. This is the Tri-force.
+The six lines of the circuit, each a verb and a trace kind:
+- 1 → 4 nourish, interval trace
+- 4 → 2 break, octave trace
+- 2 → 8 inherit, interval trace
+- 8 → 5 keep, octave trace
+- 5 → 7 reflect, interval trace
+- 7 → 1 shape, octave trace
+- Tending: the three earth points are three scales of tending. 2 tends everything, in the dark, in
+  private, not for show. 5 tends the self: unblocking, so that what is coming through can land, not
+  pushing outward. 8 tends one thing, with great care. An earth period closes on a tending at that
+  scale, not a push.
+- get_octave_point(n) and get_octave_line(from, to) return the full brief of a point and of a line;
+  the whole ledger is the octave://ledger resource.
+
+## Reading order
+The page's order, on every face: the head (the number and the point's name; on the palace, the
+traditional star), the condition (whose element sits in whose, and the flow), ji (the native in the
+field), shi (what is moving), and in practice (the line's verb and its practice, and the tending for an
+earth point). Read a circuit point's two lines interval trace first (1 to 4, 2 to 8, 5 to 7, inside the
+octave), octave trace second (4 to 2, 8 to 5, 7 to 1, leaving it), whichever is incoming. Without a
+profile, give the point's plain question; with one, the question carries the condition clause.
+
+## Standing rules
+- The reading is a reading, not a system explanation: no attribute lists, no method words, no account of the mechanics in anything a person reads. Explanation lives in the ledger.
+- The ledger text is verbatim; change it in the study ledger first. Rewords for the reading are overrides in briefs.js.
+- Jev decides and grades; Jev never writes. Never ask Jev what code can count (sentences, words, an ending).
+- The forecast and the statement are synthesis, "something new, not a cookbook recipe".
+- Always say whose element it is ("Your earth in an earth hour"); never the bare pair.
+- American spelling everywhere. No em-dashes in page text (the pipelines turn them into commas). No emoji in UI.
+- UI names: the three faces octave, plot, palace; the path of time and the circuit; Tri-force with the hyphen; Ba, Shi, Ji, In Practice. The ledger keeps rim, hexad, Triforce.
+
 ## How to read
-1. Call get_octave(birth_date) for the person's octave, today's position, years, echo pairs and shocks.
-2. Locate now: personal year and month, the year and month figures, the rim position, and the next
-   great-year shift.
-3. Read the year as its figure over the great year. Read the month as its figure over the year.
-4. For each echo pair, call get_octave_reading(primary, lines=moving lines) and read the editor's
-   judgment, superior-man line, notes and the moving lines; then the transformed figure.
-5. Ask of the 6 year whether the strike was made. Ask whether the coming octave repeats the wiring on
-   new ground (same figures, shifted great year) or the same ground.
-6. Quote the editor where it lands; keep his register: plain, psychological, about the Work.
+Every number and text comes from a tool; never compute Ki, a figure or a relation by hand.
+1. get_octave(birth_date): the person's octave, today's position, years, echo pairs and shocks.
+2. get_octave_reading(hexagram, lines): the Gnostic Book of Changes at a figure and its moving lines.
+3. get_octave_period(level, datetime, natal): start here for any period. The ba, shi, house, point and
+   palace; with natal, the full packet with ji and the six sources.
+4. get_octave_condition(natal, level, datetime): the condition and the flow with their words and
+   readings, the composed statement and the quiet sentence.
+5. get_native_figure(natal, level, datetime): the native hexagram, the ji lines and the ba's text there.
+6. get_octave_shi(level, datetime, natal): the lines that change into the next period, and the text.
+7. get_palace(level, datetime, natal): the Lo Shu flight, flags, house line and star.
+8. get_octave_point(number): one point's brief, tending and family; the Tri-force at 3, 6, 9.
+9. get_octave_line(from_number, to_number, datetime): one circuit line, its verb, practice and figure.
+10. write_octave_statement(natal, level, datetime): one written thought, Jev deciding and grading.
+11. explain_octave_statement(natal, level, datetime): the reading of that thought, phrase by phrase.
+12. write_octave_forecast(natal, level, datetime): one paragraph of synthesis for the period.
+Order: get_octave_period, then get_octave_condition, get_native_figure and get_octave_shi, then the
+palace and the point as the question needs. Read the year as its figure over the great year and the
+month as its figure over the year. For each echo pair call get_octave_reading(primary, lines=moving
+lines), then the transformed figure. Ask of the 6 year whether the strike was made, and whether the
+coming octave repeats the wiring on new ground or the same ground. Quote the editor where it lands;
+keep his register: plain, psychological, about the Work. Period indexes count gate levels from 2010.
 """
 
 
@@ -151,8 +255,8 @@ def octave_reading(hexagram: int, lines: Optional[list] = None, full: bool = Tru
 def hermes_skill() -> str:
     return """---
 name: octave
-description: "Read a person's life as nine-year octaves: Nine Star Ki on Gurdjieff's enneagram, every year and month an I Ching figure formed over the cycle above it, read through The Gnostic Book of Changes. Loads on 'octave', 'nine star ki', 'ki cycle', 'personal year', 'great year', 'echo pair', 'which hexagram is my year', or any reading of life cycles with the I Ching."
-version: 1.0.0
+description: "Read a person's life as nine-year octaves: Nine Star Ki on Gurdjieff's enneagram, every year and month an I Ching figure formed over the cycle above it, read through The Gnostic Book of Changes, with the three lenses ba, shi and ji, the condition and the flow, the Lo Shu palace, and written readings. Loads on 'octave', 'nine star ki', 'ki cycle', 'personal year', 'great year', 'echo pair', 'which hexagram is my year', or any reading of life cycles with the I Ching."
+version: 2.0.0
 author: Stella
 license: MIT
 metadata:
@@ -162,7 +266,7 @@ metadata:
     related_skills: []
 ---
 
-Use Stella's MCP tools `get_octave` and `get_octave_reading` for every number and text; never compute Ki by hand.
+Use Stella's MCP tools (`get_octave`, `get_octave_reading` and the ten period tools in 'How to read') for every number and text; never compute Ki by hand.
 
 """ + FRAMEWORK
 
@@ -217,9 +321,23 @@ def register_octave(mcp) -> None:
         """The octave framework: Ki clock, enneagram rim, figure formation, how to read."""
         return FRAMEWORK
 
+    @mcp.resource("octave://ledger")
+    def octave_ledger_resource() -> str:
+        """The Octave ledger as JSON: points, houses, stars, relation words, the 25 condition readings, lines, tending."""
+        return json.dumps(octave_ledger.load(), ensure_ascii=False, indent=1)
+
     @mcp.prompt(name="octave_reading")
     def octave_reading_prompt(birth_date: str = "", focus: str = "") -> str:
         """Read a person's life as nine-year octaves with Stella's octave tools."""
         who = f"The person was born {birth_date}." if birth_date else "Ask for the birth date first."
         on = f" Focus on: {focus}." if focus else ""
         return f"{FRAMEWORK}\n\n## Now\n{who}{on} Follow 'How to read' above, using get_octave and get_octave_reading."
+
+    @mcp.prompt(name="octave_period_reading")
+    def octave_period_reading_prompt(birth_date: str = "", level: str = "day", datetime: str = "") -> str:
+        """Read one period for a person in the page's order: head, condition, ji, shi, in practice."""
+        who = f"The person was born {birth_date}." if birth_date else "Ask for the birth date first."
+        at = f" at {datetime}" if datetime else " now"
+        return (f"{FRAMEWORK}\n\n## Now\n{who} Read the {level}{at}. Call get_octave_period for that person, level "
+                "and instant, then get_octave_condition, get_native_figure and get_octave_shi. Read in the "
+                "page's order (head, condition, ji, shi, in practice), under the standing rules above.")

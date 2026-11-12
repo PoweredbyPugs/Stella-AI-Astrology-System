@@ -35,3 +35,16 @@ def test_tool_rejects_other_tz():
     import stella_server
     res = asyncio.run(stella_server.mcp.call_tool("get_octave", {"birth_date": "1986-05-01", "tz": "Europe/London"}))
     assert "America/New_York" in str(res)
+
+
+def test_framework_v2_carries_the_lenses_and_rules():
+    f = octave.FRAMEWORK
+    for s in ("Ba (場)", "Shi (勢)", "Ji (機)", "resonates", "fed by", "Five Yellow", "What's under the surface?", "nourish", "tends everything", "Tri-force", "Jev decides and grades; Jev never writes", "get_octave_period", "write_octave_statement"):
+        assert s in f, s
+    assert "version: 2.0.0" in octave.hermes_skill()
+
+
+def test_ledger_resource_registered():
+    import stella_server
+    names = {str(r.uri) for r in asyncio.run(stella_server.mcp.list_resources())}
+    assert "octave://ledger" in names

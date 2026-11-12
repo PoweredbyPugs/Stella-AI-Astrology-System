@@ -1,5 +1,22 @@
 # Stella Changelog
 
+## 2026.11.12 — The Octave system: lenses, elements, palace, ledger, written readings
+
+### `octave_engine.py`, `octave_ledger.py`, `octave_packet.py`, `octave_models.py`, `octave_forecast.py`, `octave_tools.py` (new)
+- `octave_engine.py` ports the Octave Calendar page's engine onto Stella's clock: resolve, the ba figure, shi (moving lines into the next period), the native figure and ji lines, the circuit's line figures, the Tri-force, the element relation, the Lo Shu palace. The 5 rule: a 5 inherits the trigram of the nearest level above it that is not 5, and a stack that is 5 all the way up has no figure. The ephemeris edge is the solar-degree stack in `ki_solar.py`; the great-year index counts from 2010, so it is the page's index plus one.
+- `octave_ledger.py` reads `data/octave_ledger.json`, dumped verbatim from the page by `scripts/export_octave_ledger.sh` (the nine points, the 25 condition readings, houses, stars, the six lines, tending), and ports STATEMENT, TRAD and TRAD_KEY. Served whole as the `octave://ledger` resource.
+- `octave_packet.py` builds the deterministic packet for a period and a native: ba, native, ji and shi, condition and flow, house, point and the six sources.
+- `octave_models.py` and `octave_forecast.py` hold the three pipelines, each packet, Jev decides, the writer phrases, Jev grades, one rewrite, cached by version: forecast (v4), statement (s2) and explain (x1). Jev decides and grades and never writes; without a Jev key the writer runs unbriefed.
+- `octave_tools.py` registers ten tools: `get_octave_period`, `get_octave_condition`, `get_native_figure`, `get_octave_shi`, `get_palace`, `get_octave_point`, `get_octave_line`, `write_octave_forecast`, `write_octave_statement`, `explain_octave_statement`.
+- The framework is now 2.0.0: the three lenses, elements, the palace, the ledger, the reading order and the seven standing rules; the Hermes skill is regenerated at version 2.0.0; the `octave_period_reading` prompt reads one period in the page's order.
+- Checked against the page: stacks agree for 2026-11-11 12:22 natal 1986-05-01, global 8.5.1.1.8.4.8, personal 2.5.9.9.2.6.2; month of 2026-11-09 ba 36, native 11, ji line 2. Tests: `tests/test_octave_*.py`.
+
+### Fixed
+- `get_synodic_gate_now` docstring now follows `ki_levels`: the 2022 great year opened 1, not gate 8.
+
+### Tools
+(104 tools). Reference: `docs/OCTAVE_REFERENCE.md`.
+
 ## 2026.11.12 — The sky over a window (Octave's sky layer)
 
 ### `sky.py` (new), `get_sky_window` (94 tools)

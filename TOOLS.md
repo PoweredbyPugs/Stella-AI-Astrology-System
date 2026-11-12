@@ -1,4 +1,4 @@
-# Stella MCP Server — 94 Tools
+# Stella MCP Server — 104 Tools
 
 *Last updated: Nov 12, 2026*
 
@@ -86,8 +86,18 @@ The three-number reading has no hierarchy: a 5 in the middle takes the other num
 |---|------|-------------|
 | — | `get_octave` | A life as nine-year octaves on Gurdjieff's enneagram: natal triple, every octave, today's position, the nine years with their figures (year over great year), echo pairs with moving lines, shocks, the next cycle. Months of the current year by default, all 108 with `include_months=true`. |
 | — | `get_octave_reading` | A hexagram from The Gnostic Book of Changes: judgment, superior-man line, editor's notes, moving lines. |
+| 95 | `get_octave_period` | The Octave period at a level (instant or index), with or without a birth date: number, global, span, ba, shi, house, point, palace; with `natal` the full packet with ji and the six sources |
+| 96 | `get_octave_condition` | The condition (the native's element in the period's) and the flow (the period in its container) with their words and readings, the composed statement, the quiet sentence and its key |
+| 97 | `get_native_figure` | The ba, the native hexagram, the ji lines where they differ, and the ba's text at those lines |
+| 98 | `get_octave_shi` | The lines that change from this period's ba into the next, the ba's text at them, and the next figure |
+| 99 | `get_palace` | The Lo Shu palace of a period: nine cells, Five Yellow, Broken, Own and Opposite flags, the house line and direction, the star |
+| 100 | `get_octave_point` | One of the nine points: name, question, function, image, shadow, practice, family, tending, and the Tri-force figure at 3, 6, 9 |
+| 101 | `get_octave_line` | One of the six circuit lines: verb, kind, practice and its figure; a line through 5 resolves the 5 at a datetime |
+| 102 | `write_octave_forecast` | One paragraph of synthesis for a period: Jev reads and grades, the writer phrases, one rewrite, cached (prompt v4) |
+| 103 | `write_octave_statement` | One written thought of two or three sentences under the headline: Jev decides and grades, the writer phrases, cached (statement s2); null with the composed sentence if nothing passes |
+| 104 | `explain_octave_statement` | The reading of the written thought: each phrase quoted and opened, the whole, questions to sit with, a closing line (explain x1) |
 
-Math in `octave_math.py`; text in `data/gnostic.json`. Framework as the `octave://framework` resource and the `octave_reading` prompt.
+Math in `octave_math.py`; text in `data/gnostic.json`. Rows 95-104 are in `octave_tools.py` (engine `octave_engine.py`, ledger `octave_ledger.py`, pipelines `octave_forecast.py`). Framework as the `octave://framework` resource and the `octave_reading` and `octave_period_reading` prompts; the ledger as `octave://ledger`. Reference: `docs/OCTAVE_REFERENCE.md`.
 
 ## Convergence Ki (5-level solar-terrestrial cascade)
 

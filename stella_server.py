@@ -254,7 +254,7 @@ async def get_zodiacal_releasing(
     date: Optional[str] = None,
     time: Optional[str] = None,
 ) -> str:
-    """Get Zodiacal Releasing L1-L6 periods for a stored chart.
+    """Get Zodiacal Releasing L1-L5 periods for a stored chart.
 
     Native calculation - no external API dependency.
     Includes peak periods and loosing of the bond.
@@ -377,7 +377,7 @@ async def get_zr_periods(
         start: Window start, ISO date or datetime (YYYY-MM-DD[THH:MM])
         end: Window end, ISO date or datetime (exclusive)
         lot: 'spirit' (default) or 'fortune'
-        levels: Comma-separated levels 1-6 (default "1,2"). L4-L6 over long windows are large (L6 periods are minutes).
+        levels: Comma-separated levels 1-5 (default "1,2"). L4/L5 over long windows are large.
     """
     from datetime import datetime
     from zr import zr_periods_for_chart
@@ -5377,7 +5377,7 @@ async def get_timing_stack(
 
     ZODIACAL RELEASING (Hellenistic, lot-based):
       Spirit (career/action) and Fortune (body/circumstances)
-      L1-L6 periods with peak detection and loosing of the bond
+      L1-L5 periods with peak detection and loosing of the bond
 
     NAKSHATRA TRANSIT (astronomical, live Moon position):
       6. Nakshatra lord — the day quality (~24 hours)

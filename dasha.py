@@ -428,7 +428,7 @@ def get_full_timing_stack(
     # ── Zodiacal Releasing (both lots) ──
     zr_data = {}
     try:
-        from zr import zr_for_chart, format_zr_summary, MAX_LEVEL
+        from zr import zr_for_chart, format_zr_summary
 
         if target_date:
             if target_time:
@@ -445,7 +445,7 @@ def get_full_timing_stack(
 
                 # Extract concise level summary
                 levels = []
-                for i in range(1, MAX_LEVEL + 1):
+                for i in range(1, 6):
                     lkey = f'L{i}'
                     if lkey in snap_dict:
                         lv = snap_dict[lkey]

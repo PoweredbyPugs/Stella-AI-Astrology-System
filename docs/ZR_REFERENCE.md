@@ -91,8 +91,7 @@ Each level subdivides the period above it:
 - **L2** = Subperiods (months/years)
 - **L3** = Sub-subperiods (weeks/months)
 - **L4** = Days
-- **L5** = Hours (~25 min per unit)
-- **L6** = Minutes (~2 min per unit; a full cycle of twelve signs is ~7.3 hours)
+- **L5** = Hours
 
 The same ZR logic applies at each level — peaks, triads, ruler conditions.
 

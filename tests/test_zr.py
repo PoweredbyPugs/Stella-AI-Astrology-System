@@ -240,36 +240,3 @@ def test_zr_report_json_has_the_worksheet_sections():
     assert data["peaks"]["10th"]["sign"] == "Pisces"
     assert data["periods"]["L1"]["sign"] == "Gemini"
     assert data["loosing"]["L1_loosing_at"] == (BIRTH + timedelta(days=L2_CYCLE)).isoformat()
-
-
-# ── Level 6 ───────────────────────────────────────────────────────────────
-
-L6_CYCLE = 211 * 30 / 20736  # days: 211 units of ~2.08 minutes, ~7.3 hours
-
-
-def test_l6_unit_is_a_twelfth_of_l5():
-    from zr import LEVEL_MULTIPLIERS, MAX_LEVEL
-    assert MAX_LEVEL == 6
-    assert abs(LEVEL_MULTIPLIERS[6] - LEVEL_MULTIPLIERS[5] / 12) < 1e-15
-
-
-def test_l6_jumps_to_opposite_sign_within_a_long_l5():
-    # Capricorn L5 = 27 units of 25 min = 11.25 h, longer than the L6 cycle.
-    snap = l2_at(L6_CYCLE + 0.0005)
-    assert snap.L5.sign == "Capricorn"
-    assert snap.L6.sign == "Cancer"
-    assert snap.L6.start == BIRTH + timedelta(days=L6_CYCLE)
-    assert snap.L6.is_loosing_of_bond is True
-    assert snap.L5.loosing_at == BIRTH + timedelta(days=L6_CYCLE)
-    before = l2_at(L6_CYCLE - 0.0005)
-    assert before.L6.sign == "Sagittarius"
-    assert before.L6.is_pre_loosing is True
-    assert snap.to_dict()["L6"]["level"] == 6
-    assert len(snap.levels) == 6
-
-
-def test_zr_periods_accepts_level_6():
-    out = zr_periods("Capricorn", BIRTH, BIRTH, BIRTH + timedelta(hours=3), levels=[6], fortune_sign="Aries")
-    assert [p.sign for p in out["L6"][:3]] == ["Capricorn", "Aquarius", "Pisces"]
-    assert out["L6"][0].start == BIRTH
-    assert out["L6"][0].end == BIRTH + timedelta(days=27 * 30 / 20736)

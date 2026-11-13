@@ -373,7 +373,7 @@ def render_zr_report_markdown(data: Dict[str, Any]) -> str:
 
     lines.append(f"## 6. Current Periods (releasing from {data['lot'].title()})")
     lines.append("")
-    for level in ("L1", "L2", "L3", "L4", "L5"):
+    for level in ("L1", "L2", "L3", "L4", "L5", "L6"):
         p = data["periods"][level]
         peak_marker = f" ⭐ ({p['peak_type']})" if p["peak_type"] else ""
         marks = ""

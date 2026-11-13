@@ -35,7 +35,7 @@
 | # | Tool | Description |
 |---|------|-------------|
 | 19 | `get_profections` | Annual profections with lord of year |
-| 20 | `get_zodiacal_releasing` | ZR L1–L5 at one instant, with peaks (from Fortune), angular-triad phase, and the loosing of the bond at every level |
+| 20 | `get_zodiacal_releasing` | ZR L1–L6 at one instant, with peaks (from Fortune), angular-triad phase, and the loosing of the bond at every level |
 | 21 | `get_zr_report` | Comprehensive ZR report (Brennan worksheet framework); `lot` spirit or fortune, `format` markdown or json |
 | 93 | `get_zr_periods` | Every ZR period overlapping a window at the requested levels (timelines, Octave, next loosing or peak) |
 | 94 | `get_sky_window` | The sky over a window, for Octave's sky layer: at the start the positions, the Moon's phase, the ascendant (with lat/lon), transits to a chart with orbs, the profection; inside it lunations, ingresses, the Moon's 15° gates, stations, eclipses, void of course, exact transits, the turnings; releasing periods for both lots at chosen levels (by default the level the window's length is read at: a few hours L5, a day L4, a month L3, a year L2, longer L1); UTC in and out |
@@ -52,7 +52,7 @@ Sky conventions (`sky.py`): every instant out is UTC ISO with `Z`; an input with
 
 | # | Tool | Description |
 |---|------|-------------|
-| 26 | `get_timing_stack` | **Full timing stack** — 4 systems in one call: Dasha (5 levels), ZR (Spirit + Fortune, L1-L5), Nakshatra transit (lord + pada), Ki (5 levels). Includes glyphs, resonance detection. |
+| 26 | `get_timing_stack` | **Full timing stack** — 4 systems in one call: Dasha (5 levels), ZR (Spirit + Fortune, L1-L6), Nakshatra transit (lord + pada), Ki (5 levels). Includes glyphs, resonance detection. |
 | 27 | `get_dasha_periods` | 5-level Vimshottari dasha only (maha→prana) with dates and durations |
 | 28 | `get_nakshatra_transit` | Live Moon nakshatra position with lord, pada, entry/exit times |
 

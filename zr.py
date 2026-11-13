@@ -56,6 +56,7 @@ LEVEL_MULTIPLIERS = {
     3: EGYPTIAN_MONTH / 12,     # L3: ~2.5 days per "year"
     4: EGYPTIAN_MONTH / 144,    # L4: ~0.208 days per "year" (~5 hours)
     5: EGYPTIAN_MONTH / 1728,   # L5: ~0.017 days per "year" (~25 min)
+    6: EGYPTIAN_MONTH / 20736,  # L6: ~0.0014 days per "year" (~2 min 5 s)
 }
 MAX_LEVEL = max(LEVEL_MULTIPLIERS)
 
@@ -124,6 +125,7 @@ class ZRSnapshot:
     L3: ZRPeriod
     L4: ZRPeriod
     L5: ZRPeriod
+    L6: ZRPeriod
     is_loosing_of_bond: bool          # the L2 period is in the loosed portion of L1
     loosing_details: Optional[str]
     release_sign: str = ""            # sign the releasing starts from (differs from lot_sign
@@ -136,7 +138,7 @@ class ZRSnapshot:
 
     @property
     def levels(self) -> List[ZRPeriod]:
-        return [self.L1, self.L2, self.L3, self.L4, self.L5]
+        return [self.L1, self.L2, self.L3, self.L4, self.L5, self.L6]
 
     def to_dict(self) -> Dict[str, Any]:
         loosed = [f"L{p.level}" for p in self.levels if p.is_loosing_of_bond]
@@ -152,6 +154,7 @@ class ZRSnapshot:
             "L3": self.L3.to_dict(),
             "L4": self.L4.to_dict(),
             "L5": self.L5.to_dict(),
+            "L6": self.L6.to_dict(),
             "is_loosing_of_bond": self.is_loosing_of_bond,
             "loosing_details": self.loosing_details,
             "loosed_levels": loosed,
@@ -385,7 +388,7 @@ def calculate_zr(
         periods.append(p)
         parent_sign, parent_start, parent_end = p.sign, p.start, p.end
 
-    l1, l2, l3, l4, l5 = periods
+    l1, l2, l3, l4, l5, l6 = periods
 
     loosing_details = None
     if l2.is_loosing_of_bond:
@@ -405,6 +408,7 @@ def calculate_zr(
         L3=l3,
         L4=l4,
         L5=l5,
+        L6=l6,
         is_loosing_of_bond=l2.is_loosing_of_bond,
         loosing_details=loosing_details,
         release_sign=start_sign,

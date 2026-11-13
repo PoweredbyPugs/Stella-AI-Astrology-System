@@ -1,5 +1,11 @@
 # Stella Changelog
 
+## 2026.11.13 — Zodiacal Releasing Level 6
+
+### `zr.py`, `zr_report.py`, `dasha.py`
+- A sixth level: each L5 period (units of 25 minutes) now subdivides into twelve L6 periods of 2 minutes 5 seconds per unit (30 days / 20736), by the same rule as every level above it, loosing of the bond included: an L5 longer than 211 L6 units (~7.3 hours, so Gemini, Cancer, Leo, Virgo, Capricorn, Aquarius) jumps to its opposite sign. `ZRSnapshot` carries `L6`; `get_zodiacal_releasing`, `get_zr_report`, the timing stack and `get_sky_window` show it, and `get_zr_periods` accepts `levels` up to 6.
+- Checked on a stored chart: L5 Aquarius 05:35 to 18:05 looses at 12:54:35, exactly 211 L6 units in; the L6 before it, Capricorn, is 27 units of 2 min 5 s. Tests: `tests/test_zr.py` (Level 6 section).
+
 ## 2026.11.12 — The Octave system: lenses, elements, palace, ledger, written readings
 
 ### `octave_engine.py`, `octave_ledger.py`, `octave_packet.py`, `octave_models.py`, `octave_forecast.py`, `octave_tools.py` (new)

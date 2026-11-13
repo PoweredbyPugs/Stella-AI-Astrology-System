@@ -698,7 +698,7 @@ def register_sky(mcp) -> None:
                 moon_gates, stations, eclipses, void, transits, turnings (default all)
             planets: Bodies for ingresses, stations and transits, e.g. "Moon,Sun" (default all)
             aspects: Aspects for transits: Conjunction, Sextile, Square, Trine, Opposition (default all)
-            zr_levels: Releasing levels 1-5, e.g. [4,5] or "4,5" (default: the level the
+            zr_levels: Releasing levels 1-6, e.g. [4,5] or "4,5" (default: the level the
                 window's length is read at, a few hours 5, a day 4, a month 3, a year 2,
                 longer 1; the frame one level up comes with it; null without a chart)
             lots: "spirit", "fortune" or both (default both)

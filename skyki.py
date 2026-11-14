@@ -383,10 +383,8 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
 
 def register_skyki(mcp) -> None:
     """Add the skyki_hour tool to Stella's FastMCP server."""
-    fn = globals()["skyki_hour"]  # the module function; the tool below shadows the name here
-
-    @mcp.tool()
-    async def skyki_hour(
+    @mcp.tool(name="skyki_hour")
+    async def skyki_hour_tool(
         name: str,
         at: Optional[str] = None,
         lat: float = None,
@@ -413,7 +411,7 @@ def register_skyki(mcp) -> None:
             lon: Longitude in degrees, east positive; needed with lat for the same parts
         """
         try:
-            result = await asyncio.to_thread(fn, name, at, lat, lon)
+            result = await asyncio.to_thread(skyki_hour, name, at, lat, lon)
             return json.dumps(result, default=str)
         except Exception as ex:
             return json.dumps({"error": str(ex)})

@@ -1,5 +1,13 @@
 # Stella Changelog
 
+## 2026.11.13 — skyki_hour and local dignity scoring
+
+### `dignity.py` (new)
+Essential dignity scored locally at any longitude and sect: domicile, exaltation, triplicity, bound (term) and face tables, with detriment and fall. It reproduces the chart store's API scores and condition words, checked against chris's natal planets. Sect helpers (day or night chart, sect status of a planet) sit beside it.
+
+### `skyki.py` (new)
+The `skyki_hour` tool (105th): one Ki double-hour read against the sky and a stored chart in one call. It joins the Ki hour (global and personal, with numbers, trigrams and elements), the chart of the moment, the seven planets with dignity, sect and houses, the Moon's phase and void state, planetary hours, the rising sign read against the natal chart, releasing L4 and L5 for Spirit and Fortune with natal joins, and the time-ordered changes inside the hour. It matches the acceptance fixture for chris. Nothing existing changed. Open points decided: Ceres is out, the Moon's contacts are out, and Ki is given as numbers, trigrams and elements only.
+
 ## 2026.11.12 — The Octave system: lenses, elements, palace, ledger, written readings
 
 ### `octave_engine.py`, `octave_ledger.py`, `octave_packet.py`, `octave_models.py`, `octave_forecast.py`, `octave_tools.py` (new)

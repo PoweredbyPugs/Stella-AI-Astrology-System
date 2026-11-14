@@ -20,6 +20,9 @@ an unreadable `at`, or a Ki hour window that cannot be computed.
 from datetime import date, datetime, timedelta, timezone
 from typing import Optional
 
+import asyncio
+import json
+
 import ki
 import ki_solar
 import sky
@@ -357,3 +360,44 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
         "changes": changes,
         "absent": sorted(set(absent), key=absent.index),
     }
+
+
+skyki_hour_fn = skyki_hour
+
+
+# ── MCP ──
+
+def register_skyki(mcp) -> None:
+    """Add the skyki_hour tool to Stella's FastMCP server."""
+
+    @mcp.tool()
+    async def skyki_hour(
+        name: str,
+        at: Optional[str] = None,
+        lat: float = None,
+        lon: float = None,
+    ) -> str:
+        """Every fact the hour reading needs for one Ki double-hour, in one call: facts only, no grading.
+
+        Returns the Ki hour containing `at` (start, end, global and personal hour and day with
+        trigram and element), the chart of the moment (rising sign and when it changes, sect,
+        the seven planets with dignity score, condition, flags, sect status and both
+        whole-sign houses, the Moon's phase and void state, the planetary hours overlapping
+        the Ki hour), the rising sign read against the natal chart (its natal house, natal
+        points in it, its ruler natally and in transit with contacts), releasing L4 and L5
+        for Spirit and Fortune with natal joins, and the time-ordered `changes` inside the hour.
+
+        Runs on the local ephemeris and chart store. Parts that cannot be computed are named
+        in `absent`.
+
+        Args:
+            name: Stored chart name
+            at: ISO 8601 instant (default now; naive = America/New_York)
+            lat: Latitude in degrees (required; rising sign, sect, planetary hours)
+            lon: Longitude in degrees, east positive (required; rising sign, sect, planetary hours)
+        """
+        try:
+            result = await asyncio.to_thread(skyki_hour_fn, name, at, lat, lon)
+            return json.dumps(result, default=str)
+        except Exception as ex:
+            return json.dumps({"error": str(ex)})

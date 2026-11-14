@@ -223,3 +223,13 @@ def test_iso_from_julian_day():
 def test_iso_from_aware_utc_datetime():
     from datetime import timezone
     assert skyki._iso(datetime(2026, 11, 13, 22, 58, 14, tzinfo=timezone.utc)) == "2026-11-13T17:58:14-05:00"
+
+
+def test_register_skyki_adds_one_tool():
+    import asyncio
+    from mcp.server.fastmcp import FastMCP
+    mcp = FastMCP("t")
+    skyki.register_skyki(mcp)
+    tools = asyncio.run(mcp.list_tools())
+    assert [t.name for t in tools] == ["skyki_hour"]
+    assert "Ki" in tools[0].description and "lat" in tools[0].description

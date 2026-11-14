@@ -1,4 +1,4 @@
-# Stella MCP Server — 104 Tools
+# Stella MCP Server — 105 Tools
 
 *Last updated: Nov 12, 2026*
 
@@ -96,6 +96,7 @@ The three-number reading has no hierarchy: a 5 in the middle takes the other num
 | 102 | `write_octave_forecast` | One paragraph of synthesis for a period: Jev reads and grades, the writer phrases, one rewrite, cached (prompt v4) |
 | 103 | `write_octave_statement` | One written thought of two or three sentences under the headline: Jev decides and grades, the writer phrases, cached (statement s2); null with the composed sentence if nothing passes |
 | 104 | `explain_octave_statement` | The reading of the written thought: each phrase quoted and opened, the whole, questions to sit with, a closing line (explain x1) |
+| 105 | `skyki_hour` | One Ki double-hour in one call for the hour reading: Ki hour and numbers, rising sign and sect, the seven planets with dignity and houses, the Moon, planetary hours, the rising sign read natally, releasing L4/L5 with natal joins, and the changes inside the hour; facts only |
 
 Math in `octave_math.py`; text in `data/gnostic.json`. Rows 95-104 are in `octave_tools.py` (engine `octave_engine.py`, ledger `octave_ledger.py`, pipelines `octave_forecast.py`). Framework as the `octave://framework` resource and the `octave_reading` and `octave_period_reading` prompts; the ledger as `octave://ledger`. Reference: `docs/OCTAVE_REFERENCE.md`.
 

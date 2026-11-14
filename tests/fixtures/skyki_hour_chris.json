@@ -1,0 +1,80 @@
+{
+  "chart": "chris",
+  "at": "2026-11-13T18:17:45-05:00",
+  "window": {
+    "start": "2026-11-13T18:02:00-05:00",
+    "end": "2026-11-13T20:01:00-05:00"
+  },
+  "ki": {
+    "natal_year": 5,
+    "global": {
+      "hour": { "number": 7, "trigram": "Lake", "element": "Metal" },
+      "day": { "number": 2, "trigram": "Earth", "element": "Earth" }
+    },
+    "personal": {
+      "hour": { "number": 3, "trigram": "Thunder", "element": "Wood" },
+      "day": { "number": 8, "trigram": "Mountain", "element": "Earth" }
+    }
+  },
+  "moment": {
+    "rising": {
+      "sign": "Gemini",
+      "ruler": "Mercury",
+      "entered_at": "2026-11-13T17:58:14-05:00",
+      "leaves_at": "2026-11-13T19:58:05-05:00"
+    },
+    "sect": { "label": "night", "light": "Moon", "benefic": "Venus", "malefic": "Mars" },
+    "moon": { "phase": "waxing crescent", "void": false },
+    "planets": [
+      { "planet": "Sun", "sign": "Scorpio", "degree": 21.59, "retrograde": false, "score": 0, "condition": "neutral", "dignities": [], "sect": "contrary to sect", "house_from_rising": 6, "natal_house": 3 },
+      { "planet": "Moon", "sign": "Capricorn", "degree": 13.22, "retrograde": false, "score": -2, "condition": "weakened", "dignities": ["triplicity", "detriment"], "sect": "in sect", "house_from_rising": 8, "natal_house": 5 },
+      { "planet": "Mercury", "sign": "Scorpio", "degree": 5.04, "retrograde": false, "score": 0, "condition": "neutral", "dignities": [], "sect": "neutral", "house_from_rising": 6, "natal_house": 3 },
+      { "planet": "Venus", "sign": "Libra", "degree": 22.86, "retrograde": true, "score": 7, "condition": "strong", "dignities": ["domicile", "term"], "sect": "in sect", "house_from_rising": 5, "natal_house": 2 },
+      { "planet": "Mars", "sign": "Leo", "degree": 24.85, "retrograde": false, "score": 3, "condition": "moderate", "dignities": ["term", "face"], "sect": "in sect", "house_from_rising": 3, "natal_house": 12 },
+      { "planet": "Jupiter", "sign": "Leo", "degree": 25.69, "retrograde": false, "score": 3, "condition": "moderate", "dignities": ["triplicity"], "sect": "contrary to sect", "house_from_rising": 3, "natal_house": 12 },
+      { "planet": "Saturn", "sign": "Aries", "degree": 8.57, "retrograde": true, "score": -1, "condition": "weakened", "dignities": ["triplicity", "fall"], "sect": "contrary to sect", "house_from_rising": 11, "natal_house": 8 }
+    ],
+    "planetary_hours": [
+      { "ruler": "Mars", "start": "2026-11-13T17:32:50-05:00", "end": "2026-11-13T18:39:01-05:00" },
+      { "ruler": "Sun", "start": "2026-11-13T18:39:01-05:00", "end": "2026-11-13T19:45:13-05:00" },
+      { "ruler": "Venus", "start": "2026-11-13T19:45:13-05:00", "end": "2026-11-13T20:51:25-05:00" }
+    ]
+  },
+  "natal": {
+    "rising_sign_house": 10,
+    "in_rising_sign": ["Venus", "Chiron", "Lot of Fortune"],
+    "ruler": {
+      "planet": "Mercury",
+      "is_chart_ruler": true,
+      "natal": { "sign": "Aries", "house": 8 },
+      "transit": { "sign": "Scorpio", "house": 3 },
+      "contacts": [
+        { "natal_point": "Neptune", "aspect": "sextile", "orb": 0.61, "applying": true, "exact_at": "2026-11-16T02:35:59-05:00" },
+        { "natal_point": "Pluto", "aspect": "conjunction", "orb": 0.78, "applying": true, "exact_at": "2026-11-16T11:07:49-05:00" }
+      ]
+    }
+  },
+  "releasing": {
+    "fortune_sign": "Gemini",
+    "spirit": {
+      "l4": { "sign": "Pisces", "ruler": "Jupiter", "start": "2026-11-11T18:35:00-05:00", "end": "2026-11-14T06:35:00-05:00", "peak": "major", "house_from_fortune": 10, "angularity": "angular", "loosing_of_bond": false },
+      "l5": [
+        { "sign": "Virgo", "ruler": "Mercury", "start": "2026-11-13T11:50:00-05:00", "end": "2026-11-13T20:10:00-05:00", "peak": "minor", "house_from_fortune": 4, "angularity": "angular", "loosing_of_bond": false, "natal_house": 1, "natal_planets": [], "ruler_natal": { "sign": "Aries", "house": 8 }, "ruler_transit": { "sign": "Scorpio", "house": 3 } }
+      ]
+    },
+    "fortune": {
+      "l4": { "sign": "Aquarius", "ruler": "Saturn", "start": "2026-11-13T05:35:00-05:00", "end": "2026-11-19T11:35:00-05:00", "peak": null, "house_from_fortune": 9, "angularity": "cadent", "loosing_of_bond": false, "loosing_at": "2026-11-16T21:30:00-05:00" },
+      "l5": [
+        { "sign": "Aquarius", "ruler": "Saturn", "start": "2026-11-13T05:35:00-05:00", "end": "2026-11-13T18:05:00-05:00", "peak": null, "house_from_fortune": 9, "angularity": "cadent", "loosing_of_bond": false, "natal_house": 6, "natal_planets": ["Moon"], "ruler_natal": { "sign": "Sagittarius", "house": 4 }, "ruler_transit": { "sign": "Aries", "house": 8 } },
+        { "sign": "Pisces", "ruler": "Jupiter", "start": "2026-11-13T18:05:00-05:00", "end": "2026-11-13T23:05:00-05:00", "peak": "major", "house_from_fortune": 10, "angularity": "angular", "loosing_of_bond": false, "natal_house": 7, "natal_planets": ["Jupiter"], "ruler_natal": { "sign": "Pisces", "house": 7 }, "ruler_transit": { "sign": "Leo", "house": 12 } }
+      ]
+    }
+  },
+  "changes": [
+    { "at": "2026-11-13T18:05:00-05:00", "what": "fortune_l5", "from": "Aquarius", "to": "Pisces" },
+    { "at": "2026-11-13T18:39:01-05:00", "what": "planetary_hour", "from": "Mars", "to": "Sun" },
+    { "at": "2026-11-13T19:45:13-05:00", "what": "planetary_hour", "from": "Sun", "to": "Venus" },
+    { "at": "2026-11-13T19:58:05-05:00", "what": "rising_sign", "from": "Gemini", "to": "Cancer" }
+  ],
+  "absent": []
+}

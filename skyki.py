@@ -59,6 +59,12 @@ def _jd(s: str) -> float:
     return sky.parse_instant(str(s).replace("Z", "+00:00"))
 
 
+def _sec(x) -> float:
+    """A Julian Day or ISO string, rounded to the whole second the reply shows, as a Julian Day.
+    Window comparisons use these so that no visible time contradicts the visible window."""
+    return _jd(_iso(x))
+
+
 def _ny_date(jd: float) -> date:
     return sky.jd_to_dt(jd).astimezone(sky.TZ).date()
 
@@ -204,14 +210,25 @@ def _period(p: dict) -> dict:
             "loosing_at": _iso(p["loosing_at"])}
 
 
-def _l5_natal(sign: str, ruler: str, natal_rising: str, natal_sign: dict, transit_sign: dict) -> dict:
-    return {
-        "natal_house": zr.house_from(sign, natal_rising),
-        "natal_planets": [n for n, s in natal_sign.items() if s == sign and n in NATAL_PLANETS],
-        "ruler_natal": {"sign": natal_sign[ruler], "house": zr.house_from(natal_sign[ruler], natal_rising)},
-        "ruler_transit": {"sign": transit_sign[ruler],
-                          "house": zr.house_from(transit_sign[ruler], natal_rising)},
+def _l5_natal(sign: str, ruler: str, natal_rising: str, natal_sign: Optional[dict],
+              transit_sign: dict) -> tuple:
+    """The natal joins of one L5 period, each computed on its own: (fields, any_missing).
+    A field that cannot be computed is None."""
+    parts = {
+        "natal_house": lambda: zr.house_from(sign, natal_rising),
+        "natal_planets": lambda: [n for n, s in natal_sign.items() if s == sign and n in NATAL_PLANETS],
+        "ruler_natal": lambda: {"sign": natal_sign[ruler],
+                                "house": zr.house_from(natal_sign[ruler], natal_rising)},
+        "ruler_transit": lambda: {"sign": transit_sign[ruler],
+                                  "house": zr.house_from(transit_sign[ruler], natal_rising)},
     }
+    out, missing = {}, False
+    for key, fn in parts.items():
+        try:
+            out[key] = fn()
+        except Exception:
+            out[key], missing = None, True
+    return out, missing
 
 
 def _releasing(jd: float, w0: float, w1: float, chart: dict, natal_rising: str,
@@ -224,18 +241,16 @@ def _releasing(jd: float, w0: float, w1: float, chart: dict, natal_rising: str,
     out = {"fortune_sign": chart["lots"]["fortune"]["sign"]}
     for lot in ("spirit", "fortune"):
         z = sky.zr_window(chart, w0, w1, lot, levels=(4, 5))
-        l4s = [p for p in z["levels"]["4"] if _jd(p["end"]) > w0 and _jd(p["start"]) < w1]
-        l4 = next((p for p in l4s if _jd(p["start"]) <= jd < _jd(p["end"])), l4s[0])
+        l4s = [p for p in z["levels"]["4"] if _sec(p["end"]) > w0 and _sec(p["start"]) < w1]
+        l4 = next((p for p in l4s if _sec(p["start"]) <= jd < _sec(p["end"])), l4s[0])
         l5 = []
         for p in z["levels"]["5"]:
-            if not (_jd(p["end"]) > w0 and _jd(p["start"]) < w1):
+            if not (_sec(p["end"]) > w0 and _sec(p["start"]) < w1):
                 continue
             row = _period(p)
-            try:
-                row.update(_l5_natal(p["sign"], p["ruler"], natal_rising, natal_sign, transit_sign))
-            except Exception:
-                natal_missing = True
-                row.update(natal_house=None, natal_planets=None, ruler_natal=None, ruler_transit=None)
+            joins, missing = _l5_natal(p["sign"], p["ruler"], natal_rising, natal_sign, transit_sign)
+            row.update(joins)
+            natal_missing = natal_missing or missing
             l5.append(row)
         out[lot] = {"l4": _period(l4), "l5": l5}
     if natal_missing:
@@ -250,13 +265,13 @@ def _rising_boundaries(jd: float, w0: float, w1: float, lat: float, lon: float) 
     out = []
     here = sky._ascendant_at(jd, float(lat), float(lon))
     cur = here
-    while cur["leaves_at"] is not None and w0 < _jd(cur["leaves_at"]) < w1:
+    while cur["leaves_at"] is not None and w0 < _sec(cur["leaves_at"]) < w1:
         t = _jd(cur["leaves_at"])
         nxt = sky._ascendant_at(t + step, float(lat), float(lon))
         out.append((t, cur["sign"], nxt["sign"]))
         cur = nxt
     cur = here
-    while cur["entered_at"] is not None and w0 < _jd(cur["entered_at"]) < w1:
+    while cur["entered_at"] is not None and w0 < _sec(cur["entered_at"]) < w1:
         t = _jd(cur["entered_at"])
         prev = sky._ascendant_at(t - step, float(lat), float(lon))
         out.append((t, prev["sign"], cur["sign"]))
@@ -269,7 +284,7 @@ def _changes(jd: float, w0: float, w1: float, lat: float, lon: float, rising: Op
     out = []
 
     def inside(t):
-        return t is not None and w0 < _jd(t) < w1
+        return t is not None and w0 < _sec(t) < w1
 
     def add(at, what, frm, to):
         out.append({"at": _iso(at), "what": what, "from": frm, "to": to})
@@ -288,9 +303,9 @@ def _changes(jd: float, w0: float, w1: float, lat: float, lon: float, rising: Op
                 if inside(b["start"]):
                     add(b["start"], f"{lot}_l5", a["sign"], b["sign"])
     for s in spans or []:
-        if w0 < s["start_jd"] < w1:
+        if inside(s["start_jd"]):
             add(s["start_jd"], "moon_void", "aspecting", "void")
-        if w0 < s["end_jd"] < w1:
+        if inside(s["end_jd"]):
             add(s["end_jd"], "moon_void", "void", "aspecting")
     out.sort(key=lambda c: (_jd(c["at"]), c["what"]))
     return out
@@ -300,6 +315,7 @@ def _changes(jd: float, w0: float, w1: float, lat: float, lon: float, rising: Op
 
 def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: float = None) -> dict:
     """One Ki hour, read at `at` for the stored chart `name` at (lat, lon)."""
+    name = (name or "").strip().lower()
     if not name:
         return {"error": "name is required"}
     try:
@@ -319,7 +335,8 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
         return {"error": f"cannot compute the Ki hour window: {e}"}
 
     absent: list = []
-    w0, w1 = window.pop("start_jd"), window.pop("end_jd")
+    window.pop("start_jd"), window.pop("end_jd")
+    w0, w1 = _jd(window["start"]), _jd(window["end"])  # the window as shown, whole seconds
 
     natal_rising = _block(absent, "natal", _natal_rising_sign, chart)
     transit = _block(absent, "planets", sky._planets_at, jd)
@@ -362,13 +379,11 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
     }
 
 
-skyki_hour_fn = skyki_hour
-
-
 # ── MCP ──
 
 def register_skyki(mcp) -> None:
     """Add the skyki_hour tool to Stella's FastMCP server."""
+    fn = globals()["skyki_hour"]  # the module function; the tool below shadows the name here
 
     @mcp.tool()
     async def skyki_hour(
@@ -393,11 +408,12 @@ def register_skyki(mcp) -> None:
         Args:
             name: Stored chart name
             at: ISO 8601 instant (default now; naive = America/New_York)
-            lat: Latitude in degrees (required; rising sign, sect, planetary hours)
-            lon: Longitude in degrees, east positive (required; rising sign, sect, planetary hours)
+            lat: Latitude in degrees; needed for the rising sign, sect, planets, planetary
+                hours and the natal reading, which are named in `absent` without it
+            lon: Longitude in degrees, east positive; needed with lat for the same parts
         """
         try:
-            result = await asyncio.to_thread(skyki_hour_fn, name, at, lat, lon)
+            result = await asyncio.to_thread(fn, name, at, lat, lon)
             return json.dumps(result, default=str)
         except Exception as ex:
             return json.dumps({"error": str(ex)})

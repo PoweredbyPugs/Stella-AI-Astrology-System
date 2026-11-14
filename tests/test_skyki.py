@@ -150,12 +150,26 @@ def test_hours_before_sunrise_come_from_the_previous_night():
     hours = r["moment"]["planetary_hours"]
     assert hours and all(iso(h["start"]) < iso(r["window"]["end"]) and iso(h["end"]) > iso(r["window"]["start"]) for h in hours)
 
-def test_l5_list_excludes_period_ending_at_window_start():
+def test_l5_list_excludes_period_ending_at_window_start(monkeypatch):
+    # Spirit's L5 list gets a period ending exactly at the window start, and the next one
+    # starting there; the first must be left out and no change listed at window.start.
+    real = sky.zr_window
+    def fake(chart, jd0, jd1, lot, levels):
+        z = real(chart, jd0, jd1, lot, levels=levels)
+        if lot == "spirit":
+            w = sky.iso_utc(jd0)
+            nxt = dict(z["levels"]["5"][-1], start=w)
+            prev = dict(nxt, sign="Leo", ruler="Sun", start=sky.iso_utc(jd0 - 5 * sky.HOUR), end=w)
+            z["levels"]["5"] = [prev, nxt]
+        return z
+    monkeypatch.setattr(skyki.sky, "zr_window", fake)
     r = fixture_call()
     w0 = iso(r["window"]["start"])
+    assert [p["sign"] for p in r["releasing"]["spirit"]["l5"]] == ["Virgo"]
     for lot in ("spirit", "fortune"):
         for p in r["releasing"][lot]["l5"]:
             assert iso(p["end"]) > w0
+    assert not [c for c in r["changes"] if c["what"].endswith("_l5") and iso(c["at"]) == w0]
 
 def test_iso_passes_none_through():
     assert skyki._iso(None) is None
@@ -233,3 +247,42 @@ def test_register_skyki_adds_one_tool():
     tools = asyncio.run(mcp.list_tools())
     assert [t.name for t in tools] == ["skyki_hour"]
     assert "Ki" in tools[0].description and "lat" in tools[0].description
+
+
+# ── Final review fix ────────────────────────────────────────────────────────
+
+def test_chart_name_is_lowercased_before_loading(monkeypatch):
+    seen = []
+    real = skyki._load_chart
+    def spy(n):
+        seen.append(n)
+        return real(n)
+    monkeypatch.setattr(skyki, "_load_chart", spy)
+    r = skyki.skyki_hour(" Chris ", FIX["at"], *MAITLAND)
+    assert seen == ["chris"]
+    assert r["chart"] == "chris"
+
+def test_boundary_a_fraction_after_the_true_start_is_not_a_change_at_window_start(monkeypatch):
+    jd = sky.parse_instant(FIX["at"])
+    w0 = skyki.ki_solar.solar_stack(jd)["spans"]["hour"][0]
+    shown = sky.parse_instant(skyki._iso(w0))
+    edge = shown + 0.5 * sky.SECOND if shown < w0 else shown
+    b = (w0 + edge) / 2  # after the true start, yet shown as the window start
+    assert b > w0 and skyki._iso(b) == skyki._iso(w0)
+    monkeypatch.setattr(skyki.sky, "_void_spans", lambda a, z: [
+        {"start_jd": b, "end_jd": b + sky.HOUR, "from_sign": "Capricorn", "to_sign": "Aquarius", "last_aspect": None}])
+    r = fixture_call()
+    assert not [c for c in r["changes"] if c["at"] == r["window"]["start"]]
+
+def test_missing_transit_blanks_only_ruler_transit_in_l5(monkeypatch):
+    def boom(jd):
+        raise RuntimeError("no planets")
+    monkeypatch.setattr(skyki.sky, "_planets_at", boom)
+    r = fixture_call()
+    assert "releasing_natal" in r["absent"]
+    rows = r["releasing"]["fortune"]["l5"]
+    want = FIX["releasing"]["fortune"]["l5"]
+    for got, w in zip(rows, want, strict=True):
+        assert got["ruler_transit"] is None
+        assert (got["natal_house"], got["natal_planets"], got["ruler_natal"]) == \
+            (w["natal_house"], w["natal_planets"], w["ruler_natal"])

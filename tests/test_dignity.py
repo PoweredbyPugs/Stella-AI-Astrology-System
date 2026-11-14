@@ -48,3 +48,7 @@ def test_participating_triplicity_counts_in_both_sects():
 def test_sect_blocks():
     assert sect_block(True) == {"label": "day", "light": "Sun", "benefic": "Jupiter", "malefic": "Saturn"}
     assert sect_block(False) == {"label": "night", "light": "Moon", "benefic": "Venus", "malefic": "Mars"}
+
+
+def test_longitude_a_hair_below_zero_is_aries():
+    assert essential_dignities("Sun", -1e-15, True)["sign"] == "Aries"

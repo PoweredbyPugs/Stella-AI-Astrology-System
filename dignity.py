@@ -67,6 +67,8 @@ def _as_list(v):
 
 def essential_dignities(planet: str, longitude: float, is_day: bool) -> dict:
     lon = longitude % 360
+    if lon >= 360:  # a tiny negative longitude wraps to 360.0 in floating point
+        lon -= 360
     idx = int(lon // 30)
     sign = SIGN_NAMES[idx]
     deg = lon - idx * 30

@@ -239,13 +239,13 @@ def test_iso_from_aware_utc_datetime():
     assert skyki._iso(datetime(2026, 11, 13, 22, 58, 14, tzinfo=timezone.utc)) == "2026-11-13T17:58:14-05:00"
 
 
-def test_register_skyki_adds_one_tool():
+def test_register_skyki_adds_both_tools():
     import asyncio
     from mcp.server.fastmcp import FastMCP
     mcp = FastMCP("t")
     skyki.register_skyki(mcp)
     tools = asyncio.run(mcp.list_tools())
-    assert [t.name for t in tools] == ["skyki_hour"]
+    assert sorted(t.name for t in tools) == ["skyki_hour", "skyki_inner_hour"]
     assert "Ki" in tools[0].description and "lat" in tools[0].description
 
 
@@ -286,3 +286,40 @@ def test_missing_transit_blanks_only_ruler_transit_in_l5(monkeypatch):
         assert got["ruler_transit"] is None
         assert (got["natal_house"], got["natal_planets"], got["ruler_natal"]) == \
             (w["natal_house"], w["natal_planets"], w["ruler_natal"])
+
+
+# ── Inner hour: the personal side read from the second (month) Ki number ───────────────────
+
+def inner_fixture_call():
+    return skyki.skyki_inner_hour("chris", FIX["at"], *MAITLAND)
+
+def test_inner_hour_personal_side_comes_from_the_month_number():
+    k = inner_fixture_call()["ki"]
+    # chris is 5.9.1: the inner hour reads from the 9, not the 5
+    assert k["natal_month"] == 9
+    assert "natal_year" not in k
+    assert k["global"] == FIX["ki"]["global"]
+    assert k["personal"]["hour"] == {"number": 7, "trigram": "Lake", "element": "Metal"}
+    assert k["personal"]["day"] == {"number": 3, "trigram": "Thunder", "element": "Wood"}
+
+def test_inner_hour_matches_the_principal_hour_everywhere_but_ki():
+    a = fixture_call()
+    b = inner_fixture_call()
+    assert set(a) == set(b)
+    for key in a:
+        if key != "ki":
+            assert a[key] == b[key], key
+
+def test_inner_hour_keeps_ki_absent_without_birth_data():
+    r = skyki.skyki_inner_hour("betsy", FIX["at"], *MAITLAND)
+    assert r["ki"] is None and "ki" in r["absent"]
+
+def test_inner_hour_registers_as_a_second_tool():
+    import asyncio
+    from mcp.server.fastmcp import FastMCP
+    mcp = FastMCP("t")
+    skyki.register_skyki(mcp)
+    tools = {t.name: t for t in asyncio.run(mcp.list_tools())}
+    assert set(tools) == {"skyki_hour", "skyki_inner_hour"}
+    assert "second" in tools["skyki_inner_hour"].description
+    assert "lat" in tools["skyki_inner_hour"].description

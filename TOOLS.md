@@ -1,6 +1,6 @@
-# Stella MCP Server — 105 Tools
+# Stella MCP Server — 106 Tools
 
-*Last updated: Nov 13, 2026*
+*Last updated: Nov 14, 2026*
 
 ## Helios Bridge (current sky data)
 
@@ -40,6 +40,7 @@
 | 93 | `get_zr_periods` | Every ZR period overlapping a window at the requested levels (timelines, Octave, next loosing or peak) |
 | 94 | `get_sky_window` | The sky over a window, for Octave's sky layer: at the start the positions, the Moon's phase, the ascendant (with lat/lon), transits to a chart with orbs, the profection; inside it lunations, ingresses, the Moon's 15° gates, stations, eclipses, void of course, exact transits, the turnings; releasing periods for both lots at chosen levels (by default the level the window's length is read at: a few hours L5, a day L4, a month L3, a year L2, longer L1); UTC in and out |
 | 105 | `skyki_hour` | One Ki double-hour in one call for the hour reading: Ki hour and numbers, rising sign and sect, the seven planets with dignity and houses, the Moon, planetary hours, the rising sign read natally, releasing L4/L5 with natal joins, and the changes inside the hour; facts only |
+| 106 | `skyki_inner_hour` | `skyki_hour` with the personal Ki read from the native's second (month) number instead of the principal year number; same arguments, same reply, only the `ki` block differs |
 
 ZR conventions (`zr.py`): 360-day years, 30-day months (Brennan's published tables reproduce date for date). Sub-periods run the twelve signs from the parent's sign; after 211 units the bond is loosed and they jump to the sign opposite the parent, continuing in order; the last sub-period is cut at the parent's end. Spirit in Fortune's sign releases from the next sign. Peaks and triads always count from Fortune: 1st/10th Major, 7th Moderate, 4th Minor; cadent = preparatory, angular = peak, succedent = completion.
 
@@ -98,7 +99,7 @@ The three-number reading has no hierarchy: a 5 in the middle takes the other num
 | 103 | `write_octave_statement` | One written thought of two or three sentences under the headline: Jev decides and grades, the writer phrases, cached (statement s2); null with the composed sentence if nothing passes |
 | 104 | `explain_octave_statement` | The reading of the written thought: each phrase quoted and opened, the whole, questions to sit with, a closing line (explain x1) |
 
-Math in `octave_math.py`; text in `data/gnostic.json`. Rows 95-104 are in `octave_tools.py` (engine `octave_engine.py`, ledger `octave_ledger.py`, pipelines `octave_forecast.py`). Row 105 is in `skyki.py`. Framework as the `octave://framework` resource and the `octave_reading` and `octave_period_reading` prompts; the ledger as `octave://ledger`. Reference: `docs/OCTAVE_REFERENCE.md`.
+Math in `octave_math.py`; text in `data/gnostic.json`. Rows 95-104 are in `octave_tools.py` (engine `octave_engine.py`, ledger `octave_ledger.py`, pipelines `octave_forecast.py`). Rows 105-106 are in `skyki.py`. Framework as the `octave://framework` resource and the `octave_reading` and `octave_period_reading` prompts; the ledger as `octave://ledger`. Reference: `docs/OCTAVE_REFERENCE.md`.
 
 ## Convergence Ki (5-level solar-terrestrial cascade)
 

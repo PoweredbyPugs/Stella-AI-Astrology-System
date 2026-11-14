@@ -1,5 +1,10 @@
 # Stella Changelog
 
+## 2026.11.14 — skyki_inner_hour
+
+### `skyki.py`
+The `skyki_inner_hour` tool (106th): the same hour reading as `skyki_hour`, with the personal Ki read from the native's second (month) number instead of the first (principal year) number. The reply is identical except the `ki` block, which reports `natal_month` and personal hour and day numbers derived from it. Both tools share one function behind a `number` switch (`principal` or `inner`), so they cannot drift apart.
+
 ## 2026.11.13 — skyki_hour and local dignity scoring
 
 ### `dignity.py` (new)

@@ -12,8 +12,9 @@ under charts/; no HTTP. Julian Days inside; every time in the reply is ISO 8601 
 America/New_York with its offset and whole seconds (never Z, never naive). A naive `at` is
 America/New_York; no `at` is now.
 
-Any block that cannot be computed is None and named in `absent`; the call never raises. The
-one error reply is a missing name or a chart that is not found.
+Any block that cannot be computed is None and named in `absent`; the call never raises. An
+error reply comes back only for a missing name, a chart that is not found or cannot be read,
+an unreadable `at`, or a Ki hour window that cannot be computed.
 """
 
 from datetime import date, datetime, timedelta, timezone
@@ -123,10 +124,6 @@ def _peak(label) -> Optional[str]:
     return label.split()[0].lower() if label else None
 
 
-def _next_sign(sign: str, step: int = 1) -> str:
-    return SIGN_NAMES[(SIGN_NAMES.index(sign) + step) % 12]
-
-
 # ── Blocks ──
 
 def _window(jd: float) -> dict:
@@ -151,9 +148,10 @@ def _rising(jd: float, lat: float, lon: float) -> dict:
             "entered_at": _iso(a["entered_at"]), "leaves_at": _iso(a["leaves_at"])}
 
 
-def _moon(jd: float, spans: list) -> dict:
-    out = {"phase": sky._moon_at(jd)["phase"], "void": False}
-    for s in spans:
+def _moon(jd: float, spans: Optional[list]) -> dict:
+    """Phase always; void None when the void spans could not be computed."""
+    out = {"phase": sky._moon_at(jd)["phase"], "void": None if spans is None else False}
+    for s in spans or []:
         if s["start_jd"] <= jd < s["end_jd"]:
             out.update(void=True, void_start=_iso(s["start_jd"]), void_end=_iso(s["end_jd"]))
             break
@@ -242,8 +240,29 @@ def _releasing(jd: float, w0: float, w1: float, chart: dict, natal_rising: str,
     return out
 
 
-def _changes(w0: float, w1: float, rising: Optional[dict], hours: Optional[list],
-             releasing: Optional[dict], spans: Optional[list]) -> list:
+def _rising_boundaries(jd: float, w0: float, w1: float, lat: float, lon: float) -> list:
+    """Every ascendant sign change strictly inside (w0, w1): (jd, from_sign, to_sign), walked
+    forward through leaves_at and backward through entered_at from the sign at jd."""
+    step = 30 * sky.SECOND
+    out = []
+    here = sky._ascendant_at(jd, float(lat), float(lon))
+    cur = here
+    while cur["leaves_at"] is not None and w0 < _jd(cur["leaves_at"]) < w1:
+        t = _jd(cur["leaves_at"])
+        nxt = sky._ascendant_at(t + step, float(lat), float(lon))
+        out.append((t, cur["sign"], nxt["sign"]))
+        cur = nxt
+    cur = here
+    while cur["entered_at"] is not None and w0 < _jd(cur["entered_at"]) < w1:
+        t = _jd(cur["entered_at"])
+        prev = sky._ascendant_at(t - step, float(lat), float(lon))
+        out.append((t, prev["sign"], cur["sign"]))
+        cur = prev
+    return sorted(out)
+
+
+def _changes(jd: float, w0: float, w1: float, lat: float, lon: float, rising: Optional[dict],
+             hours: Optional[list], releasing: Optional[dict], spans: Optional[list]) -> list:
     out = []
 
     def inside(t):
@@ -253,10 +272,8 @@ def _changes(w0: float, w1: float, rising: Optional[dict], hours: Optional[list]
         out.append({"at": _iso(at), "what": what, "from": frm, "to": to})
 
     if rising:
-        if inside(rising["leaves_at"]):
-            add(rising["leaves_at"], "rising_sign", rising["sign"], _next_sign(rising["sign"]))
-        if inside(rising["entered_at"]):
-            add(rising["entered_at"], "rising_sign", _next_sign(rising["sign"], -1), rising["sign"])
+        for t, frm, to in _rising_boundaries(jd, w0, w1, lat, lon):
+            add(t, "rising_sign", frm, to)
     if hours:
         for a, b in zip(hours, hours[1:]):
             if inside(b["start"]):
@@ -286,23 +303,29 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
         chart = _load_chart(name)
     except FileNotFoundError:
         return {"error": f"chart '{name}' not found"}
+    except ValueError as e:  # json.JSONDecodeError is a ValueError
+        return {"error": f"chart '{name}' cannot be read: {e}"}
     try:
         jd = sky.parse_instant(at) if at else sky._dt_to_jd(datetime.now(timezone.utc))
     except Exception:
         return {"error": f"cannot read at: {at!r}"}
 
+    try:
+        window = _window(jd)
+    except Exception as e:
+        return {"error": f"cannot compute the Ki hour window: {e}"}
+
     absent: list = []
-    window = _window(jd)
     w0, w1 = window.pop("start_jd"), window.pop("end_jd")
 
     natal_rising = _block(absent, "natal", _natal_rising_sign, chart)
     transit = _block(absent, "planets", sky._planets_at, jd)
     transit_sign = {p["planet"]: p["sign"] for p in transit} if transit else {}
-    spans = _block(absent, "moon", sky._void_spans, jd - 1, jd + 1)
+    spans = _block(absent, "moon_void", sky._void_spans, jd - 1, jd + 1)
 
     rising = _block(absent, "rising", _rising, jd, lat, lon)
     is_day = _block(absent, "sect", _is_day, jd, lat, lon)
-    moon = _block(absent, "moon", _moon, jd, spans) if spans is not None else None
+    moon = _block(absent, "moon", _moon, jd, spans)
     planets = _block(absent, "planets", _planets, transit, is_day, rising["sign"], natal_rising) \
         if transit and rising and is_day is not None and natal_rising else None
     if planets is None and "planets" not in absent:
@@ -314,7 +337,8 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
     if natal is None and "natal" not in absent:
         absent.append("natal")
     releasing = _block(absent, "releasing", _releasing, jd, w0, w1, chart, natal_rising, transit_sign, absent)
-    changes = _block(absent, "changes", _changes, w0, w1, rising, hours, releasing, spans)
+    changes = _block(absent, "changes", _changes, jd, w0, w1, lat, lon, rising, hours,
+                     releasing, spans)
 
     return {
         "chart": name,

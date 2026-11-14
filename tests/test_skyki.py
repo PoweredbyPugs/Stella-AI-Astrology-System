@@ -168,3 +168,58 @@ def test_dms_chart_marks_natal_absent():
 
 def test_missing_chart_is_an_error_not_a_raise():
     assert "error" in skyki.skyki_hour("no-such-chart", FIX["at"], *MAITLAND)
+
+# ── Fix round 1 ─────────────────────────────────────────────────────────────
+
+def test_window_failure_is_an_error_not_a_raise(monkeypatch):
+    def boom(jd):
+        raise RuntimeError("no sun today")
+    monkeypatch.setattr(skyki.ki_solar, "solar_stack", boom)
+    r = skyki.skyki_hour("chris", FIX["at"], *MAITLAND)
+    assert "error" in r and "no sun today" in r["error"]
+
+def _asc_boundaries(jd0, jd1, lat, lon):
+    idx = lambda j: int((sky._asc_lon(j, lat, lon) % 360) // 30)
+    out, j, prev = [], jd0, idx(jd0)
+    while j < jd1:
+        j2 = min(j + sky.MINUTE, jd1)
+        cur = idx(j2)
+        if cur != prev:
+            out.append((sky._bisect(lambda x: idx(x) == prev, j, j2), sky.SIGN_NAMES[prev], sky.SIGN_NAMES[cur]))
+            prev = cur
+        j = j2
+    return out
+
+def test_two_rising_changes_inside_one_ki_hour_are_both_listed():
+    # Aries rises in under ninety minutes at Maitland; this Ki hour holds Aries->Taurus and Taurus->Gemini.
+    r = skyki.skyki_hour("chris", "2026-11-13T16:10:00-05:00", *MAITLAND)
+    assert r["moment"]["rising"]["sign"] == "Aries"
+    got = [c for c in r["changes"] if c["what"] == "rising_sign"]
+    w0, w1 = sky.parse_instant(r["window"]["start"]), sky.parse_instant(r["window"]["end"])
+    want = _asc_boundaries(w0, w1, *MAITLAND)
+    assert len(want) == 2
+    assert [(c["from"], c["to"]) for c in got] == [(f, t) for _, f, t in want]
+    for c, (jd, _, _) in zip(got, want):
+        assert within_minute(c["at"], skyki._iso(jd))
+    assert [iso(c["at"]) for c in r["changes"]] == sorted(iso(c["at"]) for c in r["changes"])
+
+def test_void_failure_keeps_the_moon_phase(monkeypatch):
+    def boom(jd0, jd1):
+        raise RuntimeError("voc down")
+    monkeypatch.setattr(skyki.sky, "_void_spans", boom)
+    r = skyki.skyki_hour("chris", FIX["at"], *MAITLAND)
+    assert r["moment"]["moon"] == {"phase": FIX["moment"]["moon"]["phase"], "void": None}
+    assert "moon_void" in r["absent"] and "moon" not in r["absent"]
+
+def test_corrupt_chart_is_an_error_not_a_raise(monkeypatch, tmp_path):
+    import ephemeris
+    (tmp_path / "broken.json").write_text("{ not json")
+    monkeypatch.setattr(ephemeris, "CHARTS_DIR", tmp_path)
+    assert "error" in skyki.skyki_hour("broken", FIX["at"], *MAITLAND)
+
+def test_iso_from_julian_day():
+    assert skyki._iso(sky.parse_instant("2026-11-13T22:58:14Z")) == "2026-11-13T17:58:14-05:00"
+
+def test_iso_from_aware_utc_datetime():
+    from datetime import timezone
+    assert skyki._iso(datetime(2026, 11, 13, 22, 58, 14, tzinfo=timezone.utc)) == "2026-11-13T17:58:14-05:00"

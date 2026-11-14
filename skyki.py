@@ -1,5 +1,8 @@
 """SkyKi hour: one Ki hour read against the sky and a stored chart, in one call.
 
+Two entry points: `skyki_hour` reads the personal Ki from the principal (year) number and
+`skyki_inner_hour` from the second (month) number; everything else is the same.
+
 Joins, at one instant, the solar Ki hour that holds it (its window, the global and personal
 Ki of the hour and the day), the moment chart (rising sign, sect, the Moon's phase and void
 of course, the seven classical planets with essential dignity, sect and whole-sign houses
@@ -24,6 +27,7 @@ import asyncio
 import json
 
 import ki
+import ki_levels
 import ki_solar
 import sky
 import zr
@@ -140,15 +144,27 @@ def _window(jd: float) -> dict:
     return {"start": _iso(w0), "end": _iso(w1), "start_jd": w0, "end_jd": w1}
 
 
-def _ki(jd: float, chart: dict) -> dict:
+NUMBERS = {"principal": ("natal_year", 0), "inner": ("natal_month", 1)}
+
+
+def _ki(jd: float, chart: dict, number: str = "principal") -> dict:
+    """The Ki hour and day, global and personal. `number` names which natal number the
+    personal side is read from: "principal" (the year number, the first of the three) or
+    "inner" (the month number, the second)."""
+    key, idx = NUMBERS[number]
     birth = date.fromisoformat(chart["birthData"]["date"])
     target = sky.jd_to_dt(jd).astimezone(sky.TZ).replace(tzinfo=None)
     k = ki.calculate_daily_ki(birth, target)
+    natal = ki.calculate_ki_all(birth.year, birth.month, birth.day)[idx]
 
     def side(s):
-        return {lvl: {"number": k[s][lvl]["ki"], "trigram": k[s][lvl]["info"]["name"],
-                      "element": k[s][lvl]["info"]["element"]} for lvl in ("hour", "day")}
-    return {"natal_year": k["natal_year_ki"], "global": side("global"), "personal": side("personal")}
+        out = {}
+        for lvl in ("hour", "day"):
+            n = k[s][lvl]["ki"] if s == "global" else ki_levels.personal(natal, k["global"][lvl]["ki"])
+            info = ki.KI_TRIGRAMS[n]
+            out[lvl] = {"number": n, "trigram": info["name"], "element": info["element"]}
+        return out
+    return {key: natal, "global": side("global"), "personal": side("personal")}
 
 
 def _rising(jd: float, lat: float, lon: float) -> dict:
@@ -313,8 +329,12 @@ def _changes(jd: float, w0: float, w1: float, lat: float, lon: float, rising: Op
 
 # ── The whole reply ──
 
-def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: float = None) -> dict:
-    """One Ki hour, read at `at` for the stored chart `name` at (lat, lon)."""
+def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: float = None,
+               number: str = "principal") -> dict:
+    """One Ki hour, read at `at` for the stored chart `name` at (lat, lon). `number` picks
+    which natal Ki number the personal side is read from (see NUMBERS)."""
+    if number not in NUMBERS:
+        return {"error": f"number must be one of {sorted(NUMBERS)}, not {number!r}"}
     name = (name or "").strip().lower()
     if not name:
         return {"error": "name is required"}
@@ -364,7 +384,7 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
         "chart": name,
         "at": _iso(jd),
         "window": window,
-        "ki": _block(absent, "ki", _ki, jd, chart),
+        "ki": _block(absent, "ki", _ki, jd, chart, number),
         "moment": {
             "rising": rising,
             "sect": sect_block(is_day) if is_day is not None else None,
@@ -379,10 +399,15 @@ def skyki_hour(name: str, at: Optional[str] = None, lat: float = None, lon: floa
     }
 
 
+def skyki_inner_hour(name: str, at: Optional[str] = None, lat: float = None, lon: float = None) -> dict:
+    """The same hour, with the personal Ki read from the second (month) number."""
+    return skyki_hour(name, at, lat, lon, number="inner")
+
+
 # ── MCP ──
 
 def register_skyki(mcp) -> None:
-    """Add the skyki_hour tool to Stella's FastMCP server."""
+    """Add the skyki_hour and skyki_inner_hour tools to Stella's FastMCP server."""
     @mcp.tool(name="skyki_hour")
     async def skyki_hour_tool(
         name: str,
@@ -412,6 +437,34 @@ def register_skyki(mcp) -> None:
         """
         try:
             result = await asyncio.to_thread(skyki_hour, name, at, lat, lon)
+            return json.dumps(result, default=str)
+        except Exception as ex:
+            return json.dumps({"error": str(ex)})
+
+    @mcp.tool(name="skyki_inner_hour")
+    async def skyki_inner_hour_tool(
+        name: str,
+        at: Optional[str] = None,
+        lat: float = None,
+        lon: float = None,
+    ) -> str:
+        """The inner Ki hour: skyki_hour with the personal Ki read from the native's second
+        (month) number instead of the first (principal year) number.
+
+        Same arguments and same reply as skyki_hour. Only the `ki` block differs: it reports
+        `natal_month` instead of `natal_year`, and the personal hour and day numbers are the
+        natal month number placed against the global hour and day. The global numbers, the
+        chart of the moment, the natal reading, releasing and `changes` are identical.
+
+        Args:
+            name: Stored chart name
+            at: ISO 8601 instant (default now; naive = America/New_York)
+            lat: Latitude in degrees; needed for the rising sign, sect, planets, planetary
+                hours and the natal reading, which are named in `absent` without it
+            lon: Longitude in degrees, east positive; needed with lat for the same parts
+        """
+        try:
+            result = await asyncio.to_thread(skyki_inner_hour, name, at, lat, lon)
             return json.dumps(result, default=str)
         except Exception as ex:
             return json.dumps({"error": str(ex)})
